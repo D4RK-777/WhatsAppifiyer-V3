@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import TemplateGallery from "./template-gallery";
+import TemplateGallery, { type TemplateItemProps } from "./template-gallery";
 import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
@@ -33,19 +33,19 @@ import { Loader2 } from "lucide-react";
 const formSchema = z.object({
   field1: z
     .string()
-    .max(150, "Field 1 must be 150 characters or less.")
+    .max(500, "Field 1 must be 500 characters or less.") // Increased max length for WhatsApp messages
     .optional()
-    .describe("AI-generated content for Field 1."),
+    .describe("AI-generated content for Field 1, WhatsApp formatted."),
   field2: z
     .string()
-    .max(150, "Field 2 must be 150 characters or less.")
+    .max(500, "Field 2 must be 500 characters or less.") // Increased max length
     .optional()
-    .describe("AI-generated content for Field 2."),
+    .describe("AI-generated content for Field 2, WhatsApp formatted."),
   field3: z
     .string()
-    .max(150, "Field 3 must be 150 characters or less.")
+    .max(500, "Field 3 must be 500 characters or less.") // Increased max length
     .optional()
-    .describe("AI-generated content for Field 3."),
+    .describe("AI-generated content for Field 3, WhatsApp formatted."),
   context: z.string().min(1, "Context cannot be empty.").max(500, "Context must be 500 characters or less."),
 });
 
@@ -66,10 +66,21 @@ function FormFlowFields() {
     },
   });
 
+  const handleTemplateSelect = (template: TemplateItemProps) => {
+    form.setValue("context", template.dataAiHint, { shouldValidate: true });
+    form.setValue("field1", template.templateContent.field1 || "", { shouldValidate: true });
+    form.setValue("field2", template.templateContent.field2 || "", { shouldValidate: true });
+    form.setValue("field3", template.templateContent.field3 || "", { shouldValidate: true });
+    toast({
+      title: `Template "${template.title}" Applied!`,
+      description: "Context and fields pre-populated. Edit or get AI suggestions.",
+    });
+  };
+
   const handleGetSuggestions = async () => {
     const { context, field1, field2, field3 } = form.getValues();
     if (!context.trim()) {
-      form.setError("context", { type: "manual", message: "Please provide some context before generating suggestions." });
+      form.setError("context", { type: "manual", message: "Please provide some context or select a template." });
       return;
     }
     form.clearErrors("context");
@@ -88,7 +99,7 @@ function FormFlowFields() {
       form.setValue("field3", suggestions.suggestion3, { shouldValidate: true });
       toast({
         title: "Suggestions Loaded!",
-        description: "AI-powered suggestions have been populated.",
+        description: "AI-powered WhatsApp suggestions populated.",
       });
     } catch (error) {
       console.error("Error getting suggestions:", error);
@@ -104,10 +115,10 @@ function FormFlowFields() {
 
 
   const onSubmit = (values: FormValues) => {
-    console.log("Form submitted:", values);
+    console.log("Form submitted (WhatsAppified):", values);
     toast({
       title: "Form Submitted!",
-      description: "Your data has been successfully processed.",
+      description: "Your WhatsApp-ified data has been processed.",
     });
   };
 
@@ -118,10 +129,10 @@ function FormFlowFields() {
         <Card className="shadow-xl rounded-xl bg-card">
           <CardHeader>
             <CardTitle className="text-3xl font-bold text-center text-primary">
-              Describe Your Needs
+              WhatsAppify Your Text
             </CardTitle>
             <CardDescription className="text-center text-muted-foreground">
-              Provide context for the form. Fields 1, 2, and 3 will display AI-generated content based on your input.
+              Select a template or provide context and initial text. Then, get AI-powered WhatsApp formatted suggestions.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -130,57 +141,41 @@ function FormFlowFields() {
               name="context"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-lg font-semibold">Context</FormLabel>
+                  <FormLabel className="text-lg font-semibold">Context / Goal</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Provide some context (e.g., 'User is planning a new software project.')"
+                      placeholder="E.g., 'Marketing campaign for new shoes', 'OTP for login', or select a template below."
                       className="resize-none rounded-md shadow-sm text-base focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]"
                       rows={3}
                       {...field}
                     />
                   </FormControl>
                   <FormDescription className="text-sm text-muted-foreground">
-                    This context will be used by the AI to generate content for the fields below.
+                    This context guides the AI for WhatsApp message generation.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            <div className="flex justify-center pt-2 pb-4">
-              <Button
-                type="button"
-                onClick={handleGetSuggestions}
-                disabled={isLoadingSuggestions}
-                className="px-8 py-3 text-base rounded-lg shadow-md hover:shadow-lg transition-shadow"
-              >
-                {isLoadingSuggestions ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  "Get AI Suggestions"
-                )}
-              </Button>
-            </div>
-
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
               <FormField
                 control={form.control}
                 name="field1"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold text-primary/90">AI Output: Field 1</FormLabel>
+                    <FormLabel className="font-semibold text-primary/90">Message Part 1 / Suggestion 1</FormLabel>
                     <FormControl>
-                      <div className="flex items-start p-3 min-h-[6rem] w-full rounded-md border border-input bg-secondary/30 text-sm shadow-sm break-words whitespace-pre-wrap">
-                        {field.value ? (
-                          <span className="text-foreground">{field.value}</span>
-                        ) : (
-                          <span className="text-muted-foreground italic">AI suggestion for Field 1 will appear here...</span>
-                        )}
-                      </div>
+                      <Textarea
+                        placeholder="Enter initial text for message part 1 or let AI generate it."
+                        className="resize-none rounded-md shadow-sm text-base min-h-[100px] focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]"
+                        rows={4}
+                        {...field}
+                      />
                     </FormControl>
+                     <FormDescription className="text-xs text-muted-foreground">
+                      This field will be transformed into a WhatsApp message suggestion.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -190,16 +185,18 @@ function FormFlowFields() {
                 name="field2"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold text-primary/90">AI Output: Field 2</FormLabel>
+                    <FormLabel className="font-semibold text-primary/90">Message Part 2 / Suggestion 2</FormLabel>
                     <FormControl>
-                       <div className="flex items-start p-3 min-h-[6rem] w-full rounded-md border border-input bg-secondary/30 text-sm shadow-sm break-words whitespace-pre-wrap">
-                        {field.value ? (
-                          <span className="text-foreground">{field.value}</span>
-                        ) : (
-                          <span className="text-muted-foreground italic">AI suggestion for Field 2 will appear here...</span>
-                        )}
-                      </div>
+                      <Textarea
+                        placeholder="Enter initial text for message part 2 or let AI generate it."
+                        className="resize-none rounded-md shadow-sm text-base min-h-[100px] focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]"
+                        rows={4}
+                        {...field}
+                      />
                     </FormControl>
+                    <FormDescription className="text-xs text-muted-foreground">
+                      This field will be transformed into a WhatsApp message suggestion.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -209,26 +206,46 @@ function FormFlowFields() {
                 name="field3"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold text-primary/90">AI Output: Field 3</FormLabel>
+                    <FormLabel className="font-semibold text-primary/90">Message Part 3 / Suggestion 3</FormLabel>
                     <FormControl>
-                       <div className="flex items-start p-3 min-h-[6rem] w-full rounded-md border border-input bg-secondary/30 text-sm shadow-sm break-words whitespace-pre-wrap">
-                        {field.value ? (
-                           <span className="text-foreground">{field.value}</span>
-                        ) : (
-                          <span className="text-muted-foreground italic">AI suggestion for Field 3 will appear here...</span>
-                        )}
-                      </div>
+                      <Textarea
+                        placeholder="Enter initial text for message part 3 or let AI generate it."
+                        className="resize-none rounded-md shadow-sm text-base min-h-[100px] focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]"
+                        rows={4}
+                        {...field}
+                      />
                     </FormControl>
+                     <FormDescription className="text-xs text-muted-foreground">
+                      This field will be transformed into a WhatsApp message suggestion.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-             <div className="flex justify-center pt-6">
-                <Button type="submit" className="px-10 py-3 text-lg rounded-lg shadow-lg hover:shadow-xl transition-shadow">Submit Form</Button>
+
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-6">
+              <Button
+                type="button"
+                onClick={handleGetSuggestions}
+                disabled={isLoadingSuggestions}
+                className="px-8 py-3 text-base rounded-lg shadow-md hover:shadow-lg transition-shadow w-full sm:w-auto"
+              >
+                {isLoadingSuggestions ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    WhatsAppifying...
+                  </>
+                ) : (
+                  "Get AI WhatsApp Suggestions"
+                )}
+              </Button>
+              <Button type="submit" className="px-10 py-3 text-lg rounded-lg shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto">
+                Submit Form
+              </Button>
             </div>
           </CardContent>
-          <TemplateGallery />
+          <TemplateGallery onTemplateClick={handleTemplateSelect} />
         </Card>
       </form>
     </Form>
