@@ -46,19 +46,19 @@ const formSchema = z.object({
   }),
   field1: z
     .string()
-    .max(500, "Suggestion 1 must be 500 characters or less.")
+    .max(500, "Suggestion 1 (Variation) must be 500 characters or less.")
     .optional()
-    .describe("AI-generated content for Suggestion 1, WhatsApp formatted."),
+    .describe("AI-generated Variation 1 of the WhatsApp message."),
   field2: z
     .string()
-    .max(500, "Suggestion 2 must be 500 characters or less.")
+    .max(500, "Suggestion 2 (Variation) must be 500 characters or less.")
     .optional()
-    .describe("AI-generated content for Suggestion 2, WhatsApp formatted."),
+    .describe("AI-generated Variation 2 of the WhatsApp message."),
   field3: z
     .string()
-    .max(500, "Suggestion 3 must be 500 characters or less.")
+    .max(500, "Suggestion 3 (Variation) must be 500 characters or less.")
     .optional()
-    .describe("AI-generated content for Suggestion 3, WhatsApp formatted."),
+    .describe("AI-generated Variation 3 of the WhatsApp message."),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -81,12 +81,13 @@ function FormFlowFields() {
   const handleTemplateSelect = (template: TemplateItemProps) => {
     form.setValue("yourTextOrIdea", template.dataAiHint, { shouldValidate: true });
     form.setValue("messageType", template.messageType, { shouldValidate: true });
+    // Pre-fill only field1 from template, AI will generate variations for others if field2/3 are empty
     form.setValue("field1", template.templateContent.field1 || "", { shouldValidate: true });
-    form.setValue("field2", template.templateContent.field2 || "", { shouldValidate: true });
-    form.setValue("field3", template.templateContent.field3 || "", { shouldValidate: true });
+    form.setValue("field2", template.templateContent.field2 || "", { shouldValidate: false }); // Don't validate, let AI fill
+    form.setValue("field3", template.templateContent.field3 || "", { shouldValidate: false }); // Don't validate, let AI fill
     toast({
       title: `Template "${template.title}" Applied!`,
-      description: "Text/Idea, message type, and fields pre-populated. Edit or get AI suggestions.",
+      description: "Text/Idea, message type, and initial field content pre-populated. Edit or get AI suggestions.",
     });
   };
 
@@ -112,19 +113,21 @@ function FormFlowFields() {
 
     setIsLoadingSuggestions(true);
     try {
-      const suggestions: SuggestFormFieldsOutput = await suggestFormFields({
-        context: yourTextOrIdea, // 'context' in AI flow maps to 'yourTextOrIdea' here
+      const suggestionsInput: SuggestFormFieldsInput = {
+        context: yourTextOrIdea,
         messageType,
-        field1: field1 || "",
+        field1: field1 || "", // Send current field content as potential drafts
         field2: field2 || "",
         field3: field3 || "",
-      });
+      };
+      
+      const suggestions: SuggestFormFieldsOutput = await suggestFormFields(suggestionsInput);
       form.setValue("field1", suggestions.suggestion1, { shouldValidate: true });
       form.setValue("field2", suggestions.suggestion2, { shouldValidate: true });
       form.setValue("field3", suggestions.suggestion3, { shouldValidate: true });
       toast({
-        title: "Suggestions Loaded!",
-        description: "AI-powered WhatsApp suggestions populated.",
+        title: "WhatsApp Variations Loaded!",
+        description: "AI-powered WhatsApp message variations populated.",
       });
     } catch (error) {
       console.error("Error getting suggestions:", error);
@@ -139,10 +142,12 @@ function FormFlowFields() {
   };
 
   const onSubmit = (values: FormValues) => {
-    console.log("Form submitted (WhatsAppified):", values);
+    // For submission, typically you'd pick one field or combine them as needed.
+    // Here, we'll just log them all.
+    console.log("Form submitted (WhatsAppified variations):", values);
     toast({
       title: "Form Submitted!",
-      description: "Your WhatsApp-ified data has been processed.",
+      description: "Your WhatsApp-ified variations have been processed.",
     });
   };
 
@@ -155,7 +160,7 @@ function FormFlowFields() {
               WhatsAppify Your Text
             </CardTitle>
             <CardDescription className="text-center text-muted-foreground">
-              Enter your text or an idea, select a message type, then get AI-powered WhatsApp formatted suggestions. Or, pick a template!
+              Enter your text or an idea, select a message type, then get AI-powered WhatsApp formatted variations. Or, pick a template!
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -167,14 +172,14 @@ function FormFlowFields() {
                   <FormLabel className="text-lg font-semibold">Your Text / Message Idea</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Paste your SMS or text here, or describe your message (e.g., 'Weekend sale announcement for shoes'). You can also select a template below."
+                      placeholder="Paste your SMS or text here, or describe your message idea (e.g., 'Weekend sale announcement for shoes'). You can also select a template below."
                       className="resize-none rounded-md shadow-sm text-base focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]"
                       rows={3}
                       {...field}
                     />
                   </FormControl>
                   <FormDescription className="text-sm text-muted-foreground">
-                    This text or idea will be transformed by the AI.
+                    This text or idea will be transformed by the AI into WhatsApp message variations.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -214,17 +219,17 @@ function FormFlowFields() {
                 name="field1"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold text-primary/90">Suggestion 1</FormLabel>
+                    <FormLabel className="font-semibold text-primary/90">WhatsApp Variation 1</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="AI-generated WhatsApp message suggestion 1 will appear here."
+                        placeholder="AI-generated WhatsApp message variation 1 will appear here."
                         className="resize-none rounded-md shadow-sm text-base min-h-[100px] focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]"
                         rows={4}
                         {...field}
                       />
                     </FormControl>
                      <FormDescription className="text-xs text-muted-foreground">
-                      Editable AI suggestion.
+                      Editable AI variation.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -235,17 +240,17 @@ function FormFlowFields() {
                 name="field2"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold text-primary/90">Suggestion 2</FormLabel>
+                    <FormLabel className="font-semibold text-primary/90">WhatsApp Variation 2</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="AI-generated WhatsApp message suggestion 2 will appear here."
+                        placeholder="AI-generated WhatsApp message variation 2 will appear here."
                         className="resize-none rounded-md shadow-sm text-base min-h-[100px] focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]"
                         rows={4}
                         {...field}
                       />
                     </FormControl>
                     <FormDescription className="text-xs text-muted-foreground">
-                      Editable AI suggestion.
+                      Editable AI variation.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -256,17 +261,17 @@ function FormFlowFields() {
                 name="field3"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold text-primary/90">Suggestion 3</FormLabel>
+                    <FormLabel className="font-semibold text-primary/90">WhatsApp Variation 3</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="AI-generated WhatsApp message suggestion 3 will appear here."
+                        placeholder="AI-generated WhatsApp message variation 3 will appear here."
                         className="resize-none rounded-md shadow-sm text-base min-h-[100px] focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]"
                         rows={4}
                         {...field}
                       />
                     </FormControl>
                      <FormDescription className="text-xs text-muted-foreground">
-                      Editable AI suggestion.
+                      Editable AI variation.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -287,7 +292,7 @@ function FormFlowFields() {
                     WhatsAppifying...
                   </>
                 ) : (
-                  "Get AI WhatsApp Suggestions"
+                  "Get AI WhatsApp Variations"
                 )}
               </Button>
               <Button type="submit" className="px-10 py-3 text-lg rounded-lg shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto">

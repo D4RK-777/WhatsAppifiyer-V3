@@ -3,9 +3,9 @@
 /**
  * @fileOverview Provides AI-powered suggestions for form fields, specializing in WhatsApp message formatting.
  *
- * - suggestFormFields - A function that provides WhatsApp-formatted suggestions for form fields based on context, message type, and initial content.
+ * - suggestFormFields - A function that provides three WhatsApp-formatted variations for a message based on context, message type, and initial content.
  * - SuggestFormFieldsInput - The input type for the suggestFormFields function.
- * - SuggestFormFieldsOutput - The return type for the suggestFormFields function.
+ * - SuggestFormFieldsOutput - The return type for the suggestFormFields function, containing three variations of the message.
  */
 
 import {ai} from '@/ai/genkit';
@@ -14,16 +14,16 @@ import {z} from 'genkit';
 const SuggestFormFieldsInputSchema = z.object({
   context: z.string().describe('The user-provided text to be WhatsAppified, or an idea/topic for message generation.'),
   messageType: z.enum(["marketing", "authentication", "utility", "service"]).describe('The selected type of WhatsApp message (e.g., marketing, authentication).'),
-  field1: z.string().optional().describe('The initial content for the first part of the WhatsApp message or the first suggestion field.'),
-  field2: z.string().optional().describe('The initial content for the second part of the WhatsApp message or the second suggestion field.'),
-  field3: z.string().optional().describe('The initial content for the third part of the WhatsApp message or the third suggestion field.'),
+  field1: z.string().optional().describe('Optional: Initial content for the first part/draft of the WhatsApp message. If provided, the AI should consider this as a starting point for one of its variations.'),
+  field2: z.string().optional().describe('Optional: Initial content for the second part/draft of the WhatsApp message. If provided, the AI should consider this as a starting point for one of its variations.'),
+  field3: z.string().optional().describe('Optional: Initial content for the third part/draft of the WhatsApp message. If provided, the AI should consider this as a starting point for one ofits variations.'),
 });
 export type SuggestFormFieldsInput = z.infer<typeof SuggestFormFieldsInputSchema>;
 
 const SuggestFormFieldsOutputSchema = z.object({
-  suggestion1: z.string().describe('AI-generated WhatsApp-formatted suggestion for the first field, based on user input, message type, and Field 1 content.'),
-  suggestion2: z.string().describe('AI-generated WhatsApp-formatted suggestion for the second field, based on user input, message type, and Field 2 content.'),
-  suggestion3: z.string().describe('AI-generated WhatsApp-formatted suggestion for the third field, based on user input, message type, and Field 3 content.'),
+  suggestion1: z.string().describe('AI-generated WhatsApp-formatted message: Variation 1, based on user input, message type, and any initial field content.'),
+  suggestion2: z.string().describe('AI-generated WhatsApp-formatted message: Variation 2, based on user input, message type, and any initial field content. This should be a distinct alternative to Variation 1.'),
+  suggestion3: z.string().describe('AI-generated WhatsApp-formatted message: Variation 3, based on user input, message type, and any initial field content. This should be a distinct alternative to Variations 1 and 2.'),
 });
 export type SuggestFormFieldsOutput = z.infer<typeof SuggestFormFieldsOutputSchema>;
 
@@ -36,37 +36,38 @@ const prompt = ai.definePrompt({
   input: {schema: SuggestFormFieldsInputSchema},
   output: {schema: SuggestFormFieldsOutputSchema},
   prompt: `You are an expert AI assistant specializing in crafting engaging and effective WhatsApp messages.
-Your task is to take the user's input (which could be existing text to convert OR an idea for a new message), the selected message type, and any existing content in "Field 1", "Field 2", and "Field 3".
-Then, transform these into three distinct, well-formatted WhatsApp message suggestions for "Suggestion 1", "Suggestion 2", and "Suggestion 3".
+Your task is to take the user's input (which could be existing text to convert OR an idea for a new message), the selected message type, and any existing content in "Field 1", "Field 2", or "Field 3".
+Then, generate THREE DISTINCT VARIATIONS of a WhatsApp message based on this information. These variations should be provided for "Suggestion 1", "Suggestion 2", and "Suggestion 3". Each suggestion should be a complete, standalone message.
 
 Message Type: {{{messageType}}}
 
 User Input (Text to convert or Idea for message):
 {{{context}}}
 
-Current content for Field 1 (this might be empty or a draft; build upon it if relevant, otherwise generate based on User Input and Message Type):
+Optional initial content for Field 1 (consider as a draft or starting point if provided; otherwise, generate fresh):
 {{{field1}}}
 
-Current content for Field 2 (this might be empty or a draft; build upon it if relevant, otherwise generate based on User Input and Message Type):
+Optional initial content for Field 2 (consider as a draft or starting point if provided; otherwise, generate fresh):
 {{{field2}}}
 
-Current content for Field 3 (this might be empty or a draft; build upon it if relevant, otherwise generate based on User Input and Message Type):
+Optional initial content for Field 3 (consider as a draft or starting point if provided; otherwise, generate fresh):
 {{{field3}}}
 
-Prioritize converting the "User Input" if it appears to be existing text that needs WhatsApp formatting.
-If "User Input" seems to be an idea or topic, generate new messages based on that idea and the "Message Type".
-If a "Field X" (1, 2, or 3) already has content, refine and enhance that content for WhatsApp, always considering the overall "User Input" and "Message Type". If "Field X" is empty, generate a new message component for it based on the "User Input" and "Message Type".
+The core goal is to produce three different, high-quality WhatsApp message variations for the user to choose from.
+- If "User Input" is existing text, transform it into three compelling WhatsApp versions.
+- If "User Input" is an idea, generate three distinct messages based on that idea and the "Message Type".
+- If "Field 1", "Field 2", or "Field 3" have content, use that as inspiration or a starting point for one or more variations, but ensure all three final suggestions are complete, refined, and WhatsApp-formatted. If a field is empty, generate a variation based on the "User Input" and "Message Type".
 
-Apply WhatsApp formatting best practices:
+Apply WhatsApp formatting best practices to ALL THREE suggestions:
 - Use *bold* for emphasis, headings, or key information (e.g., *Special Offer!*).
 - Use _italics_ for sub-text, softer emphasis, or to highlight specific terms (e.g., _Limited time only_).
 - Use ~strikethrough~ for discounts, old prices, or completed tasks (e.g., ~Was $99~ Now $49!).
 - Use \`\`\`monospace\`\`\` for codes (like OTPs: \`\`\`123456\`\`\`), specific URLs, or technical details.
 - Incorporate emojis appropriately to enhance engagement, convey emotion, and improve visual appeal. Ensure emojis are relevant to the message content and the '{{{messageType}}}' (e.g., 🚀 for launches, 🔒 for security, 🗓️ for reminders, ℹ️ for information).
 - Keep messages concise, clear, and actionable, tailoring the tone and style to the specified '{{{messageType}}}'.
-- Ensure each suggestion ("Suggestion 1", "Suggestion 2", "Suggestion 3") results in a complete, ready-to-send WhatsApp message or a significant, distinct part of one if they are clearly meant to be combined sequentially by the user.
+- Ensure "Suggestion 1", "Suggestion 2", and "Suggestion 3" are distinct from each other in terms of phrasing, emphasis, or structure, while conveying the same core message based on the user's input.
 
-Based on all the above, provide polished, WhatsApp-formatted suggestions for "Suggestion 1", "Suggestion 2", and "Suggestion 3".`,
+Based on all the above, provide three polished, WhatsApp-formatted message variations for "Suggestion 1", "Suggestion 2", and "Suggestion 3".`,
 });
 
 const suggestFormFieldsFlow = ai.defineFlow(
