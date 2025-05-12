@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import TemplateGallery from "./template-gallery"; // Added import
+import TemplateGallery from "./template-gallery";
 import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
@@ -33,20 +33,20 @@ import { Loader2 } from "lucide-react";
 const formSchema = z.object({
   field1: z
     .string()
-    .max(150, "Field 1 must be 150 characters or less.") // Increased max length
+    .max(150, "Field 1 must be 150 characters or less.")
     .optional()
     .describe("AI-generated content for Field 1."),
   field2: z
     .string()
-    .max(150, "Field 2 must be 150 characters or less.") // Increased max length
+    .max(150, "Field 2 must be 150 characters or less.")
     .optional()
     .describe("AI-generated content for Field 2."),
   field3: z
     .string()
-    .max(150, "Field 3 must be 150 characters or less.") // Increased max length
+    .max(150, "Field 3 must be 150 characters or less.")
     .optional()
     .describe("AI-generated content for Field 3."),
-  context: z.string().min(1, "Context cannot be empty.").max(500, "Context must be 500 characters or less."), // Added validation
+  context: z.string().min(1, "Context cannot be empty.").max(500, "Context must be 500 characters or less."),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -134,7 +134,7 @@ function FormFlowFields() {
                   <FormControl>
                     <Textarea
                       placeholder="Provide some context (e.g., 'User is planning a new software project.')"
-                      className="resize-none rounded-md shadow-sm text-base focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                      className="resize-none rounded-md shadow-sm text-base focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]"
                       rows={3}
                       {...field}
                     />
