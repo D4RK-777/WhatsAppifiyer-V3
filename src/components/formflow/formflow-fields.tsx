@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Send, Sparkles } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod"; // Corrected import for z
+import { z } from "zod";
 
 import { suggestFormFields, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
 import { Button } from "@/components/ui/button";
@@ -26,23 +26,26 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/input"; // Kept for context field
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   field1: z
     .string()
-    .min(1, "Field 1 is required.")
-    .max(50, "Field 1 must be 50 characters or less."),
+    .max(50, "Field 1 must be 50 characters or less.")
+    .optional()
+    .describe("AI-generated content for Field 1."),
   field2: z
     .string()
-    .min(1, "Field 2 is required.")
-    .max(50, "Field 2 must be 50 characters or less."),
+    .max(50, "Field 2 must be 50 characters or less.")
+    .optional()
+    .describe("AI-generated content for Field 2."),
   field3: z
     .string()
-    .min(1, "Field 3 is required.")
-    .max(50, "Field 3 must be 50 characters or less."),
+    .max(50, "Field 3 must be 50 characters or less.")
+    .optional()
+    .describe("AI-generated content for Field 3."),
   context: z.string().optional(),
 });
 
@@ -50,7 +53,6 @@ type FormValues = z.infer<typeof formSchema>;
 
 function FormFlowFields() {
   const { toast } = useToast();
-  const [suggestions, setSuggestions] = useState<SuggestFormFieldsOutput | null>(null);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
 
   const form = useForm<FormValues>({
@@ -69,28 +71,28 @@ function FormFlowFields() {
       title: "Form Submitted!",
       description: "Your data has been successfully processed.",
     });
-    // Here you would typically send the data to a backend or perform other actions.
-    // For now, we just log it and show a toast.
     // Optionally, reset the form:
     // form.reset();
-    // setSuggestions(null);
   };
 
   const handleGetSuggestions = useCallback(async () => {
     setIsLoadingSuggestions(true);
-    setSuggestions(null); // Clear previous suggestions
     const currentValues = form.getValues();
     try {
       const result = await suggestFormFields({
-        field1: currentValues.field1,
-        field2: currentValues.field2,
-        field3: currentValues.field3,
-        context: currentValues.context || "General context", // Provide default context if empty
+        field1: currentValues.field1 || "", // Pass current value or empty string
+        field2: currentValues.field2 || "", // Pass current value or empty string
+        field3: currentValues.field3 || "", // Pass current value or empty string
+        context: currentValues.context || "General context",
       });
-      setSuggestions(result);
+      
+      form.setValue('field1', result.suggestion1, { shouldValidate: true });
+      form.setValue('field2', result.suggestion2, { shouldValidate: true });
+      form.setValue('field3', result.suggestion3, { shouldValidate: true });
+
       toast({
         title: "AI Suggestions Loaded!",
-        description: "New suggestions are available for your form fields.",
+        description: "Form fields have been updated with AI suggestions.",
       });
     } catch (error) {
       console.error("Error getting AI suggestions:", error);
@@ -114,7 +116,7 @@ function FormFlowFields() {
               Describe Your Needs
             </CardTitle>
             <CardDescription className="text-center text-muted-foreground">
-              Fill in the details below. Use the AI suggestions to help you out!
+              Provide context and let AI generate the details for Field 1, 2, and 3.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -148,17 +150,14 @@ function FormFlowFields() {
                   <FormItem>
                     <FormLabel className="font-semibold">Field 1</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Enter value for Field 1" 
-                        {...field} 
-                        className="rounded-md shadow-sm focus:ring-accent focus:border-accent"
-                      />
+                      <div className="flex items-center h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm">
+                        {field.value ? (
+                          <span className="truncate">{field.value}</span>
+                        ) : (
+                          <span className="text-muted-foreground">AI suggestion...</span>
+                        )}
+                      </div>
                     </FormControl>
-                    {suggestions?.suggestion1 && (
-                       <FormDescription className="text-primary italic pt-1">
-                        Suggestion: {suggestions.suggestion1}
-                       </FormDescription>
-                    )}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -170,17 +169,14 @@ function FormFlowFields() {
                   <FormItem>
                     <FormLabel className="font-semibold">Field 2</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Enter value for Field 2" 
-                        {...field} 
-                        className="rounded-md shadow-sm focus:ring-accent focus:border-accent"
-                      />
+                       <div className="flex items-center h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm">
+                        {field.value ? (
+                          <span className="truncate">{field.value}</span>
+                        ) : (
+                          <span className="text-muted-foreground">AI suggestion...</span>
+                        )}
+                      </div>
                     </FormControl>
-                     {suggestions?.suggestion2 && (
-                       <FormDescription className="text-primary italic pt-1">
-                        Suggestion: {suggestions.suggestion2}
-                       </FormDescription>
-                    )}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -192,17 +188,14 @@ function FormFlowFields() {
                   <FormItem>
                     <FormLabel className="font-semibold">Field 3</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Enter value for Field 3" 
-                        {...field} 
-                        className="rounded-md shadow-sm focus:ring-accent focus:border-accent"
-                      />
+                       <div className="flex items-center h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm">
+                        {field.value ? (
+                           <span className="truncate">{field.value}</span>
+                        ) : (
+                          <span className="text-muted-foreground">AI suggestion...</span>
+                        )}
+                      </div>
                     </FormControl>
-                     {suggestions?.suggestion3 && (
-                       <FormDescription className="text-primary italic pt-1">
-                        Suggestion: {suggestions.suggestion3}
-                       </FormDescription>
-                    )}
                     <FormMessage />
                   </FormItem>
                 )}
