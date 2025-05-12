@@ -25,31 +25,36 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import TemplateGallery from "./template-gallery"; // Added import
+import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+
 
 const formSchema = z.object({
   field1: z
     .string()
-    .max(50, "Field 1 must be 50 characters or less.")
+    .max(150, "Field 1 must be 150 characters or less.") // Increased max length
     .optional()
     .describe("AI-generated content for Field 1."),
   field2: z
     .string()
-    .max(50, "Field 2 must be 50 characters or less.")
+    .max(150, "Field 2 must be 150 characters or less.") // Increased max length
     .optional()
     .describe("AI-generated content for Field 2."),
   field3: z
     .string()
-    .max(50, "Field 3 must be 50 characters or less.")
+    .max(150, "Field 3 must be 150 characters or less.") // Increased max length
     .optional()
     .describe("AI-generated content for Field 3."),
-  context: z.string().optional(),
+  context: z.string().min(1, "Context cannot be empty.").max(500, "Context must be 500 characters or less."), // Added validation
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 function FormFlowFields() {
   const { toast } = useToast();
-  // isLoadingSuggestions and handleGetSuggestions are removed as the button is removed.
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -61,15 +66,51 @@ function FormFlowFields() {
     },
   });
 
+  const handleGetSuggestions = async () => {
+    const { context, field1, field2, field3 } = form.getValues();
+    if (!context.trim()) {
+      form.setError("context", { type: "manual", message: "Please provide some context before generating suggestions." });
+      return;
+    }
+    form.clearErrors("context");
+
+
+    setIsLoadingSuggestions(true);
+    try {
+      const suggestions: SuggestFormFieldsOutput = await suggestFormFields({
+        context,
+        field1: field1 || "",
+        field2: field2 || "",
+        field3: field3 || "",
+      });
+      form.setValue("field1", suggestions.suggestion1, { shouldValidate: true });
+      form.setValue("field2", suggestions.suggestion2, { shouldValidate: true });
+      form.setValue("field3", suggestions.suggestion3, { shouldValidate: true });
+      toast({
+        title: "Suggestions Loaded!",
+        description: "AI-powered suggestions have been populated.",
+      });
+    } catch (error) {
+      console.error("Error getting suggestions:", error);
+      toast({
+        title: "Error",
+        description: "Failed to get AI suggestions. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  };
+
+
   const onSubmit = (values: FormValues) => {
     console.log("Form submitted:", values);
     toast({
       title: "Form Submitted!",
-      description: "Your data has been successfully processed. (Note: Submit button removed, this might be triggered by Enter in Textarea)",
+      description: "Your data has been successfully processed.",
     });
   };
 
-  // handleGetSuggestions logic removed
 
   return (
     <Form {...form}>
@@ -80,7 +121,7 @@ function FormFlowFields() {
               Describe Your Needs
             </CardTitle>
             <CardDescription className="text-center text-muted-foreground">
-              Provide context for the form. Fields 1, 2, and 3 will display content.
+              Provide context for the form. Fields 1, 2, and 3 will display AI-generated content based on your input.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -93,18 +134,36 @@ function FormFlowFields() {
                   <FormControl>
                     <Textarea
                       placeholder="Provide some context (e.g., 'User is planning a new software project.')"
-                      className="resize-none rounded-md shadow-sm focus:ring-accent focus:border-accent text-base"
+                      className="resize-none rounded-md shadow-sm text-base focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                       rows={3}
                       {...field}
                     />
                   </FormControl>
                   <FormDescription className="text-sm text-muted-foreground">
-                    This context can be used to guide the content of the fields below.
+                    This context will be used by the AI to generate content for the fields below.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            <div className="flex justify-center pt-2 pb-4">
+              <Button
+                type="button"
+                onClick={handleGetSuggestions}
+                disabled={isLoadingSuggestions}
+                className="px-8 py-3 text-base rounded-lg shadow-md hover:shadow-lg transition-shadow"
+              >
+                {isLoadingSuggestions ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  "Get AI Suggestions"
+                )}
+              </Button>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
               <FormField
@@ -112,13 +171,13 @@ function FormFlowFields() {
                 name="field1"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold">Field 1</FormLabel>
+                    <FormLabel className="font-semibold text-primary/90">AI Output: Field 1</FormLabel>
                     <FormControl>
-                      <div className="flex items-center h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm">
+                      <div className="flex items-start p-3 min-h-[6rem] w-full rounded-md border border-input bg-secondary/30 text-sm shadow-sm break-words whitespace-pre-wrap">
                         {field.value ? (
-                          <span className="truncate">{field.value}</span>
+                          <span className="text-foreground">{field.value}</span>
                         ) : (
-                          <span className="text-muted-foreground">Output for Field 1...</span>
+                          <span className="text-muted-foreground italic">AI suggestion for Field 1 will appear here...</span>
                         )}
                       </div>
                     </FormControl>
@@ -131,13 +190,13 @@ function FormFlowFields() {
                 name="field2"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold">Field 2</FormLabel>
+                    <FormLabel className="font-semibold text-primary/90">AI Output: Field 2</FormLabel>
                     <FormControl>
-                       <div className="flex items-center h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm">
+                       <div className="flex items-start p-3 min-h-[6rem] w-full rounded-md border border-input bg-secondary/30 text-sm shadow-sm break-words whitespace-pre-wrap">
                         {field.value ? (
-                          <span className="truncate">{field.value}</span>
+                          <span className="text-foreground">{field.value}</span>
                         ) : (
-                          <span className="text-muted-foreground">Output for Field 2...</span>
+                          <span className="text-muted-foreground italic">AI suggestion for Field 2 will appear here...</span>
                         )}
                       </div>
                     </FormControl>
@@ -150,13 +209,13 @@ function FormFlowFields() {
                 name="field3"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold">Field 3</FormLabel>
+                    <FormLabel className="font-semibold text-primary/90">AI Output: Field 3</FormLabel>
                     <FormControl>
-                       <div className="flex items-center h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm">
+                       <div className="flex items-start p-3 min-h-[6rem] w-full rounded-md border border-input bg-secondary/30 text-sm shadow-sm break-words whitespace-pre-wrap">
                         {field.value ? (
-                           <span className="truncate">{field.value}</span>
+                           <span className="text-foreground">{field.value}</span>
                         ) : (
-                          <span className="text-muted-foreground">Output for Field 3...</span>
+                          <span className="text-muted-foreground italic">AI suggestion for Field 3 will appear here...</span>
                         )}
                       </div>
                     </FormControl>
@@ -165,8 +224,11 @@ function FormFlowFields() {
                 )}
               />
             </div>
+             <div className="flex justify-center pt-6">
+                <Button type="submit" className="px-10 py-3 text-lg rounded-lg shadow-lg hover:shadow-xl transition-shadow">Submit Form</Button>
+            </div>
           </CardContent>
-          <TemplateGallery /> {/* Replaced CardFooter */}
+          <TemplateGallery />
         </Card>
       </form>
     </Form>
