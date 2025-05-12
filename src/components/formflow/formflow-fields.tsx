@@ -2,18 +2,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Send, Sparkles } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { suggestFormFields, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -26,9 +22,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input"; // Kept for context field
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import TemplateGallery from "./template-gallery"; // Added import
 
 const formSchema = z.object({
   field1: z
@@ -53,7 +49,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 function FormFlowFields() {
   const { toast } = useToast();
-  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  // isLoadingSuggestions and handleGetSuggestions are removed as the button is removed.
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -69,43 +65,11 @@ function FormFlowFields() {
     console.log("Form submitted:", values);
     toast({
       title: "Form Submitted!",
-      description: "Your data has been successfully processed.",
+      description: "Your data has been successfully processed. (Note: Submit button removed, this might be triggered by Enter in Textarea)",
     });
-    // Optionally, reset the form:
-    // form.reset();
   };
 
-  const handleGetSuggestions = useCallback(async () => {
-    setIsLoadingSuggestions(true);
-    const currentValues = form.getValues();
-    try {
-      const result = await suggestFormFields({
-        field1: currentValues.field1 || "", // Pass current value or empty string
-        field2: currentValues.field2 || "", // Pass current value or empty string
-        field3: currentValues.field3 || "", // Pass current value or empty string
-        context: currentValues.context || "General context",
-      });
-      
-      form.setValue('field1', result.suggestion1, { shouldValidate: true });
-      form.setValue('field2', result.suggestion2, { shouldValidate: true });
-      form.setValue('field3', result.suggestion3, { shouldValidate: true });
-
-      toast({
-        title: "AI Suggestions Loaded!",
-        description: "Form fields have been updated with AI suggestions.",
-      });
-    } catch (error) {
-      console.error("Error getting AI suggestions:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load AI suggestions. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoadingSuggestions(false);
-    }
-  }, [form, toast]);
-
+  // handleGetSuggestions logic removed
 
   return (
     <Form {...form}>
@@ -116,7 +80,7 @@ function FormFlowFields() {
               Describe Your Needs
             </CardTitle>
             <CardDescription className="text-center text-muted-foreground">
-              Provide context and let AI generate the details for Field 1, 2, and 3.
+              Provide context for the form. Fields 1, 2, and 3 will display content.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -128,14 +92,14 @@ function FormFlowFields() {
                   <FormLabel className="text-lg font-semibold">Context</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Provide some context for the AI (e.g., 'User is planning a new software project.')"
+                      placeholder="Provide some context (e.g., 'User is planning a new software project.')"
                       className="resize-none rounded-md shadow-sm focus:ring-accent focus:border-accent text-base"
                       rows={3}
                       {...field}
                     />
                   </FormControl>
                   <FormDescription className="text-sm text-muted-foreground">
-                    This context helps the AI provide more relevant suggestions for the fields below.
+                    This context can be used to guide the content of the fields below.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -154,7 +118,7 @@ function FormFlowFields() {
                         {field.value ? (
                           <span className="truncate">{field.value}</span>
                         ) : (
-                          <span className="text-muted-foreground">AI suggestion...</span>
+                          <span className="text-muted-foreground">Output for Field 1...</span>
                         )}
                       </div>
                     </FormControl>
@@ -173,7 +137,7 @@ function FormFlowFields() {
                         {field.value ? (
                           <span className="truncate">{field.value}</span>
                         ) : (
-                          <span className="text-muted-foreground">AI suggestion...</span>
+                          <span className="text-muted-foreground">Output for Field 2...</span>
                         )}
                       </div>
                     </FormControl>
@@ -192,7 +156,7 @@ function FormFlowFields() {
                         {field.value ? (
                            <span className="truncate">{field.value}</span>
                         ) : (
-                          <span className="text-muted-foreground">AI suggestion...</span>
+                          <span className="text-muted-foreground">Output for Field 3...</span>
                         )}
                       </div>
                     </FormControl>
@@ -202,35 +166,7 @@ function FormFlowFields() {
               />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-border mt-6">
-            <Button 
-              type="button" 
-              onClick={handleGetSuggestions} 
-              disabled={isLoadingSuggestions} 
-              variant="outline"
-              className="w-full sm:w-auto rounded-md shadow-sm hover:bg-accent/10"
-            >
-              {isLoadingSuggestions ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Getting Suggestions...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="mr-2 h-4 w-4 text-accent" />
-                  Get AI Suggestions
-                </>
-              )}
-            </Button>
-            <Button 
-              type="submit" 
-              className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground rounded-md shadow-md" 
-              disabled={isLoadingSuggestions}
-            >
-              <Send className="mr-2 h-4 w-4" />
-              Submit Form
-            </Button>
-          </CardFooter>
+          <TemplateGallery /> {/* Replaced CardFooter */}
         </Card>
       </form>
     </Form>
