@@ -1,7 +1,8 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -46,22 +47,98 @@ const formSchema = z.object({
   }),
   field1: z
     .string()
-    .max(500, "Suggestion 1 (Variation) must be 500 characters or less.")
+    .max(1500, "Suggestion 1 (Variation) must be 1500 characters or less.") // Increased max length for potentially longer formatted messages
     .optional()
     .describe("AI-generated Variation 1 of the WhatsApp message."),
   field2: z
     .string()
-    .max(500, "Suggestion 2 (Variation) must be 500 characters or less.")
+    .max(1500, "Suggestion 2 (Variation) must be 1500 characters or less.")
     .optional()
     .describe("AI-generated Variation 2 of the WhatsApp message."),
   field3: z
     .string()
-    .max(500, "Suggestion 3 (Variation) must be 500 characters or less.")
+    .max(1500, "Suggestion 3 (Variation) must be 1500 characters or less.")
     .optional()
     .describe("AI-generated Variation 3 of the WhatsApp message."),
 });
 
 type FormValues = z.infer<typeof formSchema>;
+
+// Component to render WhatsApp-like formatted text
+const WhatsAppMessagePreview = ({ content }: { content: string | undefined }) => {
+  if (!content || content.trim() === "") {
+    return (
+      <div className="p-3 border rounded-md bg-muted/50 min-h-[100px] text-muted-foreground flex items-center justify-center text-sm">
+        AI-generated WhatsApp message variation will appear here.
+      </div>
+    );
+  }
+
+  let keyCounter = 0;
+  const generateKey = (type: string) => `${type}-${keyCounter++}`;
+
+  const parseTextToReact = (text: string): React.ReactNode[] => {
+    if (!text) return [];
+
+    // 1. ```codeblock``` (multiline, non-greedy)
+    const codeMatch = text.match(/^(.*?)```([\s\S]*?)```(.*)$/s);
+    if (codeMatch) {
+      return [
+        ...parseTextToReact(codeMatch[1]), // Before
+        <pre key={generateKey('codeblock')} className="bg-muted p-2 my-1 rounded-md text-sm font-mono whitespace-pre-wrap break-all">
+          <code>{codeMatch[2]}</code>
+        </pre>,
+        ...parseTextToReact(codeMatch[3])  // After
+      ];
+    }
+
+    // 2. *bold* (non-greedy, content must exist)
+    const boldMatch = text.match(/^(.*?)\*([^*]+?)\*(.*)$/s);
+    if (boldMatch) {
+      return [
+        ...parseTextToReact(boldMatch[1]),
+        <strong key={generateKey('bold')}>{parseTextToReact(boldMatch[2])}</strong>,
+        ...parseTextToReact(boldMatch[3])
+      ];
+    }
+
+    // 3. _italic_ (non-greedy, content must exist)
+    const italicMatch = text.match(/^(.*?)_([^_]+?)_(.*)$/s);
+    if (italicMatch) {
+      return [
+        ...parseTextToReact(italicMatch[1]),
+        <em key={generateKey('italic')}>{parseTextToReact(italicMatch[2])}</em>,
+        ...parseTextToReact(italicMatch[3])
+      ];
+    }
+    
+    // 4. ~strikethrough~ (non-greedy, content must exist)
+    const strikeMatch = text.match(/^(.*?)~([^~]+?)~(.*)$/s);
+    if (strikeMatch) {
+      return [
+        ...parseTextToReact(strikeMatch[1]),
+        <del key={generateKey('strike')}>{parseTextToReact(strikeMatch[2])}</del>,
+        ...parseTextToReact(strikeMatch[3])
+      ];
+    }
+
+    // 5. Newlines and plain text
+    return text.split(/(\n)/g).map((part, index) => {
+      if (part === '\n') return <br key={generateKey(`br-${index}`)} />;
+      if (part) return <span key={generateKey(`text-${index}`)}>{part}</span>; // Wrap text for consistent handling
+      return null;
+    }).filter(Boolean); // Filter out nulls from empty parts
+  };
+  
+  const formattedNodes = parseTextToReact(content);
+
+  return (
+    <div className="p-3 border rounded-md bg-card shadow-sm text-card-foreground text-sm min-h-[100px] flex flex-col items-start justify-start overflow-y-auto">
+      {formattedNodes}
+    </div>
+  );
+};
+
 
 function FormFlowFields() {
   const { toast } = useToast();
@@ -81,10 +158,9 @@ function FormFlowFields() {
   const handleTemplateSelect = (template: TemplateItemProps) => {
     form.setValue("yourTextOrIdea", template.dataAiHint, { shouldValidate: true });
     form.setValue("messageType", template.messageType, { shouldValidate: true });
-    // Pre-fill only field1 from template, AI will generate variations for others if field2/3 are empty
     form.setValue("field1", template.templateContent.field1 || "", { shouldValidate: true });
-    form.setValue("field2", template.templateContent.field2 || "", { shouldValidate: false }); // Don't validate, let AI fill
-    form.setValue("field3", template.templateContent.field3 || "", { shouldValidate: false }); // Don't validate, let AI fill
+    form.setValue("field2", template.templateContent.field2 || "", { shouldValidate: false }); 
+    form.setValue("field3", template.templateContent.field3 || "", { shouldValidate: false }); 
     toast({
       title: `Template "${template.title}" Applied!`,
       description: "Text/Idea, message type, and initial field content pre-populated. Edit or get AI suggestions.",
@@ -116,7 +192,7 @@ function FormFlowFields() {
       const suggestionsInput: SuggestFormFieldsInput = {
         context: yourTextOrIdea,
         messageType,
-        field1: field1 || "", // Send current field content as potential drafts
+        field1: field1 || "", 
         field2: field2 || "",
         field3: field3 || "",
       };
@@ -142,8 +218,6 @@ function FormFlowFields() {
   };
 
   const onSubmit = (values: FormValues) => {
-    // For submission, typically you'd pick one field or combine them as needed.
-    // Here, we'll just log them all.
     console.log("Form submitted (WhatsAppified variations):", values);
     toast({
       title: "Form Submitted!",
@@ -221,15 +295,10 @@ function FormFlowFields() {
                   <FormItem>
                     <FormLabel className="font-semibold text-primary/90">WhatsApp Variation 1</FormLabel>
                     <FormControl>
-                      <Textarea
-                        placeholder="AI-generated WhatsApp message variation 1 will appear here."
-                        className="resize-none rounded-md shadow-sm text-base min-h-[100px] focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]"
-                        rows={4}
-                        {...field}
-                      />
+                      <WhatsAppMessagePreview content={field.value} />
                     </FormControl>
                      <FormDescription className="text-xs text-muted-foreground">
-                      Editable AI variation.
+                      AI-generated variation.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -242,15 +311,10 @@ function FormFlowFields() {
                   <FormItem>
                     <FormLabel className="font-semibold text-primary/90">WhatsApp Variation 2</FormLabel>
                     <FormControl>
-                      <Textarea
-                        placeholder="AI-generated WhatsApp message variation 2 will appear here."
-                        className="resize-none rounded-md shadow-sm text-base min-h-[100px] focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]"
-                        rows={4}
-                        {...field}
-                      />
+                       <WhatsAppMessagePreview content={field.value} />
                     </FormControl>
                     <FormDescription className="text-xs text-muted-foreground">
-                      Editable AI variation.
+                      AI-generated variation.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -263,15 +327,10 @@ function FormFlowFields() {
                   <FormItem>
                     <FormLabel className="font-semibold text-primary/90">WhatsApp Variation 3</FormLabel>
                     <FormControl>
-                      <Textarea
-                        placeholder="AI-generated WhatsApp message variation 3 will appear here."
-                        className="resize-none rounded-md shadow-sm text-base min-h-[100px] focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]"
-                        rows={4}
-                        {...field}
-                      />
+                       <WhatsAppMessagePreview content={field.value} />
                     </FormControl>
                      <FormDescription className="text-xs text-muted-foreground">
-                      Editable AI variation.
+                      AI-generated variation.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
