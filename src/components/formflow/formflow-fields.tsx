@@ -24,7 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import TemplateGallery, { type TemplateItemProps } from "./template-gallery";
 import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
 import { Button } from "@/components/ui/button";
-import { Loader2, Copy, Sparkles, ThumbsUp, ThumbsDown } from "lucide-react"; 
+import { Loader2, Copy, Sparkles, ThumbsUp, ThumbsDown, RefreshCw } from "lucide-react"; 
 import PhonePreview from "./phone-preview";
 
 const messageTypesArray = ["marketing", "authentication", "utility", "service"] as const;
@@ -172,6 +172,9 @@ function FormFlowFields() {
   };
 
   const handleRegenerate = (fieldName: VariationFieldName) => {
+    // Placeholder for actual regeneration logic
+    // This would involve calling the AI again, perhaps with only that field's context
+    // or the original context plus a request for a new variation for that specific field.
     toast({ title: `Regenerate Variation ${fieldName.charAt(fieldName.length - 1)} requested`, description: "This feature is coming soon! (placeholder)." });
   };
 
@@ -275,34 +278,32 @@ function FormFlowFields() {
                       onMouseLeave={() => setHoveredVariation(null)}
                     >
                       <FormLabel className="font-semibold text-foreground mb-1">WhatsApp Variation {index + 1}</FormLabel>
-                      <Button
-                        type="button"
-                        onClick={() => handleRegenerate(fieldName)}
-                        // For now, no individual loading state for regenerate. 
-                        // If implemented, disabled={isLoadingVariation[fieldName]}
-                        className={cn(
-                          "w-full max-w-[320px] mx-auto", 
-                          "relative overflow-hidden", 
-                          "bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900", 
-                          "text-slate-100", 
-                          "border border-purple-700", 
-                          "hover:border-purple-500", 
-                          "hover:from-indigo-900 hover:via-purple-800 hover:to-slate-800 hover:text-white", 
-                          "focus-visible:ring-purple-400", 
-                          "galaxy-stars-effect", 
-                          "animate-sparkle-icon", // Always sparkle for now as it's a placeholder
-                          "px-4 py-2 text-sm rounded-md mb-2" // Adjusted size and margin
-                        )}
-                      >
-                        <Sparkles className="mr-2 h-4 w-4" /> 
-                        Regenerate Variation {index + 1}
-                      </Button>
                       <div className="w-full p-0.5 rounded-[44px] transition-all cursor-default">
                         <FormControl>
                           <PhonePreview messageText={field.value} currentPhoneWidth={320} zoomLevel={1} />
                         </FormControl>
                       </div>
                       <div className="w-full max-w-[320px] mx-auto mt-2 flex flex-col space-y-2">
+                        <Button
+                          type="button"
+                          onClick={() => handleRegenerate(fieldName)}
+                          className={cn(
+                            "w-full", 
+                            "relative overflow-hidden", 
+                            "bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900", 
+                            "text-slate-100", 
+                            "border border-purple-700", 
+                            "hover:border-purple-500", 
+                            "hover:from-indigo-900 hover:via-purple-800 hover:to-slate-800 hover:text-white", 
+                            "focus-visible:ring-purple-400", 
+                            "galaxy-stars-effect", 
+                            "animate-sparkle-icon", 
+                            "px-4 py-2 text-sm rounded-md" 
+                          )}
+                        >
+                          <Sparkles className="mr-2 h-4 w-4" /> 
+                          Regenerate Variation {index + 1}
+                        </Button>
                         <Button
                           type="button"
                           variant="outline"
@@ -346,4 +347,6 @@ function FormFlowFields() {
 }
 
 export default FormFlowFields;
+    
+
     
