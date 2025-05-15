@@ -71,8 +71,8 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
               <div className="text-xs text-white/80">Business Account</div> {/* Made color explicit white/80 */}
             </div>
             <div className="flex items-center space-x-3">
-              <Phone size={16} className="text-white/90 hover:text-white" /> {/* Adjusted icon size and color */}
-              <Video size={16} className="text-white/90 hover:text-white" /> {/* Adjusted icon size and color */}
+              <Video size={16} className="text-white/90 hover:text-white" /> {/* Swapped position */}
+              <Phone size={16} className="text-white/90 hover:text-white" /> {/* Swapped position */}
               <MoreVertical size={16} className="text-white/90 hover:text-white" /> {/* Adjusted icon size and color */}
             </div>
           </div>
@@ -105,3 +105,4 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
 };
 
 export default PhonePreview;
+
