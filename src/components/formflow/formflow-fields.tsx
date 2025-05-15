@@ -303,7 +303,7 @@ function FormFlowFields() {
                   <FormControl>
                     <Textarea
                       placeholder={currentYourTextOrIdea && currentYourTextOrIdea.length > 0 ? "" : animatedPlaceholder}
-                      className="resize-none rounded-md text-base shadow-[0_0_5px_hsl(var(--accent)_/_0.4)] focus-visible:ring-0 focus-visible:shadow-[0_0_12px_hsl(var(--accent)_/_0.75)] transition-shadow duration-200 ease-in-out"
+                      className="bg-[#DCF8C6] text-zinc-800 placeholder:text-zinc-600 resize-none rounded-md text-base shadow-[0_0_5px_hsl(var(--accent)_/_0.4)] focus-visible:ring-0 focus-visible:shadow-[0_0_12px_hsl(var(--accent)_/_0.75)] transition-shadow duration-200 ease-in-out"
                       rows={8}
                       {...field}
                     />
@@ -458,3 +458,4 @@ export default FormFlowFields;
     
 
     
+
