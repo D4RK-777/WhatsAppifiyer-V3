@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState, memo } from "react";
-import { motion } from "framer-motion"; // Changed from "motion/react" to "framer-motion"
+import { motion } from "framer-motion";
 import { twMerge } from "tailwind-merge";
 import { cn } from "@/lib/utils";
 
@@ -67,7 +67,7 @@ export const TextRevealCard = ({
       onTouchMove={touchMoveHandler}
       ref={cardRef}
       className={cn(
-        "bg-[#1d1c20] border border-white/[0.08] w-full rounded-lg p-8 relative overflow-hidden", // Changed w-[40rem] to w-full
+        "bg-background w-full rounded-lg p-8 relative overflow-hidden",
         className
       )}
     >
@@ -89,13 +89,13 @@ export const TextRevealCard = ({
                 }
           }
           transition={isMouseOver ? { duration: 0 } : { duration: 0.4 }}
-          className="absolute bg-[#1d1c20] z-20 will-change-transform"
+          className="absolute bg-background z-20 will-change-transform"
         >
           <p
             style={{
-              textShadow: "4px 4px 15px rgba(0,0,0,0.5)",
+              textShadow: "4px 4px 15px rgba(0,0,0,0.1)", // Adjusted shadow for lighter bg
             }}
-            className="text-base sm:text-[3rem] py-10 font-bold text-white bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-300"
+            className="text-base sm:text-[3rem] py-10 font-bold text-primary bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/80"
           >
             {revealText}
           </p>
@@ -107,11 +107,11 @@ export const TextRevealCard = ({
             opacity: widthPercentage > 0 ? 1 : 0,
           }}
           transition={isMouseOver ? { duration: 0 } : { duration: 0.4 }}
-          className="h-40 w-[8px] bg-gradient-to-b from-transparent via-neutral-800 to-transparent absolute z-50 will-change-transform"
+          className="h-40 w-[8px] bg-gradient-to-b from-transparent via-border to-transparent absolute z-50 will-change-transform"
         ></motion.div>
 
         <div className="overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,white,transparent)]">
-          <p className="text-base sm:text-[3rem] py-10 font-bold bg-clip-text text-transparent bg-[#323238]">
+          <p className="text-base sm:text-[3rem] py-10 font-bold text-muted-foreground/50">
             {text}
           </p>
           <MemoizedStars />
@@ -129,7 +129,7 @@ export const TextRevealCardTitle = ({
   className?: string;
 }) => {
   return (
-    <h2 className={twMerge("text-white text-lg mb-2", className)}>
+    <h2 className={twMerge("text-foreground text-lg mb-2", className)}>
       {children}
     </h2>
   );
@@ -143,7 +143,7 @@ export const TextRevealCardDescription = ({
   className?: string;
 }) => {
   return (
-    <p className={twMerge("text-[#a9a9a9] text-sm", className)}>{children}</p>
+    <p className={twMerge("text-muted-foreground text-sm", className)}>{children}</p>
   );
 };
 
@@ -173,7 +173,8 @@ const Stars = () => {
             left: `${random() * 100}%`,
             width: `2px`,
             height: `2px`,
-            backgroundColor: "white",
+            backgroundColor: "hsl(var(--foreground))", // Use foreground for stars for better visibility on light bg
+            opacity: 0.3, // Reduce star opacity
             borderRadius: "50%",
             zIndex: 1,
           }}

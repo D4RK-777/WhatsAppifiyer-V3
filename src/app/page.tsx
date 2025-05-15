@@ -13,12 +13,12 @@ export default function HomePage() {
           <TextRevealCard
             text="Elevate Your Messages"
             revealText="With AI-Powered Formatting"
-            className="mx-auto" // Ensures the card itself is centered if its parent is wider
+            className="mx-auto" 
           >
-            <TextRevealCardTitle className="text-5xl font-extrabold tracking-tight text-primary sm:text-6xl !mb-3">
+            <TextRevealCardTitle className="text-5xl font-extrabold tracking-tight text-primary sm:text-6xl !mb-3 text-center">
               WhatsAppify Your Text
             </TextRevealCardTitle>
-            <TextRevealCardDescription className="text-xl text-foreground/80 sm:mt-1 !text-[#a9a9a9]">
+            <TextRevealCardDescription className="text-xl text-foreground/80 sm:mt-1 !text-muted-foreground text-center">
               Enter your text or an idea, select a message type, then get AI-powered WhatsApp formatted variations. Or, pick a template!
             </TextRevealCardDescription>
           </TextRevealCard>
