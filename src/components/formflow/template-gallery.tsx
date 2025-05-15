@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from 'next/image';
@@ -8,17 +9,17 @@ export interface TemplateItemProps {
   title: string;
   imageUrl: string;
   dataAiHint: string; // This will be used as the context (user's text/idea) for the AI
-  messageType: "marketing" | "authentication" | "utility" | "service"; // New: Explicit message type
+  messageType: "marketing" | "authentication" | "utility" | "service";
   templateContent: { 
-    field1?: string;
-    field2?: string;
-    field3?: string;
+    field1?: string; // Pre-filled content for variation 1
+    field2?: string; // Pre-filled content for variation 2
+    field3?: string; // Pre-filled content for variation 3
   };
   onClick: (template: TemplateItemProps) => void;
 }
 
 const TemplateItem: FC<TemplateItemProps> = (props) => {
-  const { title, imageUrl, dataAiHint, onClick } = props; // dataAiHint is for image search, not AI context directly here
+  const { title, imageUrl, dataAiHint, onClick } = props;
   return (
     <div
       className="flex-shrink-0 w-48 h-36 bg-card border border-border rounded-lg shadow-lg p-3 mx-3 flex flex-col items-center justify-center hover:shadow-xl transition-shadow duration-300 cursor-pointer group"
@@ -26,6 +27,7 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
       role="button"
       tabIndex={0}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClick(props);}}
+      aria-label={`Select ${title} template`}
     >
       <div className="w-full h-20 relative mb-2 overflow-hidden rounded-md">
         <Image
@@ -34,7 +36,7 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
           layout="fill"
           objectFit="cover"
           className="transform group-hover:scale-105 transition-transform duration-300"
-          data-ai-hint={props.dataAiHint.split(' ').slice(0, 2).join(' ')} // Keep image hint for search
+          data-ai-hint={props.dataAiHint.split(' ').slice(0, 2).join(' ')} 
         />
       </div>
       <p className="text-xs font-medium text-center text-foreground truncate w-full">
@@ -52,8 +54,11 @@ interface TemplateRowProps {
 }
 
 const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', speed = '30s', onTemplateClick }) => {
-  const duplicatedTemplates = [...templates, ...templates, ...templates]; 
+  // Duplicate templates for seamless scrolling effect
+  const duplicatedTemplates = templates.length > 0 ? [...templates, ...templates, ...templates] : [];
   
+  if (duplicatedTemplates.length === 0) return null;
+
   const animationClass = direction === 'left' ? 'animate-scroll-left' : 'animate-scroll-right';
 
   return (
@@ -73,98 +78,98 @@ const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', spee
 const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 1,
-    title: 'Product Launch Announcement',
-    imageUrl: 'https://picsum.photos/160/90?random=101',
-    dataAiHint: 'Exciting new product launch with features and discount', // This becomes the "yourTextOrIdea"
+    title: 'Product Launch (Marketing)',
+    imageUrl: 'https://placehold.co/160x90.png',
+    dataAiHint: 'Announce our new AI-powered chatbot solution with a 20% launch discount for the first 50 customers. Highlight key features: 24/7 availability and natural language understanding.',
     messageType: 'marketing',
     templateContent: {
-      field1: "🚀 Exciting News, {{name}}! 🚀\nWe're thrilled to launch our new *{{product_name}}*!",
-      field2: "✨ Features: {{feature1}}, {{feature2}}.\nSpecial launch offer: *{{discount}}% OFF* for 48 hours!",
-      field3: "👉 Shop now: {{link}}\nDon't miss out! ⏱️"
+      field1: "🚀 *Exciting News!* Our new AI Chatbot is HERE! 🤖\n\nTransform your customer service with 24/7 support & seamless conversations. Be among the *first 50* to get a *20% launch discount!*\n\n👉 Learn more & claim offer: [YourLink]",
+      field2: "🎉 Introducing {{ProductName}}! 🎉\n\nSupercharge your support with our intelligent AI chatbot. Features:\n✅ 24/7 Availability\n✅ Natural Language Processing\n\n✨ Special Launch Offer: *20% OFF* for early birds! ✨\n\n🔗 Explore: [YourLink]",
+      field3: "Get ready for the future of customer interaction! 💬 Our new *AI Chatbot* is now live.\n\nEnjoy round-the-clock assistance and smarter responses.\n\n*Limited Time Offer:* Secure your *20% discount* today!\n\n➡️ Discover: [YourLink]\n\n#AIChatbot #CustomerService #Innovation"
     }
   },
   {
     id: 2,
-    title: 'Flash Sale Alert',
-    imageUrl: 'https://picsum.photos/160/90?random=102',
-    dataAiHint: 'Urgent flash sale with big discounts on selected items',
-    messageType: 'marketing',
+    title: 'OTP Verification (Auth)',
+    imageUrl: 'https://placehold.co/160x90.png',
+    dataAiHint: 'Generate a WhatsApp OTP message for login. The code is 123456 and it expires in 5 minutes.',
+    messageType: 'authentication',
     templateContent: {
-      field1: "🚨 FLASH SALE ALERT! 🚨\nHey {{name}}! Our *BIGGEST Flash Sale* is ON NOW!",
-      field2: "Up to *{{max_discount}}% OFF* on selected items like {{item1}} & {{item2}}.",
-      field3: "🛍️ Shop: {{sale_link}}\nEnds in {{duration}}! ⏳"
+      field1: "🔒 Your verification code is: ```123456```\n\nThis code is valid for 5 minutes. Please do not share it with anyone.\n\nThanks,\n{{YourCompanyName}} Team",
+      field2: "*Authentication Required*\n\nYour One-Time Password (OTP) for logging in is: ```123456```\n\n_This OTP will expire in 5 minutes._",
+      field3: "Hi there! Use code ```123456``` to complete your login. \n\nThis code expires shortly. For your security, never share this code. 🛡️"
     }
   },
   {
     id: 3,
-    title: 'OTP Verification Code',
-    imageUrl: 'https://picsum.photos/160/90?random=103',
-    dataAiHint: 'Your secure one-time password for action',
-    messageType: 'authentication',
+    title: 'Appointment Reminder (Utility)',
+    imageUrl: 'https://placehold.co/160x90.png',
+    dataAiHint: 'Remind a user about their dental check-up tomorrow at 10:00 AM with Dr. Smile.',
+    messageType: 'utility',
     templateContent: {
-      field1: "🔒 Your One-Time Password (OTP) 🔒",
-      field2: "Hi {{name}},\nYour OTP for {{action}} is: ```{{otp_code}}```",
-      field3: "Valid for {{validity_duration}}. Do not share it with anyone."
+      field1: "🗓️ *Appointment Reminder*\n\nHi {{UserName}},\nThis is a friendly reminder for your dental check-up with *Dr. Smile* tomorrow, {{Date}}, at *10:00 AM*.\n\nSee you soon!",
+      field2: "Just a heads up! ⏰ Your appointment with *Dr. Smile* is scheduled for tomorrow at *10:00 AM*.\n\n📍 {{ClinicAddress}}\n📞 {{ClinicPhone}}\n\nNeed to reschedule? Reply to this message or call us.",
+      field3: "Hi {{UserName}}! Don't forget your dental appointment:\n\n*Service:* Check-up\n*Provider:* Dr. Smile\n*Date:* Tomorrow, {{Date}}\n*Time:* 10:00 AM\n\nWe look forward to seeing you! 😊"
     }
   },
   {
     id: 4,
-    title: 'Appointment Reminder',
-    imageUrl: 'https://picsum.photos/160/90?random=104',
-    dataAiHint: 'Friendly reminder for upcoming appointment details',
+    title: 'Order Shipped (Utility)',
+    imageUrl: 'https://placehold.co/160x90.png',
+    dataAiHint: 'Inform a customer their order #ABC12345 has shipped and provide tracking link XYZ.',
     messageType: 'utility',
     templateContent: {
-      field1: "🗓️ Appointment Reminder 🗓️",
-      field2: "Hi {{name}},\nJust a friendly reminder for your appointment with {{provider}} for {{service_type}}.",
-      field3: "Date: *{{date}}* at *{{time}}*.\nLocation: {{location}}.\nTo reschedule, please call: {{contact_number}}."
+      field1: "🚚 *Your Order #ABC12345 Has Shipped!* 🎉\n\nGreat news, {{UserName}}! Your items are on their way.\n\nTrack your package: [TrackingLinkXYZ]\n\nEstimated delivery: {{DeliveryDate}}",
+      field2: "Good news! 📦 Your order *#ABC12345* is now en route!\n\nYou can follow its journey here: [TrackingLinkXYZ]\n\nExpected arrival: {{DeliveryDate}}. We hope you love your purchase!",
+      field3: "Update on your order *#ABC12345*:\nIt's shipped! 🥳\n\n*Tracking:* [TrackingLinkXYZ]\n*Carrier:* {{CarrierName}}\n\nGet ready for your goodies!"
     }
   },
   {
     id: 5,
-    title: 'Order Shipped Notification',
-    imageUrl: 'https://picsum.photos/160/90?random=105',
-    dataAiHint: 'Update that your order has shipped with tracking info',
-    messageType: 'utility',
+    title: 'Support Ticket Update (Service)',
+    imageUrl: 'https://placehold.co/160x90.png',
+    dataAiHint: 'Provide an update on support ticket #TICKET101, stating the issue is being investigated.',
+    messageType: 'service',
     templateContent: {
-      field1: "🚚 Your Order #{{order_id}} Has Shipped! 🚚",
-      field2: "Great news, {{name}}! Your order containing {{item_summary}} is on its way!",
-      field3: "Track your package here: {{tracking_link}}\nEstimated delivery: {{delivery_date}}."
+      field1: "ℹ️ *Update on Support Ticket #TICKET101*\n\nHi {{UserName}},\nOur team is currently investigating the issue you reported. We'll provide another update within 24 hours.\n\nThank you for your patience,\n{{YourCompanyName}} Support",
+      field2: "Hello {{UserName}},\n\nThis is an update regarding your support ticket *#TICKET101*.\n\n*Status:* Under Investigation\n_We are actively working on it and will get back to you soon._\n\nThanks for reaching out!",
+      field3: "Support Update for Ticket *#TICKET101*:\n\nDear {{UserName}},\nWe've received your query and our technical team is looking into it. We appreciate your patience and will update you as soon as we have more information.\n\nWarm regards,\nCustomer Care"
     }
   },
   {
     id: 6,
-    title: 'Support Ticket Update',
-    imageUrl: 'https://picsum.photos/160/90?random=106',
-    dataAiHint: 'An update on your support ticket inquiry',
-    messageType: 'service',
+    title: 'Flash Sale (Marketing)',
+    imageUrl: 'https://placehold.co/160x90.png',
+    dataAiHint: 'Announce a 24-hour flash sale with 30% off everything site-wide. Use urgency.',
+    messageType: 'marketing',
     templateContent: {
-      field1: "ℹ️ Support Ticket #{{ticket_id}} Update ℹ️",
-      field2: "Hi {{name}},\nThere's an update regarding your support ticket \"{{ticket_subject}}\": {{update_summary}}.",
-      field3: "View full details or reply here: {{portal_link}}\nBest regards,\n{{company_name}} Support Team"
+      field1: "🚨 *FLASH SALE ALERT!* 🚨\n\nFor *24 HOURS ONLY*, get *30% OFF EVERYTHING* site-wide! 🛍️\n\nDon't miss out on incredible deals!\n\n👉 Shop Now: [YourLink]\n\n_Sale ends {{EndTime}}!_ ⏳",
+      field2: "💥 *HUGE SAVINGS!* 💥\n\nOur 24-Hour Flash Sale is LIVE! Enjoy a whopping *30% DISCOUNT* on all products.\n\nTreat yourself or find the perfect gift! 🎁\n\n🔗 Link: [YourLink]\n\n*Hurry, time is running out!*",
+      field3: "🔥 *IT'S HAPPENING!* 🔥\n\n*30% OFF EVERYTHING!* Yes, you read that right! Our exclusive 24-hour flash sale starts NOW.\n\nStock up on your favorites before it's too late!\n\n➡️ Go, Go, Go: [YourLink]\n\n#FlashSale #LimitedTimeOffer #Deals"
     }
   },
   {
     id: 7,
-    title: 'New User Welcome Message',
-    imageUrl: 'https://picsum.photos/160/90?random=107',
-    dataAiHint: 'Warm welcome to new user with getting started info',
-    messageType: 'service',
+    title: 'Password Reset (Auth)',
+    imageUrl: 'https://placehold.co/160x90.png',
+    dataAiHint: 'User requested a password reset. Provide a secure link to reset.',
+    messageType: 'authentication',
     templateContent: {
-      field1: "👋 Welcome to {{service_name}}, {{name}}! 👋",
-      field2: "We're thrilled to have you on board! Here are a few tips to get started: {{getting_started_link}}",
-      field3: "If you have any questions, feel free to reach out to us at {{support_email}} or visit our FAQ: {{faq_link}}"
+      field1: "🔑 *Password Reset Request*\n\nHi {{UserName}},\nWe received a request to reset your password. Click the link below to set a new one:\n\n[PasswordResetLink]\n\n_If you didn't request this, please ignore this message._",
+      field2: "Need to reset your password? No problem!\n\nUse this secure link to create a new password for your account: \n[PasswordResetLink]\n\nThis link will expire in {{ExpiryTime}}.\n\nFor your security, do not share this link.",
+      field3: "*Security Alert: Password Reset*\n\nHello {{UserName}},\nTo reset your password, please follow this link: [PasswordResetLink]\n\nIf this wasn't you, your account is secure, and no action is needed. However, you may want to update your password as a precaution."
     }
   },
    {
     id: 8,
-    title: 'Abandoned Cart Reminder',
-    imageUrl: 'https://picsum.photos/160/90?random=108',
-    dataAiHint: 'Reminder about items left in cart with discount offer',
-    messageType: 'marketing',
+    title: 'Service Maintenance (Utility)',
+    imageUrl: 'https://placehold.co/160x90.png',
+    dataAiHint: 'Inform users about upcoming scheduled maintenance for our app tonight from 2 AM to 4 AM. Mention service might be temporarily unavailable.',
+    messageType: 'utility',
     templateContent: {
-      field1: "🛒 Still thinking it over, {{name}}? 🛒",
-      field2: "We noticed you left some awesome items in your cart, including the *{{product_in_cart}}*.",
-      field3: "Complete your purchase today and enjoy a special *{{discount_offer}}% discount* just for you! Use code: ```{{discount_code}}```\nCheckout here: {{cart_link}}"
+      field1: "⚙️ *Scheduled Maintenance Notice* ⚙️\n\nHi there,\nOur app will undergo scheduled maintenance *tonight from 2 AM to 4 AM {{TimeZone}}* to improve performance.\n\nServices may be temporarily unavailable during this time. We apologize for any inconvenience.",
+      field2: "*Important Service Update*\n\nPlease be advised of a planned maintenance window for {{AppName}}:\n\n*Date:* Today/Tonight\n*Time:* 2:00 AM - 4:00 AM {{TimeZone}}\n\nDuring this period, access to the app might be intermittent. Thank you for your understanding.",
+      field3: "🔧 Heads up! We're making {{AppName}} even better!\n\nScheduled maintenance is planned for *tonight, 2 AM - 4 AM {{TimeZone}}*.\n\nYou might experience temporary service disruptions. We'll be back up and running smoothly ASAP! 👍"
     }
   }
 ];
@@ -176,19 +181,27 @@ interface TemplateGalleryProps {
 }
 
 const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
-  // Ensure we pass the correct type to TemplateRow
-  const typedDisplayTemplates = displayTemplates as unknown as TemplateItemProps[];
+  const typedDisplayTemplates = displayTemplates as TemplateItemProps[]; // No 'unknown' needed if types match
+
+  const row1Templates = typedDisplayTemplates.slice(0, Math.min(7, typedDisplayTemplates.length));
+  const row2Start = Math.min(1, typedDisplayTemplates.length -1); // ensure it doesn't go out of bounds
+  const row2End = Math.min(8, typedDisplayTemplates.length);
+  const row2Templates = typedDisplayTemplates.length > 1 ? typedDisplayTemplates.slice(row2Start, row2End) : (typedDisplayTemplates.length === 1 ? typedDisplayTemplates.slice(0,1) : []);
+  const row3Templates = typedDisplayTemplates.slice(0, Math.min(7, typedDisplayTemplates.length));
+
 
   return (
     <div className="pt-6 border-t border-border mt-6">
       <h3 className="text-xl font-semibold text-center mb-6 text-primary">
         Explore WhatsApp FormFlow Templates
       </h3>
-      <TemplateRow templates={typedDisplayTemplates.slice(0, 7)} direction="left" speed="60s" onTemplateClick={onTemplateClick} />
-      <TemplateRow templates={typedDisplayTemplates.slice(1, 8).length >=1 ? typedDisplayTemplates.slice(1,8) : typedDisplayTemplates.slice(0,1) } direction="right" speed="75s" onTemplateClick={onTemplateClick} />
-      <TemplateRow templates={typedDisplayTemplates.slice(0, 7)} direction="left" speed="65s" onTemplateClick={onTemplateClick} />
+      {row1Templates.length > 0 && <TemplateRow templates={row1Templates} direction="left" speed="60s" onTemplateClick={onTemplateClick} />}
+      {row2Templates.length > 0 && <TemplateRow templates={row2Templates} direction="right" speed="75s" onTemplateClick={onTemplateClick} />}
+      {row3Templates.length > 0 && <TemplateRow templates={row3Templates} direction="left" speed="65s" onTemplateClick={onTemplateClick} />}
     </div>
   );
 };
 
 export default TemplateGallery;
+
+    

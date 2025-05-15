@@ -123,14 +123,14 @@ const WhatsAppMessagePreview = ({ content }: { content: string | undefined }) =>
     }
 
     // 5. Newlines and plain text
-    return text.split(/(\n)/g).map((part, index) => {
-      if (part === '\n') return <br key={generateKey(`br-${index}`)} />;
+    return text.split(/(\\n)/g).map((part, index) => {
+      if (part === '\\n') return <br key={generateKey(`br-${index}`)} />;
       if (part) return <span key={generateKey(`text-${index}`)}>{part}</span>; // Wrap text for consistent handling
       return null;
     }).filter(Boolean); // Filter out nulls from empty parts
   };
   
-  const formattedNodes = parseTextToReact(content);
+  const formattedNodes = parseTextToReact(content.replace(/\n/g, '\\n')); // Replace actual newlines with \n for parser
 
   return (
     <div className="p-3 border rounded-md bg-card shadow-sm text-card-foreground text-sm min-h-[100px] flex flex-col items-start justify-start overflow-y-auto">
@@ -367,3 +367,5 @@ function FormFlowFields() {
 }
 
 export default FormFlowFields;
+
+    

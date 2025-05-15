@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -16,7 +17,7 @@ const SuggestFormFieldsInputSchema = z.object({
   messageType: z.enum(["marketing", "authentication", "utility", "service"]).describe('The selected type of WhatsApp message (e.g., marketing, authentication).'),
   field1: z.string().optional().describe('Optional: Initial content for the first part/draft of the WhatsApp message. If provided, the AI should consider this as a starting point for one of its variations.'),
   field2: z.string().optional().describe('Optional: Initial content for the second part/draft of the WhatsApp message. If provided, the AI should consider this as a starting point for one of its variations.'),
-  field3: z.string().optional().describe('Optional: Initial content for the third part/draft of the WhatsApp message. If provided, the AI should consider this as a starting point for one ofits variations.'),
+  field3: z.string().optional().describe('Optional: Initial content for the third part/draft of the WhatsApp message. If provided, the AI should consider this as a starting point for one of its variations.'),
 });
 export type SuggestFormFieldsInput = z.infer<typeof SuggestFormFieldsInputSchema>;
 
@@ -81,3 +82,5 @@ const suggestFormFieldsFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    
