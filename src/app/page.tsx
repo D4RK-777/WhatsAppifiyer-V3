@@ -16,7 +16,7 @@ export default function HomePage() {
             revealText="✨ *Weekend Shoe Blowout!* 👟✨\n\nGet an amazing *50% OFF* all shoes!\n\n🗓️ This Weekend Only\n📍 [Your Store Name/Link]\n⏰ Open 9 AM - 9 PM\n\nDon't miss out! Use code: `SAVEBIG` 🛍️"
             className="mx-auto w-full"
           >
-            <TextRevealCardTitle className="text-center">
+            <TextRevealCardTitle className="text-center text-4xl font-bold text-primary sm:text-5xl">
               WhatsAppify Your Text
             </TextRevealCardTitle>
             <TextRevealCardDescription className="text-center">
