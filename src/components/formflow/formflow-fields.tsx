@@ -226,13 +226,12 @@ function FormFlowFields() {
     }
   };
 
-  // This function might become unused if the submit button is removed and no other submission mechanism is intended.
-  // For now, it's kept in case of other submission methods (e.g. Enter key in a field).
   const onSubmit = (values: FormValues) => {
-    console.log("Form submitted (WhatsAppified variations):", values);
+    // This function is not currently tied to a submit button but might be used for other submission logic.
+    console.log("Form data (WhatsAppified variations):", values);
     toast({
-      title: "Form Processing", // Changed from "Form Submitted!"
-      description: "Your WhatsApp variations are being processed.", // Or a more appropriate message.
+      title: "Form Data Logged",
+      description: "Current WhatsApp variations have been logged to the console.",
     });
   };
 
@@ -322,7 +321,7 @@ function FormFlowFields() {
                 name="field1"
                 render={({ field }) => (
                   <FormItem className="flex flex-col items-center">
-                    <FormLabel className="font-semibold text-primary/90 mb-2">WhatsApp Variation 1</FormLabel>
+                    <FormLabel className="font-semibold text-foreground mb-2">WhatsApp Variation 1</FormLabel>
                     <FormControl>
                       <WhatsAppMessagePreview content={field.value} />
                     </FormControl>
@@ -338,7 +337,7 @@ function FormFlowFields() {
                 name="field2"
                 render={({ field }) => (
                   <FormItem className="flex flex-col items-center">
-                    <FormLabel className="font-semibold text-primary/90 mb-2">WhatsApp Variation 2</FormLabel>
+                    <FormLabel className="font-semibold text-foreground mb-2">WhatsApp Variation 2</FormLabel>
                     <FormControl>
                        <WhatsAppMessagePreview content={field.value} />
                     </FormControl>
@@ -354,7 +353,7 @@ function FormFlowFields() {
                 name="field3"
                 render={({ field }) => (
                   <FormItem className="flex flex-col items-center">
-                    <FormLabel className="font-semibold text-primary/90 mb-2">WhatsApp Variation 3</FormLabel>
+                    <FormLabel className="font-semibold text-foreground mb-2">WhatsApp Variation 3</FormLabel>
                     <FormControl>
                        <WhatsAppMessagePreview content={field.value} />
                     </FormControl>
@@ -366,8 +365,6 @@ function FormFlowFields() {
                 )}
               />
             </div>
-
-            {/* Submit button removed from here */}
           </CardContent>
           <TemplateGallery onTemplateClick={handleTemplateSelect} />
         </Card>
