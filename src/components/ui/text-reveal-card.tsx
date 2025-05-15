@@ -74,7 +74,7 @@ export const TextRevealCard = ({
     >
       {children}
 
-      <div className="h-40 relative flex items-center overflow-hidden">
+      <div className="h-36 relative flex items-center overflow-hidden">
         <motion.div
           style={{
             width: "100%",
@@ -96,7 +96,7 @@ export const TextRevealCard = ({
             style={{
               textShadow: "1px 1px 5px hsl(var(--primary) / 0.3)",
             }}
-            className="text-base sm:text-2xl md:text-3xl py-10 font-bold text-primary text-center whitespace-pre-line"
+            className="text-base sm:text-xl md:text-2xl py-8 text-primary text-center whitespace-pre-line"
           >
             {revealText}
           </p>
@@ -108,11 +108,11 @@ export const TextRevealCard = ({
             opacity: widthPercentage > 0 ? 1 : 0,
           }}
           transition={isMouseOver ? { duration: 0 } : { duration: 0.4 }}
-          className="h-40 w-[8px] bg-gradient-to-b from-transparent via-border to-transparent absolute z-50 will-change-transform"
+          className="h-36 w-[8px] bg-gradient-to-b from-transparent via-border to-transparent absolute z-50 will-change-transform"
         ></motion.div>
 
         <div className="w-full overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,white,transparent)]">
-          <p className="text-base sm:text-2xl md:text-3xl py-10 font-normal text-muted-foreground/70 text-center whitespace-pre-line">
+          <p className="text-base sm:text-xl md:text-2xl py-8 font-normal text-muted-foreground/70 text-center whitespace-pre-line">
             {text}
           </p>
           <MemoizedStars />
@@ -154,7 +154,7 @@ const Stars = () => {
   const random = () => Math.random();
   return (
     <div className="absolute inset-0">
-      {[...Array(80)].map((_, i) => (
+      {[...Array(60)].map((_, i) => ( // Reduced star count slightly for smaller text area
         <motion.span
           key={`star-${i}`}
           animate={{
@@ -172,8 +172,8 @@ const Stars = () => {
             position: "absolute",
             top: `${random() * 100}%`,
             left: `${random() * 100}%`,
-            width: `2px`,
-            height: `2px`,
+            width: `1.5px`, // Slightly smaller stars
+            height: `1.5px`,
             backgroundColor: "hsl(var(--foreground))",
             opacity: 0.3,
             borderRadius: "50%",
