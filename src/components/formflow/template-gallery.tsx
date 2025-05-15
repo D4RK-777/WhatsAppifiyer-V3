@@ -21,31 +21,51 @@ export interface TemplateItemProps {
   onClick: (template: TemplateItemProps) => void;
 }
 
-const getTypeColorClasses = (type: TemplateItemProps['messageType']) => {
+interface TypeColorStyle {
+  borderClasses: string;
+  textHeaderClass: string;
+}
+
+const getTypeColorStyles = (type: TemplateItemProps['messageType']): TypeColorStyle => {
   switch (type) {
     case 'marketing':
-      return 'border-green-400 hover:border-green-500 focus-visible:ring-green-500';
+      return {
+        borderClasses: 'border-green-400 hover:border-green-500 focus-visible:ring-green-500',
+        textHeaderClass: 'text-green-700 dark:text-green-500',
+      };
     case 'service':
-      return 'border-yellow-400 hover:border-yellow-500 focus-visible:ring-yellow-500';
+      return {
+        borderClasses: 'border-yellow-400 hover:border-yellow-500 focus-visible:ring-yellow-500',
+        textHeaderClass: 'text-yellow-600 dark:text-yellow-400',
+      };
     case 'authentication':
-      return 'border-orange-400 hover:border-orange-500 focus-visible:ring-orange-500';
+      return {
+        borderClasses: 'border-orange-400 hover:border-orange-500 focus-visible:ring-orange-500',
+        textHeaderClass: 'text-orange-700 dark:text-orange-500',
+      };
     case 'utility':
-      return 'border-blue-400 hover:border-blue-500 focus-visible:ring-blue-500';
+      return {
+        borderClasses: 'border-blue-400 hover:border-blue-500 focus-visible:ring-blue-500',
+        textHeaderClass: 'text-blue-700 dark:text-blue-500',
+      };
     default:
-      return 'border-border hover:border-primary focus-visible:ring-ring';
+      return {
+        borderClasses: 'border-border hover:border-primary focus-visible:ring-ring',
+        textHeaderClass: 'text-primary',
+      };
   }
 };
 
 const TemplateItem: FC<TemplateItemProps> = (props) => {
   const { title, dataAiHint, templateContent, onClick, messageType } = props;
   const previewText = templateContent.field1?.split('\n').slice(0, 3).join('\n') + (templateContent.field1 && templateContent.field1.split('\n').length > 3 ? '...' : '');
-  const colorClasses = getTypeColorClasses(messageType);
+  const { borderClasses, textHeaderClass } = getTypeColorStyles(messageType);
 
   return (
     <div
       className={cn(
         "flex-shrink-0 w-48 h-auto min-h-[9rem] bg-card border-2 rounded-lg shadow-lg p-3 mx-3 flex flex-col items-start justify-start hover:shadow-xl transition-all duration-300 cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        colorClasses
+        borderClasses
       )}
       onClick={() => onClick(props)}
       role="button"
@@ -54,7 +74,7 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
       aria-label={`Select ${title} template`}
       data-ai-hint={dataAiHint.split(' ').slice(0, 2).join(' ')} 
     >
-      <p className="text-xs font-semibold text-primary mb-1 truncate w-full">
+      <p className={cn("text-xs font-semibold mb-1 truncate w-full", textHeaderClass)}>
         {title}
       </p>
       <div 
@@ -190,7 +210,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     dataAiHint: 'Invite users to an upcoming webinar on AI in marketing. Mention date, time, and a key benefit.',
     messageType: 'marketing',
     templateContent: {
-      field1: "🎓 *Free Webinar Alert!* 🎓\n\nDiscover how AI can revolutionize your marketing strategy! Join us on {{Date}} at {{Time}}.\n\nKey takeaway: Learn to automate 50% of your campaign tasks!\n\n➡️ Register here: [YourLink]\n\n_Limited spots available!_",
+      field1: "🎓 *Free Webinar Alert!* 🎓\n\nHi {{UserName}},\n\nDiscover how AI can revolutionize your marketing strategy! Join us on {{Date}} at {{Time}}.\n\nKey takeaway: Learn to automate 50% of your campaign tasks!\n\n➡️ Register here: [YourLink]\n\n_Limited spots available!_",
       field2: "📣 *Don't Miss Out!* 📣\n\nJoin our exclusive webinar: *AI for Marketers*\n🗓️ Date: {{Date}}\n⏰ Time: {{Time}}\n\nLearn practical tips to boost your ROI with AI.\n\n👉 Save your seat: [YourLink]\n\n#AI #Marketing #Webinar",
       field3: "Unlock the power of AI in your marketing! 🤖✨\n\nWe're hosting a *FREE live webinar* on {{Date}} at {{Time}} to show you how.\n\nWhat you'll learn:\n- AI-driven content creation\n- Personalized customer journeys\n- Predictive analytics\n\n🔗 Register now: [YourLink]\n\n_See you there!_"
     }
@@ -201,9 +221,9 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     dataAiHint: 'Announce a new contest to win a {{Prize}}. Ask users to {{ActionToEnter}}, e.g., share a post or tag friends.',
     messageType: 'marketing',
     templateContent: {
-      field1: "🏆 *CONTEST ALERT!* 🏆\n\nWant to win a {{Prize}}?\nIt's simple! Just {{ActionToEnter}} by {{EndDate}}.\n\nFull details & entry: [LinkToContest]\n\n_Good luck!_ 🍀",
-      field2: "🎉 *GIVEAWAY TIME!* 🎉\n\nYou could be the lucky winner of a {{Prize}}!\nTo enter:\n1. {{Step1Action}}\n2. {{Step2Action}}\n\n🔗 Enter now: [LinkToContest]\n\nWinner announced on {{AnnouncementDate}}!",
-      field3: "✨ *WIN BIG!* ✨\n\nWe're giving away a {{Prize}}!\n\nHow to enter:\n- {{ActionToEnter1}}\n- {{ActionToEnter2}}\n\nDon't miss out! Contest ends {{EndDate}}.\n\n➡️ [LinkToContest]\n\n#Contest #Giveaway #{{YourBrand}}"
+      field1: "🏆 *CONTEST ALERT!* 🏆\n\nHi {{UserName}},\n\nWant to win a {{Prize}}?\nIt's simple! Just {{ActionToEnter}} by {{EndDate}}.\n\nFull details & entry: [LinkToContest]\n\n_Good luck!_ 🍀",
+      field2: "🎉 *GIVEAWAY TIME!* 🎉\n\nHi {{UserName}},\n\nYou could be the lucky winner of a {{Prize}}!\nTo enter:\n1. {{Step1Action}}\n2. {{Step2Action}}\n\n🔗 Enter now: [LinkToContest]\n\nWinner announced on {{AnnouncementDate}}!",
+      field3: "✨ *WIN BIG!* ✨\n\nHi {{UserName}},\n\nWe're giving away a {{Prize}}!\n\nHow to enter:\n- {{ActionToEnter1}}\n- {{ActionToEnter2}}\n\nDon't miss out! Contest ends {{EndDate}}.\n\n➡️ [LinkToContest]\n\n#Contest #Giveaway #{{YourBrand}}"
     }
   },
   {
@@ -223,9 +243,9 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     dataAiHint: 'Announce a Summer Sale with up to 50% off selected items. Create urgency.',
     messageType: 'marketing',
     templateContent: {
-      field1: "☀️ *Summer Sale is ON!* ☀️\n\nGet up to *50% OFF* selected items! 🕶️👕\nStock up on your summer essentials now.\n\nShop the sale: [LinkToSale]\n\n_Offer ends {{Date}}! Don't let this chance melt away!_",
-      field2: "🏖️ *Hello Summer Savings!* 🏖️\n\nDive into discounts! Up to *50% OFF* during our Summer Sale event.\n\nExplore deals: [LinkToSale]\n\n*Limited time only! Ends {{Date}}!*",
-      field3: "😎 *Hot Deals for Hot Days!* 😎\n\nOur Summer Sale just dropped with up to *50% OFF*!\n\nFind your favorites: [LinkToSale]\n\n_Hurry, styles are selling fast & sale ends {{Date}}!_ 🛍️"
+      field1: "☀️ *Summer Sale is ON!* ☀️\n\nHi {{UserName}},\n\nGet up to *50% OFF* selected items! 🕶️👕\nStock up on your summer essentials now.\n\nShop the sale: [LinkToSale]\n\n_Offer ends {{Date}}! Don't let this chance melt away!_",
+      field2: "🏖️ *Hello Summer Savings!* 🏖️\n\nHi {{UserName}},\n\nDive into discounts! Up to *50% OFF* during our Summer Sale event.\n\nExplore deals: [LinkToSale]\n\n*Limited time only! Ends {{Date}}!*",
+      field3: "😎 *Hot Deals for Hot Days!* 😎\n\nHi {{UserName}},\n\nOur Summer Sale just dropped with up to *50% OFF*!\n\nFind your favorites: [LinkToSale]\n\n_Hurry, styles are selling fast & sale ends {{Date}}!_ 🛍️"
     }
   },
   {
@@ -256,7 +276,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     dataAiHint: "Confirm customer {{CustomerName}}'s order #{{OrderID}} for {{TotalAmount}}. Mention expected delivery window {{DeliveryWindow}}.",
     messageType: 'utility',
     templateContent: {
-      field1: "✅ *Order Confirmed! #{{OrderID}}* ✅\n\nThanks for your order, {{CustomerName}}!\n\nYour order for {{TotalAmount}} has been successfully placed.\n\nWe'll notify you when it ships. Estimated delivery: {{DeliveryWindow}}.\n\nTrack progress: [OrderTrackingLink]",
+      field1: "✅ *Order Confirmed! #{{OrderID}}* ✅\n\nHi {{CustomerName}},\n\nThanks for your order!\n\nYour order for {{TotalAmount}} has been successfully placed.\n\nWe'll notify you when it ships. Estimated delivery: {{DeliveryWindow}}.\n\nTrack progress: [OrderTrackingLink]",
       field2: "🎉 *Your {{AppName}} Order #{{OrderID}} is Confirmed!* 🎉\n\nHi {{CustomerName}},\n\nWe've received your order totaling {{TotalAmount}}.\n\nExpected delivery: {{DeliveryWindow}}.\nYou can view your order details here: [OrderDetailsLink]\n\nThanks for shopping with us!",
       field3: "Hi {{CustomerName}},\n\nOrder #{{OrderID}} received!\n\nAmount: {{TotalAmount}}\nItems: {{ShortListOfItemsOrItemCount}}\n\nWe're preparing your order for shipment. You'll get another update soon!\n\n_Questions? Contact us at {{SupportEmailOrPhone}}._"
     }
