@@ -10,7 +10,7 @@ type FilterCategory = "all" | MessageType;
 
 export interface TemplateItemProps {
   id: number;
-  title: string; // This will now be just the use case, e.g., "Product Launch"
+  title: string; 
   dataAiHint: string;
   messageType: MessageType;
   templateContent: {
@@ -31,61 +31,27 @@ interface TypeColorStyle {
 // WhatsApp Color Palette
 const whatsappColors = {
   mainActiveGreen: '#128C7E',
-  hoverMainActiveGreen: '#0F7A6E', // Slightly darker for hover on active button
+  hoverMainActiveGreen: '#0F7A6E', // Slightly darker for hover on active
 
   brightGreenMarketing: '#25D366',
-  textOnBrightGreenMarketing: 'text-green-950', // For gradient text if ever re-introduced
-  darkTextOnGreenGradientMarketing: 'text-green-50', // For gradient text on dark if ever re-introduced
+  lightBrightGreenMarketing: '#A7F3D0', // Lighter shade for gradient
 
   lightBlueAuthUtility: '#34B7F1',
-  textOnLightBlueAuthUtility: 'text-blue-950',
-  darkTextOnBlueGradientAuthUtility: 'text-blue-50',
+  lighterBlueAuthUtility: '#BAE6FD', // Lighter shade for gradient
+  
+  neutralServiceGrey: '#737373', // For light mode text/border
+  lighterServiceGrey: '#D4D4D8', // Lighter shade for gradient (light mode)
+  darkServiceGrey: '#a1a1aa',   // For dark mode text/border
+  lighterDarkServiceGrey: '#52525B', // Lighter shade for gradient (dark mode)
 
-  lightBeigeCardBgLight: '#ECE5DD', // Applied
-  darkCardBg: '#131C21', // Applied (was slate-800, changed to custom)
+  cardBgLight: '#ECE5DD', 
+  cardBgDark: '#131C21', // A common dark WhatsApp chat background
 
-  darkTealHeaderLight: '#075E54', // Applied
-  darkHeaderTextDark: '#9ADBC4', // Applied (example, could be lighter green)
+  darkTealHeaderLight: '#075E54', // Header text for light card bg
+  darkHeaderTextDark: '#9ADBC4', // Header text for dark card bg (example, might need adjustment)
 
-  lightGreenPreviewBg: '#DCF8C6', // Applied for inner message box
-
-  neutralServiceGrey: '#737373', // Tailwind neutral-500 equivalent for consistency
-  lightServiceGreyFrom: '#d4d4d8', // Tailwind zinc-300 for gradient start
-  darkServiceGrey: '#a1a1aa', // Tailwind zinc-400 for dark mode service
-  darkLightServiceGreyFrom: '#71717a', // Tailwind zinc-500 for dark gradient start
-  textOnNeutralServiceGrey: 'text-slate-900',
-  darkTextOnNeutralServiceGrey: 'text-slate-100'
-};
-
-interface TypeSpecificInitialColors {
-  initialBorderColor: string;
-  initialTextColor: string;
-  initialDarkTextColor: string;
-}
-
-// Returns initial border and text colors for INACTIVE category-specific buttons
-const getTypeSpecificInitialColors = (type: MessageType): TypeSpecificInitialColors => {
-  switch (type) {
-    case 'marketing':
-      return {
-        initialBorderColor: whatsappColors.brightGreenMarketing,
-        initialTextColor: whatsappColors.brightGreenMarketing,
-        initialDarkTextColor: whatsappColors.brightGreenMarketing, // Assuming this green is visible enough on dark
-      };
-    case 'service':
-      return {
-        initialBorderColor: whatsappColors.neutralServiceGrey,
-        initialTextColor: whatsappColors.neutralServiceGrey,
-        initialDarkTextColor: whatsappColors.darkServiceGrey,
-      };
-    case 'authentication':
-    case 'utility':
-      return {
-        initialBorderColor: whatsappColors.lightBlueAuthUtility,
-        initialTextColor: whatsappColors.lightBlueAuthUtility,
-        initialDarkTextColor: whatsappColors.lightBlueAuthUtility, // Assuming this blue is visible enough on dark
-      };
-  }
+  lightGreenPreviewBg: '#DCF8C6', // Inner message box bg
+  previewBoxText: '#111B21', // Dark text for light green preview box
 };
 
 
@@ -93,31 +59,31 @@ const getTypeColorStyles = (type: MessageType): TypeColorStyle => {
   switch (type) {
     case 'marketing':
       return {
-        borderClasses: `border-[${whatsappColors.brightGreenMarketing}] hover:border-[${whatsappColors.brightGreenMarketing}] focus-visible:ring-[${whatsappColors.brightGreenMarketing}]`,
+        borderClasses: `border-[${whatsappColors.brightGreenMarketing}]`,
         textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderTextDark}]`,
-        cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
+        cardBackgroundClass: `bg-[${whatsappColors.cardBgLight}] dark:bg-[${whatsappColors.cardBgDark}]`,
         categoryLabelClass: `text-[${whatsappColors.brightGreenMarketing}]`,
       };
     case 'service':
       return {
-        borderClasses: `border-[${whatsappColors.neutralServiceGrey}] dark:border-[${whatsappColors.darkServiceGrey}] hover:border-[${whatsappColors.darkServiceGrey}] dark:hover:border-[${whatsappColors.neutralServiceGrey}] focus-visible:ring-[${whatsappColors.darkServiceGrey}]`,
+        borderClasses: `border-[${whatsappColors.neutralServiceGrey}] dark:border-[${whatsappColors.darkServiceGrey}]`,
         textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderTextDark}]`,
-        cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
+        cardBackgroundClass: `bg-[${whatsappColors.cardBgLight}] dark:bg-[${whatsappColors.cardBgDark}]`,
         categoryLabelClass: `text-[${whatsappColors.neutralServiceGrey}] dark:text-[${whatsappColors.darkServiceGrey}]`,
       };
     case 'authentication':
     case 'utility':
       return {
-        borderClasses: `border-[${whatsappColors.lightBlueAuthUtility}] hover:border-[${whatsappColors.lightBlueAuthUtility}] focus-visible:ring-[${whatsappColors.lightBlueAuthUtility}]`,
+        borderClasses: `border-[${whatsappColors.lightBlueAuthUtility}]`,
         textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderTextDark}]`,
-        cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
+        cardBackgroundClass: `bg-[${whatsappColors.cardBgLight}] dark:bg-[${whatsappColors.cardBgDark}]`,
         categoryLabelClass: `text-[${whatsappColors.lightBlueAuthUtility}]`,
       };
-    default:
-      return { // Should not be hit if all types are covered
-        borderClasses: 'border-border hover:border-primary focus-visible:ring-ring',
+    default: // Should not happen if type is always one of the MessageType
+      return { 
+        borderClasses: 'border-border',
         textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderTextDark}]`,
-        cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
+        cardBackgroundClass: `bg-[${whatsappColors.cardBgLight}] dark:bg-[${whatsappColors.cardBgDark}]`,
         categoryLabelClass: 'text-foreground',
       };
   }
@@ -125,15 +91,16 @@ const getTypeColorStyles = (type: MessageType): TypeColorStyle => {
 
 const TemplateItem: FC<TemplateItemProps> = (props) => {
   const { title, dataAiHint, templateContent, onClick, messageType } = props;
-  const previewText = templateContent.field1 || "";
+  const previewText = templateContent.field1 || ""; // Use field1 for preview
   const { borderClasses, textHeaderClass, cardBackgroundClass, categoryLabelClass } = getTypeColorStyles(messageType);
 
   return (
     <div
       className={cn(
-        "flex-shrink-0 w-48 h-auto min-h-[10rem] border-2 rounded-lg shadow-md p-2 mx-3 flex flex-col items-start justify-start hover:shadow-xl transition-all duration-300 cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        borderClasses, // Uses border color from messageType
-        cardBackgroundClass // Uses background color from messageType
+        "flex-shrink-0 w-48 h-auto min-h-[10rem] border-2 rounded-lg shadow-md p-2 mx-3 flex flex-col items-start justify-start group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all duration-300",
+        borderClasses, 
+        cardBackgroundClass,
+        `hover:border-[${whatsappColors.mainActiveGreen}] hover:shadow-xl cursor-pointer` 
       )}
       onClick={() => onClick(props)}
       role="button"
@@ -149,7 +116,10 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
         {title}
       </p>
       <div
-        className="w-full h-20 bg-[#DCF8C6] p-2 rounded-md overflow-hidden text-xs text-zinc-800 whitespace-pre-line" // WhatsApp outgoing bubble green
+        className={cn(
+          "w-full h-20 p-2 rounded-md overflow-hidden text-xs whitespace-pre-line",
+          `bg-[${whatsappColors.lightGreenPreviewBg}] text-[${whatsappColors.previewBoxText}]`
+        )}
         style={{ WebkitLineClamp: 5, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}
       >
         {previewText || "No preview available"}
@@ -189,7 +159,7 @@ const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', spee
 const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 1,
-    title: 'Product Launch', // Title is now just the use case
+    title: 'Product Launch',
     dataAiHint: 'Announce our new AI-powered chatbot solution with a 20% launch discount for the first 50 customers. Highlight key features: 24/7 availability and natural language understanding.',
     messageType: 'marketing',
     templateContent: {
@@ -301,7 +271,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     id: 11,
     title: 'Feedback Request',
     dataAiHint: "Ask a customer for feedback on their recent purchase of {{ProductName}}. Offer a small incentive like 10% off.",
-    messageType: 'marketing', // Can also be 'service' depending on context
+    messageType: 'marketing', 
     templateContent: {
       field1: "Hi {{CustomerName}}! 👋\n\nHow are you liking your new {{ProductName}}?\nWe'd love to hear your thoughts! Your feedback helps us improve. 😊\n\nShare your review (it only takes a minute!): [FeedbackLink]\n\n_As a thank you, enjoy 10% off your next order!_",
       field2: "Hi {{CustomerName}},\n\nWe value your opinion! Could you spare a moment to rate your recent experience with {{ProductName}}?\n\nClick here to leave feedback: [FeedbackLink]\n\nYour insights are important to us! 🙏 For your time, here's a 10% discount code: ```THANKYOU10```",
@@ -414,18 +384,18 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
   let displayTemplates: TemplateItemProps[] = [];
   if (filteredTemplates.length > 0) {
     const base = filteredTemplates;
-    while(displayTemplates.length < 24 && base.length > 0) { // Aim for up to 24 templates for good infinite scroll feel
+    while(displayTemplates.length < 24 && base.length > 0) { 
         displayTemplates = displayTemplates.concat(base);
     }
-    // If still not enough after full passes, duplicate more aggressively to fill minimum rows
-    if (displayTemplates.length === 0 && base.length > 0) displayTemplates = [...base, ...base, ...base]; // Ensure at least 3x if original is short
-    else if (displayTemplates.length < 8 && displayTemplates.length > 0) { // If still less than 8, pad more
+    // If still not enough after full repetitions (e.g. less than 8 unique templates), duplicate further
+    if (displayTemplates.length === 0 && base.length > 0) displayTemplates = [...base, ...base, ...base]; // Ensure at least some repetition if unique count is very low
+    else if (displayTemplates.length < 8 && displayTemplates.length > 0) { // Ensure at least 8 items for visual appeal if possible
         const currentDisplay = [...displayTemplates];
-        while(displayTemplates.length < Math.max(8, currentDisplay.length * 2)) { // Aim for at least 8, or double current if already that much
+        while(displayTemplates.length < Math.max(8, currentDisplay.length * 2)) { // Try to at least double or hit 8
             displayTemplates = displayTemplates.concat(currentDisplay);
         }
     }
-    displayTemplates = displayTemplates.slice(0,24); // Cap at 24
+    displayTemplates = displayTemplates.slice(0,24); // Cap at 24 total items for performance
   }
 
 
@@ -451,20 +421,22 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
       <div className="flex justify-center gap-2 mb-6 flex-wrap">
         {filterCategories.map(category => {
           const isActive = activeFilter === category.value;
-          const baseButtonClasses = "rounded-full px-4 py-1.5 text-sm transition-all duration-200 ease-in-out shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2";
-          let dynamicClasses = "";
-          
-          const commonHoverClasses = `hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}]`;
-          const commonFocusRing = `focus-visible:ring-[${whatsappColors.mainActiveGreen}]`;
+          let buttonSpecificClass = "bg-background shadow-sm rounded-full px-4 py-1.5 text-sm transition-all duration-200 ease-in-out focus-visible:ring-2 focus-visible:ring-offset-2 ";
 
           if (isActive) {
-            dynamicClasses = `bg-[${whatsappColors.mainActiveGreen}] hover:bg-[${whatsappColors.hoverMainActiveGreen}] text-white border-[${whatsappColors.mainActiveGreen}] ${commonFocusRing}`;
+            buttonSpecificClass += `bg-[${whatsappColors.mainActiveGreen}] hover:bg-[${whatsappColors.hoverMainActiveGreen}] text-white border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-[${whatsappColors.mainActiveGreen}]`;
           } else {
-            if (category.styleType) {
-              const initialColors = getTypeSpecificInitialColors(category.styleType);
-              dynamicClasses = `bg-background border-[${initialColors.initialBorderColor}] text-[${initialColors.initialTextColor}] dark:text-[${initialColors.initialDarkTextColor}] ${commonHoverClasses} ${commonFocusRing}`;
-            } else if (category.value === "all") { // "All" button inactive state
-              dynamicClasses = `bg-background border-border text-foreground ${commonHoverClasses} ${commonFocusRing}`;
+            // Common hover for all inactive buttons
+            const commonHover = `hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}]`;
+            
+            if (category.styleType === 'marketing') {
+              buttonSpecificClass += `border-[${whatsappColors.brightGreenMarketing}] text-[${whatsappColors.brightGreenMarketing}] dark:text-[${whatsappColors.brightGreenMarketing}] ${commonHover} focus-visible:ring-[${whatsappColors.brightGreenMarketing}]`;
+            } else if (category.styleType === 'authentication' || category.styleType === 'utility') {
+              buttonSpecificClass += `border-[${whatsappColors.lightBlueAuthUtility}] text-[${whatsappColors.lightBlueAuthUtility}] dark:text-[${whatsappColors.lightBlueAuthUtility}] ${commonHover} focus-visible:ring-[${whatsappColors.lightBlueAuthUtility}]`;
+            } else if (category.styleType === 'service') {
+              buttonSpecificClass += `border-[${whatsappColors.neutralServiceGrey}] text-[${whatsappColors.neutralServiceGrey}] dark:text-[${whatsappColors.darkServiceGrey}] dark:border-[${whatsappColors.darkServiceGrey}] ${commonHover} focus-visible:ring-[${whatsappColors.neutralServiceGrey}] dark:focus-visible:ring-[${whatsappColors.darkServiceGrey}]`;
+            } else { // "All" button
+              buttonSpecificClass += `border-border text-foreground ${commonHover} focus-visible:ring-[${whatsappColors.mainActiveGreen}]`;
             }
           }
 
@@ -473,7 +445,7 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
               key={category.value}
               type="button"
               onClick={() => setActiveFilter(category.value)}
-              className={cn(baseButtonClasses, dynamicClasses)}
+              className={cn(buttonSpecificClass)}
             >
               {category.label}
             </Button>
