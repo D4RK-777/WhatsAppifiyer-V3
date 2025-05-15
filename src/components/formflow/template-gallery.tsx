@@ -1,13 +1,12 @@
 
 "use client";
 
-import Image from 'next/image';
 import type { FC } from 'react';
 
 export interface TemplateItemProps {
   id: number;
   title: string;
-  imageUrl: string;
+  // imageUrl: string; // No longer strictly needed for display, but kept for data structure consistency if needed elsewhere.
   dataAiHint: string; // This will be used as the context (user's text/idea) for the AI
   messageType: "marketing" | "authentication" | "utility" | "service";
   templateContent: { 
@@ -19,29 +18,28 @@ export interface TemplateItemProps {
 }
 
 const TemplateItem: FC<TemplateItemProps> = (props) => {
-  const { title, imageUrl, dataAiHint, onClick } = props;
+  const { title, dataAiHint, templateContent, onClick } = props;
+  const previewText = templateContent.field1?.split('\n').slice(0, 3).join('\n') + (templateContent.field1 && templateContent.field1.split('\n').length > 3 ? '...' : '');
+
   return (
     <div
-      className="flex-shrink-0 w-48 h-36 bg-card border border-border rounded-lg shadow-lg p-3 mx-3 flex flex-col items-center justify-center hover:shadow-xl transition-shadow duration-300 cursor-pointer group"
+      className="flex-shrink-0 w-48 h-auto min-h-[9rem] bg-card border border-border rounded-lg shadow-lg p-3 mx-3 flex flex-col items-start justify-start hover:shadow-xl transition-shadow duration-300 cursor-pointer group"
       onClick={() => onClick(props)}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClick(props);}}
       aria-label={`Select ${title} template`}
+      data-ai-hint={dataAiHint.split(' ').slice(0, 2).join(' ')} 
     >
-      <div className="w-full h-20 relative mb-2 overflow-hidden rounded-md">
-        <Image
-          src={imageUrl}
-          alt={title}
-          layout="fill"
-          objectFit="cover"
-          className="transform group-hover:scale-105 transition-transform duration-300"
-          data-ai-hint={props.dataAiHint.split(' ').slice(0, 2).join(' ')} 
-        />
-      </div>
-      <p className="text-xs font-medium text-center text-foreground truncate w-full">
+      <p className="text-xs font-semibold text-primary mb-1 truncate w-full">
         {title}
       </p>
+      <div 
+        className="w-full h-20 bg-muted/30 p-2 rounded-md overflow-hidden text-xs text-foreground/80 whitespace-pre-line"
+        style={{ WebkitLineClamp: 4, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}
+      >
+        {previewText || "No preview available"}
+      </div>
     </div>
   );
 };
@@ -54,7 +52,6 @@ interface TemplateRowProps {
 }
 
 const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', speed = '30s', onTemplateClick }) => {
-  // Duplicate templates for seamless scrolling effect
   const duplicatedTemplates = templates.length > 0 ? [...templates, ...templates, ...templates] : [];
   
   if (duplicatedTemplates.length === 0) return null;
@@ -79,7 +76,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 1,
     title: 'Product Launch (Marketing)',
-    imageUrl: 'https://placehold.co/160x90.png',
+    // imageUrl: 'https://placehold.co/160x90.png', // Retained for data structure, not displayed
     dataAiHint: 'Announce our new AI-powered chatbot solution with a 20% launch discount for the first 50 customers. Highlight key features: 24/7 availability and natural language understanding.',
     messageType: 'marketing',
     templateContent: {
@@ -91,7 +88,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 2,
     title: 'OTP Verification (Auth)',
-    imageUrl: 'https://placehold.co/160x90.png',
+    // imageUrl: 'https://placehold.co/160x90.png',
     dataAiHint: 'Generate a WhatsApp OTP message for login. The code is 123456 and it expires in 5 minutes.',
     messageType: 'authentication',
     templateContent: {
@@ -103,7 +100,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 3,
     title: 'Appointment Reminder (Utility)',
-    imageUrl: 'https://placehold.co/160x90.png',
+    // imageUrl: 'https://placehold.co/160x90.png',
     dataAiHint: 'Remind a user about their dental check-up tomorrow at 10:00 AM with Dr. Smile.',
     messageType: 'utility',
     templateContent: {
@@ -115,7 +112,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 4,
     title: 'Order Shipped (Utility)',
-    imageUrl: 'https://placehold.co/160x90.png',
+    // imageUrl: 'https://placehold.co/160x90.png',
     dataAiHint: 'Inform a customer their order #ABC12345 has shipped and provide tracking link XYZ.',
     messageType: 'utility',
     templateContent: {
@@ -127,7 +124,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 5,
     title: 'Support Ticket Update (Service)',
-    imageUrl: 'https://placehold.co/160x90.png',
+    // imageUrl: 'https://placehold.co/160x90.png',
     dataAiHint: 'Provide an update on support ticket #TICKET101, stating the issue is being investigated.',
     messageType: 'service',
     templateContent: {
@@ -139,7 +136,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 6,
     title: 'Flash Sale (Marketing)',
-    imageUrl: 'https://placehold.co/160x90.png',
+    // imageUrl: 'https://placehold.co/160x90.png',
     dataAiHint: 'Announce a 24-hour flash sale with 30% off everything site-wide. Use urgency.',
     messageType: 'marketing',
     templateContent: {
@@ -151,7 +148,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 7,
     title: 'Password Reset (Auth)',
-    imageUrl: 'https://placehold.co/160x90.png',
+    // imageUrl: 'https://placehold.co/160x90.png',
     dataAiHint: 'User requested a password reset. Provide a secure link to reset.',
     messageType: 'authentication',
     templateContent: {
@@ -163,7 +160,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
    {
     id: 8,
     title: 'Service Maintenance (Utility)',
-    imageUrl: 'https://placehold.co/160x90.png',
+    // imageUrl: 'https://placehold.co/160x90.png',
     dataAiHint: 'Inform users about upcoming scheduled maintenance for our app tonight from 2 AM to 4 AM. Mention service might be temporarily unavailable.',
     messageType: 'utility',
     templateContent: {
@@ -181,10 +178,10 @@ interface TemplateGalleryProps {
 }
 
 const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
-  const typedDisplayTemplates = displayTemplates as TemplateItemProps[]; // No 'unknown' needed if types match
+  const typedDisplayTemplates = displayTemplates as TemplateItemProps[]; 
 
   const row1Templates = typedDisplayTemplates.slice(0, Math.min(7, typedDisplayTemplates.length));
-  const row2Start = Math.min(1, typedDisplayTemplates.length -1); // ensure it doesn't go out of bounds
+  const row2Start = Math.min(1, typedDisplayTemplates.length -1); 
   const row2End = Math.min(8, typedDisplayTemplates.length);
   const row2Templates = typedDisplayTemplates.length > 1 ? typedDisplayTemplates.slice(row2Start, row2End) : (typedDisplayTemplates.length === 1 ? typedDisplayTemplates.slice(0,1) : []);
   const row3Templates = typedDisplayTemplates.slice(0, Math.min(7, typedDisplayTemplates.length));
@@ -203,5 +200,3 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
 };
 
 export default TemplateGallery;
-
-    
