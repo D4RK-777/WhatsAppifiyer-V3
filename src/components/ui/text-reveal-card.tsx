@@ -94,9 +94,9 @@ export const TextRevealCard = ({
         >
           <p
             style={{
-              textShadow: "4px 4px 15px rgba(0,0,0,0.1)", 
+              textShadow: "1px 1px 5px hsl(var(--primary) / 0.3)",
             }}
-            className="text-base sm:text-[3rem] py-10 font-bold text-primary bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/80 text-center"
+            className="text-base sm:text-2xl md:text-3xl py-10 font-bold text-primary text-center whitespace-pre-line"
           >
             {revealText}
           </p>
@@ -112,7 +112,7 @@ export const TextRevealCard = ({
         ></motion.div>
 
         <div className="w-full overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,white,transparent)]">
-          <p className="text-base sm:text-[3rem] py-10 font-bold text-muted-foreground/50 text-center">
+          <p className="text-base sm:text-2xl md:text-3xl py-10 font-normal text-muted-foreground/70 text-center whitespace-pre-line">
             {text}
           </p>
           <MemoizedStars />
@@ -130,7 +130,7 @@ export const TextRevealCardTitle = ({
   className?: string;
 }) => {
   return (
-    <h2 className={twMerge("text-foreground text-lg mb-2", className)}>
+    <h2 className={twMerge("text-foreground text-lg mb-2 text-center", className)}>
       {children}
     </h2>
   );
@@ -144,7 +144,7 @@ export const TextRevealCardDescription = ({
   className?: string;
 }) => {
   return (
-    <p className={twMerge("text-muted-foreground text-sm", className)}>{children}</p>
+    <p className={twMerge("text-muted-foreground text-sm text-center", className)}>{children}</p>
   );
 };
 
@@ -174,8 +174,8 @@ const Stars = () => {
             left: `${random() * 100}%`,
             width: `2px`,
             height: `2px`,
-            backgroundColor: "hsl(var(--foreground))", 
-            opacity: 0.3, 
+            backgroundColor: "hsl(var(--foreground))",
+            opacity: 0.3,
             borderRadius: "50%",
             zIndex: 1,
           }}
@@ -187,3 +187,4 @@ const Stars = () => {
 };
 
 export const MemoizedStars = memo(Stars);
+

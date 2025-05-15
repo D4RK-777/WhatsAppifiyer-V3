@@ -1,3 +1,4 @@
+
 import FormFlowFields from '@/components/formflow/formflow-fields';
 import {
   TextRevealCard,
@@ -11,8 +12,8 @@ export default function HomePage() {
       <div className="w-full max-w-4xl">
         <div className="mb-6 text-center flex flex-col items-center">
           <TextRevealCard
-            text="Elevate Your Messages"
-            revealText="With AI-Powered Formatting"
+            text="SALE! product X, 50% off. click http://spam.ly/xYz for deal. ends soon!!"
+            revealText="✨ *BIG NEWS!* ✨\nOur amazing Product X is now *50% OFF*!\nTap here to shop: [YourLink]\nDon't miss out! 🚀"
             className="mx-auto" 
           >
             <TextRevealCardTitle className="text-5xl font-extrabold tracking-tight text-primary sm:text-6xl !mb-3 text-center">
@@ -28,3 +29,4 @@ export default function HomePage() {
     </main>
   );
 }
+
