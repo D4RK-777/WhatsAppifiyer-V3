@@ -226,11 +226,13 @@ function FormFlowFields() {
     }
   };
 
+  // This function might become unused if the submit button is removed and no other submission mechanism is intended.
+  // For now, it's kept in case of other submission methods (e.g. Enter key in a field).
   const onSubmit = (values: FormValues) => {
     console.log("Form submitted (WhatsAppified variations):", values);
     toast({
-      title: "Form Submitted!",
-      description: "Your WhatsApp-ified variations have been processed.",
+      title: "Form Processing", // Changed from "Form Submitted!"
+      description: "Your WhatsApp variations are being processed.", // Or a more appropriate message.
     });
   };
 
@@ -296,6 +298,24 @@ function FormFlowFields() {
               )}
             />
             
+            <div className="flex justify-center pt-4 pb-2">
+              <Button
+                type="button"
+                onClick={handleGetSuggestions}
+                disabled={isLoadingSuggestions}
+                className="px-8 py-3 text-base rounded-lg shadow-md hover:shadow-lg transition-shadow w-full sm:w-auto max-w-xs"
+              >
+                {isLoadingSuggestions ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    WhatsAppifying...
+                  </>
+                ) : (
+                  "Get AI WhatsApp Variations"
+                )}
+              </Button>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-10 pt-4">
               <FormField
                 control={form.control}
@@ -347,26 +367,7 @@ function FormFlowFields() {
               />
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-6">
-              <Button
-                type="button"
-                onClick={handleGetSuggestions}
-                disabled={isLoadingSuggestions}
-                className="px-8 py-3 text-base rounded-lg shadow-md hover:shadow-lg transition-shadow w-full sm:w-auto"
-              >
-                {isLoadingSuggestions ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    WhatsAppifying...
-                  </>
-                ) : (
-                  "Get AI WhatsApp Variations"
-                )}
-              </Button>
-              <Button type="submit" className="px-10 py-3 text-lg rounded-lg shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto">
-                Submit Form
-              </Button>
-            </div>
+            {/* Submit button removed from here */}
           </CardContent>
           <TemplateGallery onTemplateClick={handleTemplateSelect} />
         </Card>
@@ -376,3 +377,5 @@ function FormFlowFields() {
 }
 
 export default FormFlowFields;
+
+    
