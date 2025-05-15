@@ -26,31 +26,37 @@ interface TypeColorStyle {
   textHeaderClass: string;
   cardBackgroundClass: string;
   filterButtonCategoryClasses: string;
+  categoryLabelClass: string;
 }
 
 // WhatsApp Color Palette
 const whatsappColors = {
   mainActiveGreen: '#128C7E', // Main Active Green (for active filter button)
-  brightGreenMarketing: '#25D366', // Bright Green (Marketing accent)
-  lightGreenMarketingFrom: '#86EFAC', // Lighter shade for gradient start (like green-300)
-  darkTextOnGreenGradient: 'text-green-950',
-
-  lightBlueAuthUtility: '#34B7F1', // Light Blue (Authentication & Utility accent)
-  lightBlueAuthUtilityFrom: '#93C5FD', // Lighter shade for gradient start (like blue-300)
   
-  lightBeigeCardBgLight: '#ECE5DD', // Main card background for Light Mode
-  darkCardBg: '#131C21', // Dark mode card background
+  brightGreenMarketing: '#25D366', 
+  lightGreenMarketingFrom: '#86EFAC', 
+  textOnBrightGreenMarketing: 'text-green-950', // For text on lighter green gradient hover
+  darkTextOnGreenGradient: 'text-green-950', // For text on the darker green gradient button
 
-  darkTealHeaderLight: '#075E54', // Card Header Text Color Light Mode
-  darkHeaderText: '#9ADBC4', // Card Header Text Color Dark Mode (lighter teal/greenish for dark bg)
+  lightBlueAuthUtility: '#34B7F1', 
+  lightBlueAuthUtilityFrom: '#93C5FD', 
+  textOnLightBlueAuthUtility: 'text-blue-950', // For text on lighter blue gradient hover
+
+  lightBeigeCardBgLight: '#ECE5DD', 
+  darkCardBg: '#131C21', 
+
+  darkTealHeaderLight: '#075E54', 
+  darkHeaderTextDark: '#9ADBC4', 
   
-  lightGreenPreviewBg: '#DCF8C6', // Inner message preview box background (already used)
+  lightGreenPreviewBg: '#DCF8C6', 
 
   // For Service (using Tailwind classes for simplicity with neutral greys)
-  neutralServiceGrey: 'slate-400', // Tailwind class for border/text in light mode
-  lightServiceGreyFrom: 'slate-300', // Tailwind class for gradient start in light mode
-  darkServiceGrey: 'slate-500',     // Tailwind class for border/text in dark mode
-  darkLightServiceGreyFrom: 'slate-600', // Tailwind class for gradient start in dark mode
+  neutralServiceGrey: 'slate-400', 
+  lightServiceGreyFrom: 'slate-300', 
+  darkServiceGrey: 'slate-500',     
+  darkLightServiceGreyFrom: 'slate-600', 
+  textOnNeutralServiceGrey: 'text-slate-900',
+  darkTextOnNeutralServiceGrey: 'text-slate-100'
 };
 
 const getTypeColorStyles = (type: MessageType): TypeColorStyle => {
@@ -58,31 +64,35 @@ const getTypeColorStyles = (type: MessageType): TypeColorStyle => {
     case 'marketing':
       return {
         borderClasses: `border-[${whatsappColors.brightGreenMarketing}] hover:border-[${whatsappColors.brightGreenMarketing}] focus-visible:ring-[${whatsappColors.brightGreenMarketing}]`,
-        textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderText}]`,
+        textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderTextDark}]`,
         cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
-        filterButtonCategoryClasses: `border-[${whatsappColors.brightGreenMarketing}] text-[${whatsappColors.brightGreenMarketing}] dark:text-[${whatsappColors.brightGreenMarketing}] hover:bg-gradient-to-r hover:from-[${whatsappColors.lightGreenMarketingFrom}] hover:to-[${whatsappColors.brightGreenMarketing}] ${whatsappColors.darkTextOnGreenGradient} dark:hover:text-green-50 focus-visible:ring-[${whatsappColors.brightGreenMarketing}] shadow-sm`,
+        filterButtonCategoryClasses: `border-[${whatsappColors.brightGreenMarketing}] text-[${whatsappColors.brightGreenMarketing}] dark:text-[${whatsappColors.brightGreenMarketing}] hover:bg-gradient-to-r hover:from-[${whatsappColors.lightGreenMarketingFrom}] hover:to-[${whatsappColors.brightGreenMarketing}] hover:text-${whatsappColors.textOnBrightGreenMarketing} dark:hover:text-green-50 focus-visible:ring-[${whatsappColors.brightGreenMarketing}] shadow-sm`,
+        categoryLabelClass: `text-[${whatsappColors.brightGreenMarketing}]`,
       };
     case 'service':
       return {
-        borderClasses: `border-${whatsappColors.neutralServiceGrey} dark:border-${whatsappColors.darkServiceGrey} hover:border-${whatsappColors.darkServiceGrey} focus-visible:ring-${whatsappColors.darkServiceGrey}`,
-        textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderText}]`,
+        borderClasses: `border-${whatsappColors.neutralServiceGrey} dark:border-${whatsappColors.darkServiceGrey} hover:border-${whatsappColors.darkServiceGrey} dark:hover:border-${whatsappColors.neutralServiceGrey} focus-visible:ring-${whatsappColors.darkServiceGrey}`,
+        textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderTextDark}]`,
         cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
-        filterButtonCategoryClasses: `border-${whatsappColors.neutralServiceGrey} text-${whatsappColors.neutralServiceGrey} dark:border-${whatsappColors.darkServiceGrey} dark:text-${whatsappColors.darkServiceGrey} hover:bg-gradient-to-r hover:from-${whatsappColors.lightServiceGreyFrom} hover:to-${whatsappColors.neutralServiceGrey} hover:text-slate-900 dark:hover:from-${whatsappColors.darkLightServiceGreyFrom} dark:hover:to-${whatsappColors.darkServiceGrey} dark:hover:text-slate-100 focus-visible:ring-${whatsappColors.neutralServiceGrey} dark:focus-visible:ring-${whatsappColors.darkServiceGrey} shadow-sm`,
+        filterButtonCategoryClasses: `border-${whatsappColors.neutralServiceGrey} text-${whatsappColors.neutralServiceGrey} dark:border-${whatsappColors.darkServiceGrey} dark:text-${whatsappColors.darkServiceGrey} hover:bg-gradient-to-r hover:from-${whatsappColors.lightServiceGreyFrom} hover:to-${whatsappColors.neutralServiceGrey} hover:text-${whatsappColors.textOnNeutralServiceGrey} dark:hover:from-${whatsappColors.darkLightServiceGreyFrom} dark:hover:to-${whatsappColors.darkServiceGrey} dark:hover:text-${whatsappColors.darkTextOnNeutralServiceGrey} focus-visible:ring-${whatsappColors.neutralServiceGrey} dark:focus-visible:ring-${whatsappColors.darkServiceGrey} shadow-sm`,
+        categoryLabelClass: `text-${whatsappColors.neutralServiceGrey} dark:text-${whatsappColors.darkServiceGrey}`,
       };
     case 'authentication':
     case 'utility':
       return {
         borderClasses: `border-[${whatsappColors.lightBlueAuthUtility}] hover:border-[${whatsappColors.lightBlueAuthUtility}] focus-visible:ring-[${whatsappColors.lightBlueAuthUtility}]`,
-        textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderText}]`,
+        textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderTextDark}]`,
         cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
-        filterButtonCategoryClasses: `border-[${whatsappColors.lightBlueAuthUtility}] text-[${whatsappColors.lightBlueAuthUtility}] dark:text-[${whatsappColors.lightBlueAuthUtility}] hover:bg-gradient-to-r hover:from-[${whatsappColors.lightBlueAuthUtilityFrom}] hover:to-[${whatsappColors.lightBlueAuthUtility}] hover:text-white dark:hover:text-blue-950 focus-visible:ring-[${whatsappColors.lightBlueAuthUtility}] shadow-sm`,
+        filterButtonCategoryClasses: `border-[${whatsappColors.lightBlueAuthUtility}] text-[${whatsappColors.lightBlueAuthUtility}] dark:text-[${whatsappColors.lightBlueAuthUtility}] hover:bg-gradient-to-r hover:from-[${whatsappColors.lightBlueAuthUtilityFrom}] hover:to-[${whatsappColors.lightBlueAuthUtility}] hover:text-${whatsappColors.textOnLightBlueAuthUtility} dark:hover:text-blue-50 focus-visible:ring-[${whatsappColors.lightBlueAuthUtility}] shadow-sm`,
+        categoryLabelClass: `text-[${whatsappColors.lightBlueAuthUtility}]`,
       };
-    default: // Should not be reached if type is always one of the MessageType
+    default: 
       return {
         borderClasses: 'border-border hover:border-primary focus-visible:ring-ring',
-        textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderText}]`,
+        textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderTextDark}]`,
         cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
-        filterButtonCategoryClasses: 'border-border text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring shadow-sm', // Default for "All"
+        filterButtonCategoryClasses: 'border-border text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring shadow-sm', 
+        categoryLabelClass: 'text-foreground', // Default for "All" or unspecified
       };
   }
 };
@@ -90,12 +100,12 @@ const getTypeColorStyles = (type: MessageType): TypeColorStyle => {
 const TemplateItem: FC<TemplateItemProps> = (props) => {
   const { title, dataAiHint, templateContent, onClick, messageType } = props;
   const previewText = templateContent.field1 || "";
-  const { borderClasses, textHeaderClass, cardBackgroundClass } = getTypeColorStyles(messageType);
+  const { borderClasses, textHeaderClass, cardBackgroundClass, categoryLabelClass } = getTypeColorStyles(messageType);
 
   return (
     <div
       className={cn(
-        "flex-shrink-0 w-48 h-auto min-h-[9rem] border-2 rounded-lg shadow-md p-2 mx-3 flex flex-col items-start justify-start hover:shadow-xl transition-all duration-300 cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "flex-shrink-0 w-48 h-auto min-h-[10rem] border-2 rounded-lg shadow-md p-2 mx-3 flex flex-col items-start justify-start hover:shadow-xl transition-all duration-300 cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         borderClasses,
         cardBackgroundClass
       )}
@@ -106,6 +116,9 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
       aria-label={`Select ${title} template`}
       data-ai-hint={dataAiHint.split(' ').slice(0, 2).join(' ')} // For image search hint
     >
+      <p className={cn("text-[0.6rem] font-bold uppercase tracking-wider mb-0.5", categoryLabelClass)}>
+        {messageType}
+      </p>
       <p className={cn("text-xs font-semibold mb-1 truncate w-full", textHeaderClass)}>
         {title}
       </p>
@@ -127,16 +140,14 @@ interface TemplateRowProps {
 }
 
 const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', speed = '30s', onTemplateClick }) => {
-  // Duplicate templates to ensure smooth infinite scrolling
-  // Only duplicate if there are templates to show
   const duplicatedTemplates = templates.length > 0 ? [...templates, ...templates, ...templates] : [];
 
-  if (duplicatedTemplates.length === 0) return null; // Don't render if no templates
+  if (duplicatedTemplates.length === 0) return null; 
 
   const animationClass = direction === 'left' ? 'animate-scroll-left' : 'animate-scroll-right';
 
   return (
-    <div className="overflow-hidden w-full my-3"> {/* Added my-3 for vertical spacing between rows */}
+    <div className="overflow-hidden w-full my-3"> 
       <div
         className={`flex ${animationClass}`}
         style={{ animationDuration: speed }}
@@ -152,7 +163,7 @@ const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', spee
 const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 1,
-    title: 'Product Launch (Marketing)',
+    title: 'Product Launch',
     dataAiHint: 'Announce our new AI-powered chatbot solution with a 20% launch discount for the first 50 customers. Highlight key features: 24/7 availability and natural language understanding.',
     messageType: 'marketing',
     templateContent: {
@@ -163,7 +174,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 2,
-    title: 'OTP Verification (Auth)',
+    title: 'OTP Verification',
     dataAiHint: 'Generate a WhatsApp OTP message for login. The code is 123456 and it expires in 5 minutes.',
     messageType: 'authentication',
     templateContent: {
@@ -174,7 +185,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 3,
-    title: 'Appointment Reminder (Utility)',
+    title: 'Appointment Reminder',
     dataAiHint: 'Remind a user about their dental check-up tomorrow at 10:00 AM with Dr. Smile. Include options to confirm or reschedule.',
     messageType: 'utility',
     templateContent: {
@@ -185,7 +196,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 4,
-    title: 'Order Shipped (Utility)',
+    title: 'Order Shipped',
     dataAiHint: 'Inform a customer their order #ABC12345 has shipped and provide tracking link XYZ.',
     messageType: 'utility',
     templateContent: {
@@ -196,7 +207,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 5,
-    title: 'Support Ticket Update (Service)',
+    title: 'Support Ticket Update',
     dataAiHint: 'Provide an update on support ticket #TICKET101, stating the issue is being investigated.',
     messageType: 'service',
     templateContent: {
@@ -207,7 +218,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 6,
-    title: 'Flash Sale (Marketing)',
+    title: 'Flash Sale',
     dataAiHint: 'Announce a 24-hour flash sale with 30% off everything site-wide. Use urgency.',
     messageType: 'marketing',
     templateContent: {
@@ -218,7 +229,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 7,
-    title: 'Password Reset (Auth)',
+    title: 'Password Reset',
     dataAiHint: 'User requested a password reset. Provide a secure link to reset.',
     messageType: 'authentication',
     templateContent: {
@@ -229,7 +240,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
    {
     id: 8,
-    title: 'Service Maintenance (Utility)',
+    title: 'Service Maintenance',
     dataAiHint: 'Inform users about upcoming scheduled maintenance for our app tonight from 2 AM to 4 AM. Mention service might be temporarily unavailable.',
     messageType: 'utility',
     templateContent: {
@@ -240,7 +251,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 9,
-    title: 'Webinar Invitation (Marketing)',
+    title: 'Webinar Invitation',
     dataAiHint: 'Invite users to an upcoming webinar on AI in marketing. Mention date, time, and a key benefit.',
     messageType: 'marketing',
     templateContent: {
@@ -251,7 +262,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 10,
-    title: 'Contest/Giveaway (Marketing)',
+    title: 'Contest/Giveaway',
     dataAiHint: 'Announce a new contest to win a {{Prize}}. Ask users to {{ActionToEnter}}, e.g., share a post or tag friends.',
     messageType: 'marketing',
     templateContent: {
@@ -262,7 +273,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 11,
-    title: 'Feedback Request (Marketing)',
+    title: 'Feedback Request',
     dataAiHint: "Ask a customer for feedback on their recent purchase of {{ProductName}}. Offer a small incentive like 10% off.",
     messageType: 'marketing',
     templateContent: {
@@ -273,7 +284,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 12,
-    title: 'Seasonal Sale (Marketing)',
+    title: 'Seasonal Sale',
     dataAiHint: 'Announce a Summer Sale with up to 50% off selected items. Create urgency.',
     messageType: 'marketing',
     templateContent: {
@@ -284,7 +295,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 13,
-    title: 'Account Verification (Auth)',
+    title: 'Account Verification',
     dataAiHint: 'Send an account verification link to a new user {{UserName}} to activate their {{AppName}} account.',
     messageType: 'authentication',
     templateContent: {
@@ -295,7 +306,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 14,
-    title: 'New Device Login Alert (Auth)',
+    title: 'New Device Login Alert',
     dataAiHint: 'Alert user {{UserName}} about a login to their {{AppName}} account from a new device/location {{DeviceLocation}} at {{Time}}. Provide options if it was not them.',
     messageType: 'authentication',
     templateContent: {
@@ -306,7 +317,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 15,
-    title: 'Order Confirmation (Utility)',
+    title: 'Order Confirmation',
     dataAiHint: "Confirm customer {{CustomerName}}'s order #{{OrderID}} for {{TotalAmount}}. Mention expected delivery window {{DeliveryWindow}}.",
     messageType: 'utility',
     templateContent: {
@@ -317,7 +328,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 16,
-    title: 'Subscription Renewal (Utility)',
+    title: 'Subscription Renewal',
     dataAiHint: "Remind user {{UserName}} their {{SubscriptionName}} subscription is renewing on {{RenewalDate}} for {{RenewalAmount}}.",
     messageType: 'utility',
     templateContent: {
@@ -328,7 +339,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 17,
-    title: 'Support Ticket Received (Service)',
+    title: 'Support Ticket Received',
     dataAiHint: "Confirm receipt of {{UserName}}'s support query, provide ticket ID {{TicketID}}, and set {{ResponseTimeEstimate}} for response.",
     messageType: 'service',
     templateContent: {
@@ -339,7 +350,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 18,
-    title: 'Post-Support Feedback (Service)',
+    title: 'Post-Support Feedback',
     dataAiHint: "Ask {{UserName}} for feedback on recently resolved support ticket #{{TicketID}}.",
     messageType: 'service',
     templateContent: {
@@ -350,7 +361,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   },
   {
     id: 19,
-    title: 'New User Welcome (Service)',
+    title: 'New User Welcome',
     dataAiHint: "Welcome new user {{UserName}} to {{AppName}}. Highlight a key feature {{KeyFeatureDescription}} or next step {{ActionableNextStep}}.",
     messageType: 'service',
     templateContent: {
@@ -368,39 +379,32 @@ interface TemplateGalleryProps {
 const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
   const [activeFilter, setActiveFilter] = useState<FilterCategory>("all");
 
-  // Cast the imported array to the correct type for internal use.
-  // The onClick prop will be passed down to each TemplateItem when rendered.
   const allFullTemplates = whatsAppTemplates as TemplateItemProps[];
 
   const filteredTemplates = activeFilter === "all"
     ? allFullTemplates
     : allFullTemplates.filter(template => template.messageType === activeFilter);
 
-  // Logic to duplicate templates for smooth infinite scroll illusion
   let displayTemplates: TemplateItemProps[] = [];
   if (filteredTemplates.length > 0) {
     const base = filteredTemplates;
-    // Ensure at least a minimum number of items for scrolling, e.g., 24, or enough to fill rows
-    while(displayTemplates.length < 24 && base.length > 0) { // Ensure we have enough for a good scroll
+    while(displayTemplates.length < 24 && base.length > 0) { 
         displayTemplates = displayTemplates.concat(base);
     }
-    // Fallback if original list is very short
     if (displayTemplates.length === 0 && base.length > 0) displayTemplates = [...base, ...base, ...base];
-    else if (displayTemplates.length < 8 && displayTemplates.length > 0) { // if less than 8, duplicate to make it appear fuller
+    else if (displayTemplates.length < 8 && displayTemplates.length > 0) { 
         const currentDisplay = [...displayTemplates];
-        while(displayTemplates.length < Math.max(8, currentDisplay.length * 2)) { // ensure at least 8 or double the small amount
+        while(displayTemplates.length < Math.max(8, currentDisplay.length * 2)) { 
             displayTemplates = displayTemplates.concat(currentDisplay);
         }
     }
-    displayTemplates = displayTemplates.slice(0,24); // Cap at 24 for performance
+    displayTemplates = displayTemplates.slice(0,24); 
   }
 
-
-  // Distribute templates into three rows if possible
-  const itemsPerRow = Math.max(1, Math.ceil(displayTemplates.length / 3)); // Ensure at least 1 item per row if templates exist
+  const itemsPerRow = Math.max(1, Math.ceil(displayTemplates.length / 3)); 
   const row1Templates = displayTemplates.slice(0, itemsPerRow);
   const row2Templates = displayTemplates.slice(itemsPerRow, itemsPerRow * 2);
-  const row3Templates = displayTemplates.slice(itemsPerRow * 2, displayTemplates.length); // Use .length for the end slice
+  const row3Templates = displayTemplates.slice(itemsPerRow * 2, displayTemplates.length);
 
   const filterCategories: { label: string; value: FilterCategory; styleType?: MessageType }[] = [
     { label: "All", value: "all" },
@@ -424,19 +428,18 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
             const styles = getTypeColorStyles(category.styleType);
             buttonSpecificClass = styles.filterButtonCategoryClasses;
           } else if (category.value === "all" && !isActive) {
-            // Specific styling for "All" button when inactive
-             buttonSpecificClass = 'border-border text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring shadow-sm';
+             buttonSpecificClass = 'border-border text-foreground hover:bg-gradient-to-r hover:from-slate-100 hover:to-slate-300 hover:text-slate-900 dark:hover:from-slate-700 dark:hover:to-slate-500 dark:hover:text-slate-100 focus-visible:ring-ring shadow-sm';
           }
 
 
           return (
             <Button
               key={category.value}
-              type="button" // Important to prevent form submission if inside a form
+              type="button" 
               variant={isActive ? "default" : "outline"}
               onClick={() => setActiveFilter(category.value)}
               className={cn(
-                "rounded-full px-4 py-1.5 text-sm transition-colors duration-200 ease-in-out",
+                "rounded-full px-4 py-1.5 text-sm transition-all duration-200 ease-in-out", // Ensure transition for all states
                 isActive 
                   ? `bg-[${whatsappColors.mainActiveGreen}] hover:bg-[#0F7A6E] text-white border-[${whatsappColors.mainActiveGreen}] shadow-md`
                   : buttonSpecificClass
@@ -458,5 +461,3 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
 };
 
 export default TemplateGallery;
-
-    
