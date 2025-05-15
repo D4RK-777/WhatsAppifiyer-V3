@@ -20,20 +20,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import TemplateGallery, { type TemplateItemProps } from "./template-gallery";
+import TemplateGallery, { type TemplateItemProps, type MessageType as TemplateMessageType } from "./template-gallery";
 import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
 import { Button } from "@/components/ui/button";
 import { Loader2, Copy } from "lucide-react";
 import PhonePreview from "./phone-preview";
+
+const messageTypesArray = ["marketing", "authentication", "utility", "service"] as const;
 
 const formSchema = z.object({
   yourTextOrIdea: z
@@ -41,7 +36,7 @@ const formSchema = z.object({
     .min(1, "This field cannot be empty.")
     .max(1000, "Input must be 1000 characters or less.")
     .describe("User's text to convert or an idea for message generation."),
-  messageType: z.enum(["marketing", "authentication", "utility", "service"], {
+  messageType: z.enum(messageTypesArray, {
     required_error: "Please select a message type.",
   }),
   field1: z
@@ -83,7 +78,7 @@ function FormFlowFields() {
 
   const handleTemplateSelect = (template: TemplateItemProps) => {
     form.setValue("yourTextOrIdea", template.dataAiHint, { shouldValidate: true });
-    form.setValue("messageType", template.messageType, { shouldValidate: true });
+    form.setValue("messageType", template.messageType as FormValues['messageType'], { shouldValidate: true });
     form.setValue("field1", template.templateContent.field1 || "", { shouldValidate: true });
     form.setValue("field2", template.templateContent.field2 || "", { shouldValidate: true });
     form.setValue("field3", template.templateContent.field3 || "", { shouldValidate: true });
@@ -171,6 +166,8 @@ function FormFlowFields() {
     }
   };
 
+  // This onSubmit is not strictly necessary if the primary action is AI suggestions and copying.
+  // Kept for potential future use or if there's a scenario to submit the whole form.
   const onSubmit = (values: FormValues) => {
     console.log("Form data (WhatsAppified variations):", values);
     const selectedValue = selectedVariation ? values[selectedVariation] : "No variation selected";
@@ -213,19 +210,21 @@ function FormFlowFields() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-lg font-semibold text-foreground">Message Type</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || undefined} >
-                    <FormControl>
-                      <SelectTrigger className="rounded-md shadow-sm text-base focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]">
-                        <SelectValue placeholder="Select a message type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="marketing">Marketing</SelectItem>
-                      <SelectItem value="authentication">Authentication</SelectItem>
-                      <SelectItem value="utility">Utility</SelectItem>
-                      <SelectItem value="service">Service</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {messageTypesArray.map((type) => (
+                        <Button
+                          key={type}
+                          type="button" // Important to prevent form submission
+                          variant={field.value === type ? "default" : "outline"}
+                          onClick={() => field.onChange(type)}
+                          className="capitalize flex-grow sm:flex-grow-0" // Grow on small screens, not on larger
+                        >
+                          {type}
+                        </Button>
+                      ))}
+                    </div>
+                  </FormControl>
                   <FormDescription className="text-sm text-muted-foreground">
                     Select the primary purpose of your WhatsApp message.
                   </FormDescription>
@@ -264,7 +263,7 @@ function FormFlowFields() {
                       <div
                         className={cn(
                           "w-full p-0.5 rounded-[44px] transition-all cursor-pointer",
-                          selectedVariation === fieldName ? "shadow-lg" : "" // Removed ring, kept shadow for selection
+                          selectedVariation === fieldName ? "shadow-lg" : "" 
                         )}
                         onClick={() => setSelectedVariation(fieldName)}
                         role="button"
