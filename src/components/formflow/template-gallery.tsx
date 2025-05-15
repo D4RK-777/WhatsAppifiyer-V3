@@ -11,60 +11,68 @@ type FilterCategory = "all" | MessageType;
 export interface TemplateItemProps {
   id: number;
   title: string;
-  dataAiHint: string; 
+  dataAiHint: string;
   messageType: MessageType;
-  templateContent: { 
-    field1?: string; 
-    field2?: string; 
-    field3?: string; 
+  templateContent: {
+    field1?: string;
+    field2?: string;
+    field3?: string;
   };
   onClick: (template: TemplateItemProps) => void;
 }
 
 interface TypeColorStyle {
-  borderClasses: string; 
-  textHeaderClass: string; 
-  cardBackgroundClass: string; 
-  filterButtonCategoryClasses: string; 
+  borderClasses: string;
+  textHeaderClass: string;
+  cardBackgroundClass: string;
+  filterButtonCategoryClasses: string;
 }
 
-const whatsappGreyCardBackground = 'bg-slate-100 dark:bg-slate-800';
+// WhatsApp Color Palette
+const whatsappColors = {
+  mainActiveGreen: '#128C7E',
+  brightGreenMarketing: '#25D366',
+  lightBlueAuthUtility: '#34B7F1',
+  lightBeigeCardBgLight: '#ECE5DD',
+  darkTealHeaderLight: '#075E54',
+  lightGreenPreviewBg: '#DCF8C6',
+  darkCardBg: '#131C21', // Example dark WhatsApp background
+  darkHeaderText: '#9ADBC4', // Lighter teal for dark mode header
+  neutralServiceGrey: 'slate-400', // For Service type accents
+  darkServiceGrey: 'slate-500',
+};
 
 const getTypeColorStyles = (type: MessageType): TypeColorStyle => {
+  // Note: A true dynamic dark mode check (isDark) inside this function without access to theme context
+  // or window object (if prerendered) can be tricky. For simplicity, we'll use Tailwind's dark: prefix.
   switch (type) {
     case 'marketing':
       return {
-        borderClasses: 'border-green-400 hover:border-green-500 focus-visible:ring-green-500',
-        textHeaderClass: 'text-green-700 dark:text-green-500',
-        cardBackgroundClass: whatsappGreyCardBackground,
-        filterButtonCategoryClasses: 'border-green-400 text-green-700 dark:text-green-500 hover:bg-green-100 dark:hover:bg-green-800/40 hover:text-green-700 dark:hover:text-green-300 focus-visible:ring-green-500 shadow-sm',
+        borderClasses: `border-[${whatsappColors.brightGreenMarketing}] hover:border-[#1FAF54] focus-visible:ring-[${whatsappColors.brightGreenMarketing}]`,
+        textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderText}]`,
+        cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
+        filterButtonCategoryClasses: `border-[${whatsappColors.brightGreenMarketing}] text-[${whatsappColors.brightGreenMarketing}] hover:bg-[${whatsappColors.brightGreenMarketing}]/10 dark:text-[${whatsappColors.brightGreenMarketing}] dark:hover:bg-[${whatsappColors.brightGreenMarketing}]/20 focus-visible:ring-[${whatsappColors.brightGreenMarketing}] shadow-sm`,
       };
     case 'service':
       return {
-        borderClasses: 'border-yellow-400 hover:border-yellow-500 focus-visible:ring-yellow-500',
-        textHeaderClass: 'text-yellow-600 dark:text-yellow-400',
-        cardBackgroundClass: whatsappGreyCardBackground,
-        filterButtonCategoryClasses: 'border-yellow-400 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-800/40 hover:text-yellow-700 dark:hover:text-yellow-300 focus-visible:ring-yellow-500 shadow-sm',
+        borderClasses: `border-${whatsappColors.neutralServiceGrey} hover:border-${whatsappColors.darkServiceGrey} focus-visible:ring-${whatsappColors.darkServiceGrey}`,
+        textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderText}]`,
+        cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
+        filterButtonCategoryClasses: `border-${whatsappColors.neutralServiceGrey} text-${whatsappColors.neutralServiceGrey} hover:bg-${whatsappColors.neutralServiceGrey}/10 dark:text-${whatsappColors.darkServiceGrey} dark:hover:bg-${whatsappColors.darkServiceGrey}/20 focus-visible:ring-${whatsappColors.darkServiceGrey} shadow-sm`,
       };
     case 'authentication':
-      return {
-        borderClasses: 'border-orange-400 hover:border-orange-500 focus-visible:ring-orange-500',
-        textHeaderClass: 'text-orange-700 dark:text-orange-500',
-        cardBackgroundClass: whatsappGreyCardBackground,
-        filterButtonCategoryClasses: 'border-orange-400 text-orange-700 dark:text-orange-500 hover:bg-orange-100 dark:hover:bg-orange-800/40 hover:text-orange-700 dark:hover:text-orange-300 focus-visible:ring-orange-500 shadow-sm',
-      };
     case 'utility':
       return {
-        borderClasses: 'border-blue-400 hover:border-blue-500 focus-visible:ring-blue-500',
-        textHeaderClass: 'text-blue-700 dark:text-blue-500',
-        cardBackgroundClass: whatsappGreyCardBackground,
-        filterButtonCategoryClasses: 'border-blue-400 text-blue-700 dark:text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-800/40 hover:text-blue-700 dark:hover:text-blue-300 focus-visible:ring-blue-500 shadow-sm',
+        borderClasses: `border-[${whatsappColors.lightBlueAuthUtility}] hover:border-[#2AA3D9] focus-visible:ring-[${whatsappColors.lightBlueAuthUtility}]`,
+        textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderText}]`,
+        cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
+        filterButtonCategoryClasses: `border-[${whatsappColors.lightBlueAuthUtility}] text-[${whatsappColors.lightBlueAuthUtility}] hover:bg-[${whatsappColors.lightBlueAuthUtility}]/10 dark:text-[${whatsappColors.lightBlueAuthUtility}] dark:hover:bg-[${whatsappColors.lightBlueAuthUtility}]/20 focus-visible:ring-[${whatsappColors.lightBlueAuthUtility}] shadow-sm`,
       };
-    default: 
+    default: // Should not happen if types are correct
       return {
         borderClasses: 'border-border hover:border-primary focus-visible:ring-ring',
-        textHeaderClass: 'text-primary',
-        cardBackgroundClass: whatsappGreyCardBackground,
+        textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderText}]`,
+        cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
         filterButtonCategoryClasses: 'hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring shadow-sm',
       };
   }
@@ -78,7 +86,7 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
   return (
     <div
       className={cn(
-        "flex-shrink-0 w-48 h-auto min-h-[9rem] border-2 rounded-lg shadow-lg p-2 mx-3 flex flex-col items-start justify-start hover:shadow-xl transition-all duration-300 cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "flex-shrink-0 w-48 h-auto min-h-[9rem] border-2 rounded-lg shadow-md p-2 mx-3 flex flex-col items-start justify-start hover:shadow-xl transition-all duration-300 cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         borderClasses,
         cardBackgroundClass
       )}
@@ -87,12 +95,12 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
       tabIndex={0}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClick(props);}}
       aria-label={`Select ${title} template`}
-      data-ai-hint={dataAiHint.split(' ').slice(0, 2).join(' ')} 
+      data-ai-hint={dataAiHint.split(' ').slice(0, 2).join(' ')}
     >
       <p className={cn("text-xs font-semibold mb-1 truncate w-full", textHeaderClass)}>
         {title}
       </p>
-      <div 
+      <div
         className="w-full h-20 bg-[#DCF8C6] p-2 rounded-md overflow-hidden text-xs text-zinc-800 whitespace-pre-line"
         style={{ WebkitLineClamp: 5, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}
       >
@@ -111,15 +119,15 @@ interface TemplateRowProps {
 
 const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', speed = '30s', onTemplateClick }) => {
   const duplicatedTemplates = templates.length > 0 ? [...templates, ...templates, ...templates] : [];
-  
+
   if (duplicatedTemplates.length === 0) return null;
 
   const animationClass = direction === 'left' ? 'animate-scroll-left' : 'animate-scroll-right';
 
   return (
     <div className="overflow-hidden w-full my-3">
-      <div 
-        className={`flex ${animationClass}`} 
+      <div
+        className={`flex ${animationClass}`}
         style={{ animationDuration: speed }}
       >
         {duplicatedTemplates.map((template, index) => (
@@ -351,25 +359,26 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
 
   const allFullTemplates = whatsAppTemplates as TemplateItemProps[];
 
-  const filteredTemplates = activeFilter === "all" 
-    ? allFullTemplates 
+  const filteredTemplates = activeFilter === "all"
+    ? allFullTemplates
     : allFullTemplates.filter(template => template.messageType === activeFilter);
-  
+
   let displayTemplates: TemplateItemProps[] = [];
   if (filteredTemplates.length > 0) {
-    const base = filteredTemplates; 
-    while(displayTemplates.length < 24 && base.length > 0) { 
+    const base = filteredTemplates;
+    while(displayTemplates.length < 24 && base.length > 0) {
         displayTemplates = displayTemplates.concat(base);
     }
-    if (displayTemplates.length === 0 && base.length > 0) displayTemplates = [...base, ...base, ...base]; 
-    else if (displayTemplates.length < 8 && displayTemplates.length > 0) { 
+    if (displayTemplates.length === 0 && base.length > 0) displayTemplates = [...base, ...base, ...base];
+    else if (displayTemplates.length < 8 && displayTemplates.length > 0) {
         const currentDisplay = [...displayTemplates];
-        while(displayTemplates.length < Math.max(8, currentDisplay.length * 2)) { 
+        while(displayTemplates.length < Math.max(8, currentDisplay.length * 2)) {
             displayTemplates = displayTemplates.concat(currentDisplay);
         }
     }
     displayTemplates = displayTemplates.slice(0,24);
   }
+
 
   const itemsPerRow = Math.max(1, Math.ceil(displayTemplates.length / 3));
   const row1Templates = displayTemplates.slice(0, itemsPerRow);
@@ -393,24 +402,25 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
         {filterCategories.map(category => {
           const isActive = activeFilter === category.value;
           let buttonSpecificClass = "";
+          const styles = category.styleType ? getTypeColorStyles(category.styleType) : getTypeColorStyles('marketing'); // Default to one for 'all' or safety
 
           if (!isActive && category.styleType) {
-            const styles = getTypeColorStyles(category.styleType);
             buttonSpecificClass = styles.filterButtonCategoryClasses;
           } else if (!isActive && category.value === "all") {
-            buttonSpecificClass = "hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring shadow-sm";
+             // "All" button hover uses default accent
+            buttonSpecificClass = 'border-border text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring shadow-sm';
           }
-          
+
           return (
             <Button
               key={category.value}
-              type="button" 
+              type="button"
               variant={isActive ? "default" : "outline"}
               onClick={() => setActiveFilter(category.value)}
               className={cn(
                 "rounded-full px-4 py-1.5 text-sm",
                 buttonSpecificClass,
-                isActive && "shadow-md" 
+                isActive && `shadow-md bg-[${whatsappColors.mainActiveGreen}] hover:bg-[#0F7A6E] text-white border-[${whatsappColors.mainActiveGreen}]`
               )}
             >
               {category.label}
@@ -429,9 +439,3 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
 };
 
 export default TemplateGallery;
-
-    
-
-    
-
-    
