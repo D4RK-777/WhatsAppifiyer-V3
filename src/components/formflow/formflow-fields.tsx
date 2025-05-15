@@ -253,7 +253,7 @@ function FormFlowFields() {
               name="yourTextOrIdea"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-lg font-semibold">Your Text / Message Idea</FormLabel>
+                  {/* FormLabel removed as per user request */}
                   <FormControl>
                     <Textarea
                       placeholder="Paste your SMS or text here, or describe your message idea (e.g., 'Weekend sale announcement for shoes'). You can also select a template below."
