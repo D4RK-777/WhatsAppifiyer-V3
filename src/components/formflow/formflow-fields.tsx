@@ -2,7 +2,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
@@ -32,9 +32,10 @@ const messageTypesArray = ["marketing", "authentication", "utility", "service"] 
 const formSchema = z.object({
   yourTextOrIdea: z
     .string()
-    .min(1, "This field cannot be empty.")
+    .min(1, "This field cannot be empty if you want AI suggestions.")
     .max(1000, "Input must be 1000 characters or less.")
-    .describe("User's text to convert or an idea for message generation."),
+    .describe("User's text to convert or an idea for message generation.")
+    .optional(), // Made optional to allow form submission without it if not getting AI suggestions
   messageType: z.enum(messageTypesArray, {
     required_error: "Please select a message type.",
   }),
@@ -58,6 +59,13 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 type VariationFieldName = 'field1' | 'field2' | 'field3';
 
+const placeholderTips = [
+  "Paste your plain SMS or text here...",
+  "Or describe your message idea (e.g., 'Weekend sale for shoes')...",
+  "Need inspiration? Select a template below!",
+  "The AI will transform your input into 3 WhatsApp variations.",
+  "Remember to choose a message type for best results!"
+];
 
 function FormFlowFields() {
   const { toast } = useToast();
@@ -65,6 +73,11 @@ function FormFlowFields() {
   const [hoveredVariation, setHoveredVariation] = useState<VariationFieldName | null>(null);
   const [regeneratingField, setRegeneratingField] = useState<VariationFieldName | null>(null);
 
+  const [animatedPlaceholder, setAnimatedPlaceholder] = useState("");
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [charIndex, setCharIndex] = useState(0);
+  const typewriterTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -76,6 +89,55 @@ function FormFlowFields() {
       field3: "",
     },
   });
+
+  const currentYourTextOrIdea = form.watch("yourTextOrIdea");
+
+  useEffect(() => {
+    const typingSpeed = 100;
+    const deletingSpeed = 50;
+    const pauseDuration = 2000;
+
+    const handleTypewriter = () => {
+      if (currentYourTextOrIdea && currentYourTextOrIdea.length > 0) {
+        // If user has typed something, stop the animation by not setting a new timeout.
+        // The actual placeholder attribute of the textarea will be empty if there's user input.
+        if (animatedPlaceholder !== "") setAnimatedPlaceholder(""); // Clear our animated placeholder
+        return;
+      }
+
+      const currentTip = placeholderTips[currentTipIndex];
+      if (isDeleting) {
+        if (charIndex > 0) {
+          setAnimatedPlaceholder(currentTip.substring(0, charIndex - 1));
+          setCharIndex(charIndex - 1);
+          typewriterTimeoutRef.current = setTimeout(handleTypewriter, deletingSpeed);
+        } else {
+          setIsDeleting(false);
+          setCurrentTipIndex((prevIndex) => (prevIndex + 1) % placeholderTips.length);
+          // charIndex is already 0
+          typewriterTimeoutRef.current = setTimeout(handleTypewriter, pauseDuration / 2);
+        }
+      } else { // Typing
+        if (charIndex < currentTip.length) {
+          setAnimatedPlaceholder(currentTip.substring(0, charIndex + 1));
+          setCharIndex(charIndex + 1);
+          typewriterTimeoutRef.current = setTimeout(handleTypewriter, typingSpeed);
+        } else {
+          setIsDeleting(true);
+          typewriterTimeoutRef.current = setTimeout(handleTypewriter, pauseDuration);
+        }
+      }
+    };
+
+    typewriterTimeoutRef.current = setTimeout(handleTypewriter, isDeleting ? deletingSpeed : typingSpeed);
+
+    return () => {
+      if (typewriterTimeoutRef.current) {
+        clearTimeout(typewriterTimeoutRef.current);
+      }
+    };
+  }, [charIndex, isDeleting, currentTipIndex, currentYourTextOrIdea, animatedPlaceholder]);
+
 
   const handleTemplateSelect = (template: TemplateItemProps) => {
     form.setValue("yourTextOrIdea", template.dataAiHint, { shouldValidate: true });
@@ -93,7 +155,7 @@ function FormFlowFields() {
     const { yourTextOrIdea, messageType, field1, field2, field3 } = form.getValues();
     
     let hasError = false;
-    if (!yourTextOrIdea.trim()) {
+    if (!yourTextOrIdea || !yourTextOrIdea.trim()) {
       form.setError("yourTextOrIdea", { type: "manual", message: "Please provide your text or an idea." });
       hasError = true;
     } else {
@@ -112,7 +174,7 @@ function FormFlowFields() {
     setIsLoadingSuggestions(true);
     try {
       const suggestionsInput: SuggestFormFieldsInput = {
-        context: yourTextOrIdea,
+        context: yourTextOrIdea || "", // Ensure context is not undefined
         messageType,
         field1: field1 || "", 
         field2: field2 || "",
@@ -176,7 +238,7 @@ function FormFlowFields() {
   const handleRegenerate = async (fieldName: VariationFieldName) => {
     const { yourTextOrIdea, messageType } = form.getValues();
 
-    if (!yourTextOrIdea.trim()) {
+    if (!yourTextOrIdea || !yourTextOrIdea.trim()) {
       form.setError("yourTextOrIdea", { type: "manual", message: "Please provide your text or an idea first." });
       toast({ title: "Input Missing", description: "Please provide your text or an idea before regenerating.", variant: "destructive" });
       return;
@@ -193,14 +255,10 @@ function FormFlowFields() {
 
     setRegeneratingField(fieldName);
     try {
-      // For regeneration, we get all three new suggestions
-      // and pick the one corresponding to the field being regenerated.
       const suggestionsInput: SuggestFormFieldsInput = {
         context: yourTextOrIdea,
         messageType,
-        // We could pass current values here to guide the AI, but for simplicity
-        // let's get three completely fresh ones and pick one.
-        field1: fieldName === 'field1' ? form.getValues().field1 : "",
+        field1: fieldName === 'field1' ? form.getValues().field1 : "", // Pass current value if regenerating this one
         field2: fieldName === 'field2' ? form.getValues().field2 : "",
         field3: fieldName === 'field3' ? form.getValues().field3 : "",
       };
@@ -222,12 +280,11 @@ function FormFlowFields() {
     }
   };
 
-
   const onSubmit = (values: FormValues) => {
     console.log("Form data (WhatsAppified variations):", values);
     toast({
       title: "Form Data Logged",
-      description: `Current variations logged to console.`,
+      description: `Current variations logged to console. You would typically send this data to a backend.`,
     });
   };
 
@@ -243,7 +300,7 @@ function FormFlowFields() {
                 <FormItem id="tour-target-input-area">
                   <FormControl>
                     <Textarea
-                      placeholder="Paste your SMS or text here, or describe your message idea (e.g., 'Weekend sale announcement for shoes'). You can also select a template below."
+                      placeholder={animatedPlaceholder}
                       className="resize-none rounded-md text-base shadow-[0_0_5px_hsl(var(--accent)_/_0.4)] focus-visible:ring-0 focus-visible:shadow-[0_0_12px_hsl(var(--accent)_/_0.75)] transition-shadow duration-200 ease-in-out"
                       rows={8}
                       {...field}
@@ -399,6 +456,3 @@ export default FormFlowFields;
     
 
     
-
-
-
