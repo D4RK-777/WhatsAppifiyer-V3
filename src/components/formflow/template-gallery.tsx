@@ -31,17 +31,18 @@ interface TypeColorStyle {
 
 // WhatsApp Color Palette
 const whatsappColors = {
-  mainActiveGreen: '#128C7E', // Main Active Green (for active filter button)
+  mainActiveGreen: '#128C7E', 
   
   brightGreenMarketing: '#25D366', 
-  lightGreenMarketingFrom: '#86EFAC', 
-  textOnBrightGreenMarketing: 'text-green-950', // For text on lighter green gradient hover
-  darkTextOnGreenGradient: 'text-green-950', // For text on the darker green gradient button
+  lightGreenMarketingFrom: '#86EFAC', // Lighter shade for gradient start
+  textOnBrightGreenMarketing: 'text-green-950', // Darker text for on-green gradient
+  darkTextOnGreenGradient: 'text-green-50', // Lighter text for dark mode on-green gradient
 
   lightBlueAuthUtility: '#34B7F1', 
-  lightBlueAuthUtilityFrom: '#93C5FD', 
-  textOnLightBlueAuthUtility: 'text-blue-950', // For text on lighter blue gradient hover
-
+  lightBlueAuthUtilityFrom: '#93C5FD', // Lighter shade for gradient start
+  textOnLightBlueAuthUtility: 'text-blue-950', // Darker text for on-blue gradient
+  darkTextOnBlueGradient: 'text-blue-50', // Lighter text for dark mode on-blue gradient
+  
   lightBeigeCardBgLight: '#ECE5DD', 
   darkCardBg: '#131C21', 
 
@@ -50,10 +51,9 @@ const whatsappColors = {
   
   lightGreenPreviewBg: '#DCF8C6', 
 
-  // For Service (using Tailwind classes for simplicity with neutral greys)
-  neutralServiceGrey: 'slate-400', 
+  neutralServiceGrey: 'slate-500', // Slightly darker for better visibility
   lightServiceGreyFrom: 'slate-300', 
-  darkServiceGrey: 'slate-500',     
+  darkServiceGrey: 'slate-400', // Adjusted for dark mode consistency
   darkLightServiceGreyFrom: 'slate-600', 
   textOnNeutralServiceGrey: 'text-slate-900',
   darkTextOnNeutralServiceGrey: 'text-slate-100'
@@ -66,7 +66,7 @@ const getTypeColorStyles = (type: MessageType): TypeColorStyle => {
         borderClasses: `border-[${whatsappColors.brightGreenMarketing}] hover:border-[${whatsappColors.brightGreenMarketing}] focus-visible:ring-[${whatsappColors.brightGreenMarketing}]`,
         textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderTextDark}]`,
         cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
-        filterButtonCategoryClasses: `border-[${whatsappColors.brightGreenMarketing}] text-[${whatsappColors.brightGreenMarketing}] dark:text-[${whatsappColors.brightGreenMarketing}] hover:bg-gradient-to-r hover:from-[${whatsappColors.lightGreenMarketingFrom}] hover:to-[${whatsappColors.brightGreenMarketing}] hover:text-${whatsappColors.textOnBrightGreenMarketing} dark:hover:text-green-50 focus-visible:ring-[${whatsappColors.brightGreenMarketing}] shadow-sm`,
+        filterButtonCategoryClasses: `bg-background border-[${whatsappColors.brightGreenMarketing}] text-[${whatsappColors.brightGreenMarketing}] dark:text-[${whatsappColors.brightGreenMarketing}] hover:bg-gradient-to-r hover:from-[${whatsappColors.lightGreenMarketingFrom}] hover:to-[${whatsappColors.brightGreenMarketing}] hover:text-${whatsappColors.textOnBrightGreenMarketing} dark:hover:text-${whatsappColors.darkTextOnGreenGradient} focus-visible:ring-[${whatsappColors.brightGreenMarketing}] shadow-sm`,
         categoryLabelClass: `text-[${whatsappColors.brightGreenMarketing}]`,
       };
     case 'service':
@@ -74,7 +74,7 @@ const getTypeColorStyles = (type: MessageType): TypeColorStyle => {
         borderClasses: `border-${whatsappColors.neutralServiceGrey} dark:border-${whatsappColors.darkServiceGrey} hover:border-${whatsappColors.darkServiceGrey} dark:hover:border-${whatsappColors.neutralServiceGrey} focus-visible:ring-${whatsappColors.darkServiceGrey}`,
         textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderTextDark}]`,
         cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
-        filterButtonCategoryClasses: `border-${whatsappColors.neutralServiceGrey} text-${whatsappColors.neutralServiceGrey} dark:border-${whatsappColors.darkServiceGrey} dark:text-${whatsappColors.darkServiceGrey} hover:bg-gradient-to-r hover:from-${whatsappColors.lightServiceGreyFrom} hover:to-${whatsappColors.neutralServiceGrey} hover:text-${whatsappColors.textOnNeutralServiceGrey} dark:hover:from-${whatsappColors.darkLightServiceGreyFrom} dark:hover:to-${whatsappColors.darkServiceGrey} dark:hover:text-${whatsappColors.darkTextOnNeutralServiceGrey} focus-visible:ring-${whatsappColors.neutralServiceGrey} dark:focus-visible:ring-${whatsappColors.darkServiceGrey} shadow-sm`,
+        filterButtonCategoryClasses: `bg-background border-${whatsappColors.neutralServiceGrey} text-${whatsappColors.neutralServiceGrey} dark:border-${whatsappColors.darkServiceGrey} dark:text-${whatsappColors.darkServiceGrey} hover:bg-gradient-to-r hover:from-${whatsappColors.lightServiceGreyFrom} hover:to-${whatsappColors.neutralServiceGrey} hover:text-${whatsappColors.textOnNeutralServiceGrey} dark:hover:from-${whatsappColors.darkLightServiceGreyFrom} dark:hover:to-${whatsappColors.darkServiceGrey} dark:hover:text-${whatsappColors.darkTextOnNeutralServiceGrey} focus-visible:ring-${whatsappColors.neutralServiceGrey} dark:focus-visible:ring-${whatsappColors.darkServiceGrey} shadow-sm`,
         categoryLabelClass: `text-${whatsappColors.neutralServiceGrey} dark:text-${whatsappColors.darkServiceGrey}`,
       };
     case 'authentication':
@@ -83,7 +83,7 @@ const getTypeColorStyles = (type: MessageType): TypeColorStyle => {
         borderClasses: `border-[${whatsappColors.lightBlueAuthUtility}] hover:border-[${whatsappColors.lightBlueAuthUtility}] focus-visible:ring-[${whatsappColors.lightBlueAuthUtility}]`,
         textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderTextDark}]`,
         cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
-        filterButtonCategoryClasses: `border-[${whatsappColors.lightBlueAuthUtility}] text-[${whatsappColors.lightBlueAuthUtility}] dark:text-[${whatsappColors.lightBlueAuthUtility}] hover:bg-gradient-to-r hover:from-[${whatsappColors.lightBlueAuthUtilityFrom}] hover:to-[${whatsappColors.lightBlueAuthUtility}] hover:text-${whatsappColors.textOnLightBlueAuthUtility} dark:hover:text-blue-50 focus-visible:ring-[${whatsappColors.lightBlueAuthUtility}] shadow-sm`,
+        filterButtonCategoryClasses: `bg-background border-[${whatsappColors.lightBlueAuthUtility}] text-[${whatsappColors.lightBlueAuthUtility}] dark:text-[${whatsappColors.lightBlueAuthUtility}] hover:bg-gradient-to-r hover:from-[${whatsappColors.lightBlueAuthUtilityFrom}] hover:to-[${whatsappColors.lightBlueAuthUtility}] hover:text-${whatsappColors.textOnLightBlueAuthUtility} dark:hover:text-${whatsappColors.darkTextOnBlueGradient} focus-visible:ring-[${whatsappColors.lightBlueAuthUtility}] shadow-sm`,
         categoryLabelClass: `text-[${whatsappColors.lightBlueAuthUtility}]`,
       };
     default: 
@@ -91,8 +91,8 @@ const getTypeColorStyles = (type: MessageType): TypeColorStyle => {
         borderClasses: 'border-border hover:border-primary focus-visible:ring-ring',
         textHeaderClass: `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderTextDark}]`,
         cardBackgroundClass: `bg-[${whatsappColors.lightBeigeCardBgLight}] dark:bg-[${whatsappColors.darkCardBg}]`,
-        filterButtonCategoryClasses: 'border-border text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring shadow-sm', 
-        categoryLabelClass: 'text-foreground', // Default for "All" or unspecified
+        filterButtonCategoryClasses: 'bg-background border-border text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring shadow-sm', 
+        categoryLabelClass: 'text-foreground',
       };
   }
 };
@@ -114,7 +114,7 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
       tabIndex={0}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClick(props);}}
       aria-label={`Select ${title} template`}
-      data-ai-hint={dataAiHint.split(' ').slice(0, 2).join(' ')} // For image search hint
+      data-ai-hint={dataAiHint.split(' ').slice(0, 2).join(' ')}
     >
       <p className={cn("text-[0.6rem] font-bold uppercase tracking-wider mb-0.5", categoryLabelClass)}>
         {messageType}
@@ -424,22 +424,22 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
           const isActive = activeFilter === category.value;
           let buttonSpecificClass = "";
           
-          if (category.styleType) {
-            const styles = getTypeColorStyles(category.styleType);
-            buttonSpecificClass = styles.filterButtonCategoryClasses;
-          } else if (category.value === "all" && !isActive) {
-             buttonSpecificClass = 'border-border text-foreground hover:bg-gradient-to-r hover:from-slate-100 hover:to-slate-300 hover:text-slate-900 dark:hover:from-slate-700 dark:hover:to-slate-500 dark:hover:text-slate-100 focus-visible:ring-ring shadow-sm';
+          if (!isActive) {
+            if (category.styleType) {
+              const styles = getTypeColorStyles(category.styleType);
+              buttonSpecificClass = styles.filterButtonCategoryClasses;
+            } else if (category.value === "all") {
+               buttonSpecificClass = `bg-background border-border text-foreground hover:bg-gradient-to-r hover:from-slate-100 hover:to-slate-300 hover:text-slate-900 dark:hover:from-slate-700 dark:hover:to-slate-500 dark:hover:text-slate-100 focus-visible:ring-ring shadow-sm`;
+            }
           }
-
 
           return (
             <Button
               key={category.value}
               type="button" 
-              variant={isActive ? "default" : "outline"}
               onClick={() => setActiveFilter(category.value)}
               className={cn(
-                "rounded-full px-4 py-1.5 text-sm transition-all duration-200 ease-in-out", // Ensure transition for all states
+                "rounded-full px-4 py-1.5 text-sm transition-all duration-200 ease-in-out",
                 isActive 
                   ? `bg-[${whatsappColors.mainActiveGreen}] hover:bg-[#0F7A6E] text-white border-[${whatsappColors.mainActiveGreen}] shadow-md`
                   : buttonSpecificClass
@@ -461,3 +461,6 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
 };
 
 export default TemplateGallery;
+
+
+    
