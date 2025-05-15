@@ -137,7 +137,7 @@ const WhatsAppMessagePreview = ({ content }: { content: string | undefined }) =>
             AI-generated WhatsApp message variation will appear here.
           </div>
         ) : (
-          <div className="w-full"> {/* Wrapper to ensure content flows correctly */}
+          <div className="w-full leading-snug"> {/* Added leading-snug for tighter line spacing */}
             {formattedNodes}
           </div>
         )}
@@ -267,8 +267,8 @@ function FormFlowFields() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <Card className="shadow-xl rounded-xl bg-card p-6"> {/* Added p-6 here as CardHeader used to provide padding */}
-          <CardContent className="space-y-6 p-0"> {/* Removed CardContent's default p-6 and pt-0 */}
+        <Card className="shadow-xl rounded-xl bg-card p-6">
+          <CardContent className="space-y-6 p-0">
             <FormField
               control={form.control}
               name="yourTextOrIdea"
@@ -395,3 +395,4 @@ function FormFlowFields() {
 export default FormFlowFields;
 
     
+
