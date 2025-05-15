@@ -25,7 +25,7 @@ import { useToast } from "@/hooks/use-toast";
 import TemplateGallery, { type TemplateItemProps } from "./template-gallery";
 import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
 import { Button } from "@/components/ui/button";
-import { Loader2, Copy, Sparkles } from "lucide-react"; // Added Sparkles
+import { Loader2, Copy, Sparkles } from "lucide-react"; 
 import PhonePreview from "./phone-preview";
 
 const messageTypesArray = ["marketing", "authentication", "utility", "service"] as const;
@@ -232,25 +232,25 @@ function FormFlowFields() {
                 onClick={handleGetSuggestions}
                 disabled={isLoadingSuggestions}
                 className={cn(
-                  "w-full", // Takes full width of its container
-                  "relative overflow-hidden", // For positioning pseudo-elements and containing animations
-                  "bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900", // Dark gradient background
-                  "text-slate-100", // Light text color
-                  "border border-purple-700", // Purple border
-                  "hover:border-purple-500", // Border color changes on hover
-                  "hover:from-indigo-900 hover:via-purple-800 hover:to-slate-800 hover:text-white", // Gradient shifts and text to white on hover
-                  "focus-visible:ring-purple-400", // Purple focus ring
-                  "galaxy-stars-effect", // Custom animation class
-                  !isLoadingSuggestions && "animate-sparkle-icon", // Conditional class for sparkle animation on icon
-                  "px-6 py-3 text-base rounded-lg" // General padding, text size, rounding
+                  "w-full", 
+                  "relative overflow-hidden", 
+                  "bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900", 
+                  "text-slate-100", 
+                  "border border-purple-700", 
+                  "hover:border-purple-500", 
+                  "hover:from-indigo-900 hover:via-purple-800 hover:to-slate-800 hover:text-white", 
+                  "focus-visible:ring-purple-400", 
+                  "galaxy-stars-effect", 
+                  !isLoadingSuggestions && "animate-sparkle-icon", 
+                  "px-6 py-3 text-base rounded-lg" 
                 )}
               >
                 {isLoadingSuggestions ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
-                  <Sparkles className="mr-2 h-4 w-4" /> // Sparkle icon applied via animate-sparkle-icon CSS
+                  <Sparkles className="mr-2 h-4 w-4" /> 
                 )}
-                Format Beautifully with AI
+                Transform text into something magical
               </Button>
             </div>
             
@@ -265,7 +265,7 @@ function FormFlowFields() {
                       <FormLabel className="font-semibold text-foreground mb-1">WhatsApp Variation {index + 1}</FormLabel>
                       <div
                         className={cn(
-                          "w-full p-0.5 rounded-[44px] transition-all cursor-pointer", // Slightly increased rounding on the wrapper
+                          "w-full p-0.5 rounded-[44px] transition-all cursor-pointer", 
                            selectedVariation === fieldName ? "shadow-lg" : "" 
                         )}
                         onClick={() => setSelectedVariation(fieldName)}
@@ -311,3 +311,4 @@ function FormFlowFields() {
 }
 
 export default FormFlowFields;
+
