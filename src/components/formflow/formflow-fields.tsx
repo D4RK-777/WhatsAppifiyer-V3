@@ -186,7 +186,7 @@ function FormFlowFields() {
               control={form.control}
               name="yourTextOrIdea"
               render={({ field }) => (
-                <FormItem>
+                <FormItem id="tour-target-input-area">
                   <FormControl>
                     <Textarea
                       placeholder="Paste your SMS or text here, or describe your message idea (e.g., 'Weekend sale announcement for shoes'). You can also select a template below."
@@ -204,7 +204,7 @@ function FormFlowFields() {
               control={form.control}
               name="messageType"
               render={({ field }) => (
-                <FormItem className="flex flex-col items-center">
+                <FormItem className="flex flex-col items-center" id="tour-target-message-type">
                   <FormLabel className="text-lg font-semibold text-foreground text-center">Select the message type you want to send</FormLabel>
                   <FormControl>
                     <div className="flex flex-wrap gap-2 pt-1 justify-center">
@@ -226,8 +226,9 @@ function FormFlowFields() {
               )}
             />
             
-            <div className="flex justify-center pt-4 pb-2">
+            <div className="flex justify-center pt-4 pb-2" id="tour-target-transform-button-container">
               <Button
+                id="tour-target-transform-button"
                 type="button"
                 onClick={handleGetSuggestions}
                 disabled={isLoadingSuggestions}
@@ -254,7 +255,7 @@ function FormFlowFields() {
               </Button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-2 gap-y-6 pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-2 gap-y-6 pt-4" id="tour-target-variations-area">
               {(['field1', 'field2', 'field3'] as VariationFieldName[]).map((fieldName, index) => (
                 <FormField
                   key={fieldName}
@@ -303,7 +304,9 @@ function FormFlowFields() {
               ))}
             </div>
           </CardContent>
-          <TemplateGallery onTemplateClick={handleTemplateSelect} />
+          <div id="tour-target-template-gallery-container">
+            <TemplateGallery onTemplateClick={handleTemplateSelect} />
+          </div>
         </Card>
       </form>
     </Form>
@@ -311,4 +314,3 @@ function FormFlowFields() {
 }
 
 export default FormFlowFields;
-

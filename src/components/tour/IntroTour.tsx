@@ -13,12 +13,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, CheckCircle, Gift, MessageSquareText, Sparkles, Target, TextCursorInput } from 'lucide-react';
 
-const TOUR_STORAGE_KEY = 'whatsappifyIntroTourSeen';
+const TOUR_STORAGE_KEY = 'whatsappifyIntroTourSeen_v1'; // Added _v1 to potentially reset for users if tour changes significantly
 
 interface TourStep {
   title: string;
   description: React.ReactNode;
   icon?: React.ElementType;
+  targetId?: string; // ID of the element to scroll to
 }
 
 const tourSteps: TourStep[] = [
@@ -31,30 +32,35 @@ const tourSteps: TourStep[] = [
     title: "1. Your Text or Idea",
     description: "Paste your existing SMS, plain text, or simply type an idea for a message in the main text area.",
     icon: TextCursorInput,
+    targetId: "tour-target-input-area",
   },
   {
     title: "2. Select Message Type",
     description: "Choose the type of WhatsApp message you want to create (e.g., Marketing, Utility, etc.). This helps the AI tailor the tone and style.",
     icon: Target,
+    targetId: "tour-target-message-type",
   },
   {
     title: "3. Transform Your Text",
     description: "Click the 'Transform text into something magical' button. Our AI will then generate three distinct WhatsApp message variations for you.",
     icon: Sparkles,
+    targetId: "tour-target-transform-button-container", // Target the container for better visibility
   },
   {
     title: "4. Review Variations & Copy",
     description: "You'll see three phone previews, each showing a different AI-generated variation. Click a preview to select it, then use the 'Copy Variation' button to get the WhatsApp-ready text.",
     icon: MessageSquareText,
+    targetId: "tour-target-variations-area",
   },
   {
     title: "5. Explore Templates",
     description: "Need inspiration or a quick start? Browse our template gallery. Click any template to pre-fill the form with its content and message type.",
     icon: Gift,
+    targetId: "tour-target-template-gallery-container", // Target the container
   },
   {
     title: "You're All Set!",
-    description: "Enjoy creating perfectly formatted WhatsApp messages. You can always find this tour again if needed (future feature).",
+    description: "Enjoy creating perfectly formatted WhatsApp messages!",
     icon: CheckCircle,
   },
 ];
@@ -65,7 +71,7 @@ const IntroTour: React.FC = () => {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true); // Ensure localStorage is only accessed on the client
+    setIsClient(true); 
   }, []);
 
   useEffect(() => {
@@ -76,6 +82,21 @@ const IntroTour: React.FC = () => {
       }
     }
   }, [isClient]);
+
+  useEffect(() => {
+    if (isOpen && isClient) {
+      const step = tourSteps[currentStep];
+      if (step.targetId) {
+        const element = document.getElementById(step.targetId);
+        if (element) {
+          // Timeout to allow dialog to render before scrolling
+          setTimeout(() => {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+          }, 100); // Small delay
+        }
+      }
+    }
+  }, [currentStep, isOpen, isClient]);
 
   const handleNext = () => {
     if (currentStep < tourSteps.length - 1) {
@@ -100,7 +121,7 @@ const IntroTour: React.FC = () => {
   
   const handleSkip = () => {
     setIsOpen(false);
-    setCurrentStep(tourSteps.length -1); // So if they open it again, it's on the last step
+    setCurrentStep(tourSteps.length -1); 
     if (isClient) {
       localStorage.setItem(TOUR_STORAGE_KEY, 'true');
     }
@@ -115,7 +136,7 @@ const IntroTour: React.FC = () => {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => {
       if (!open) {
-        handleSkip(); // If closed via 'x' or overlay click, consider it skipped
+        handleSkip(); 
       }
       setIsOpen(open);
     }}>
