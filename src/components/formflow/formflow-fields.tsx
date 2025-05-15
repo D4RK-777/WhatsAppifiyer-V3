@@ -18,6 +18,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -172,9 +173,6 @@ function FormFlowFields() {
   };
 
   const handleRegenerate = (fieldName: VariationFieldName) => {
-    // Placeholder for actual regeneration logic
-    // This would involve calling the AI again, perhaps with only that field's context
-    // or the original context plus a request for a new variation for that specific field.
     toast({ title: `Regenerate Variation ${fieldName.charAt(fieldName.length - 1)} requested`, description: "This feature is coming soon! (placeholder)." });
   };
 
@@ -313,7 +311,7 @@ function FormFlowFields() {
                             handleCopy(fieldName);
                           }}
                           className={cn(
-                            "w-full",
+                            "w-full shadow-sm", // Added shadow-sm
                             hoveredVariation === fieldName && "ring-2 ring-primary ring-offset-1 ring-offset-background"
                           )}
                           disabled={!field.value}
@@ -322,10 +320,10 @@ function FormFlowFields() {
                           Copy Variation {index + 1}
                         </Button>
                         <div className="flex justify-center space-x-2">
-                          <Button variant="outline" size="icon" onClick={() => handleLike(fieldName)} aria-label={`Like Variation ${index + 1}`}>
+                          <Button variant="outline" size="icon" onClick={() => handleLike(fieldName)} aria-label={`Like Variation ${index + 1}`} className="shadow-sm">
                             <ThumbsUp className="h-4 w-4" />
                           </Button>
-                          <Button variant="outline" size="icon" onClick={() => handleDislike(fieldName)} aria-label={`Dislike Variation ${index + 1}`}>
+                          <Button variant="outline" size="icon" onClick={() => handleDislike(fieldName)} aria-label={`Dislike Variation ${index + 1}`} className="shadow-sm">
                             <ThumbsDown className="h-4 w-4" />
                           </Button>
                         </div>

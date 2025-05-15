@@ -22,10 +22,10 @@ export interface TemplateItemProps {
 }
 
 interface TypeColorStyle {
-  borderClasses: string; // For card border
-  textHeaderClass: string; // For card title
-  cardBackgroundClass: string; // For card background
-  filterButtonCategoryClasses: string; // For non-active outline filter buttons (base and hover)
+  borderClasses: string; 
+  textHeaderClass: string; 
+  cardBackgroundClass: string; 
+  filterButtonCategoryClasses: string; 
 }
 
 const whatsappGreyCardBackground = 'bg-slate-100 dark:bg-slate-800';
@@ -37,35 +37,35 @@ const getTypeColorStyles = (type: MessageType): TypeColorStyle => {
         borderClasses: 'border-green-400 hover:border-green-500 focus-visible:ring-green-500',
         textHeaderClass: 'text-green-700 dark:text-green-500',
         cardBackgroundClass: whatsappGreyCardBackground,
-        filterButtonCategoryClasses: 'border-green-400 text-green-700 dark:text-green-500 hover:bg-green-100 dark:hover:bg-green-800/40 hover:text-green-700 dark:hover:text-green-300 focus-visible:ring-green-500',
+        filterButtonCategoryClasses: 'border-green-400 text-green-700 dark:text-green-500 hover:bg-green-100 dark:hover:bg-green-800/40 hover:text-green-700 dark:hover:text-green-300 focus-visible:ring-green-500 shadow-sm',
       };
     case 'service':
       return {
         borderClasses: 'border-yellow-400 hover:border-yellow-500 focus-visible:ring-yellow-500',
         textHeaderClass: 'text-yellow-600 dark:text-yellow-400',
         cardBackgroundClass: whatsappGreyCardBackground,
-        filterButtonCategoryClasses: 'border-yellow-400 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-800/40 hover:text-yellow-700 dark:hover:text-yellow-300 focus-visible:ring-yellow-500',
+        filterButtonCategoryClasses: 'border-yellow-400 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-800/40 hover:text-yellow-700 dark:hover:text-yellow-300 focus-visible:ring-yellow-500 shadow-sm',
       };
     case 'authentication':
       return {
         borderClasses: 'border-orange-400 hover:border-orange-500 focus-visible:ring-orange-500',
         textHeaderClass: 'text-orange-700 dark:text-orange-500',
         cardBackgroundClass: whatsappGreyCardBackground,
-        filterButtonCategoryClasses: 'border-orange-400 text-orange-700 dark:text-orange-500 hover:bg-orange-100 dark:hover:bg-orange-800/40 hover:text-orange-700 dark:hover:text-orange-300 focus-visible:ring-orange-500',
+        filterButtonCategoryClasses: 'border-orange-400 text-orange-700 dark:text-orange-500 hover:bg-orange-100 dark:hover:bg-orange-800/40 hover:text-orange-700 dark:hover:text-orange-300 focus-visible:ring-orange-500 shadow-sm',
       };
     case 'utility':
       return {
         borderClasses: 'border-blue-400 hover:border-blue-500 focus-visible:ring-blue-500',
         textHeaderClass: 'text-blue-700 dark:text-blue-500',
         cardBackgroundClass: whatsappGreyCardBackground,
-        filterButtonCategoryClasses: 'border-blue-400 text-blue-700 dark:text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-800/40 hover:text-blue-700 dark:hover:text-blue-300 focus-visible:ring-blue-500',
+        filterButtonCategoryClasses: 'border-blue-400 text-blue-700 dark:text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-800/40 hover:text-blue-700 dark:hover:text-blue-300 focus-visible:ring-blue-500 shadow-sm',
       };
-    default: // Should not be reached if types are correct
+    default: 
       return {
         borderClasses: 'border-border hover:border-primary focus-visible:ring-ring',
         textHeaderClass: 'text-primary',
         cardBackgroundClass: whatsappGreyCardBackground,
-        filterButtonCategoryClasses: 'hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring', // Default fallback for filter button
+        filterButtonCategoryClasses: 'hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring shadow-sm',
       };
   }
 };
@@ -137,9 +137,9 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     dataAiHint: 'Announce our new AI-powered chatbot solution with a 20% launch discount for the first 50 customers. Highlight key features: 24/7 availability and natural language understanding.',
     messageType: 'marketing',
     templateContent: {
-      field1: "🚀 *Exciting News!* Our new AI Chatbot is HERE! 🤖\n\nTransform your customer service with 24/7 support & seamless conversations. Be among the *first 50* to get a *20% launch discount!*\n\n👉 Learn more & claim offer: [YourLink]",
-      field2: "🎉 Introducing {{ProductName}}! 🎉\n\nSupercharge your support with our intelligent AI chatbot. Features:\n✅ 24/7 Availability\n✅ Natural Language Processing\n\n✨ Special Launch Offer: *20% OFF* for early birds! ✨\n\n🔗 Explore: [YourLink]",
-      field3: "Get ready for the future of customer interaction! 💬 Our new *AI Chatbot* is now live.\n\nEnjoy round-the-clock assistance and smarter responses.\n\n*Limited Time Offer:* Secure your *20% discount* today!\n\n➡️ Discover: [YourLink]\n\n#AIChatbot #CustomerService #Innovation"
+      field1: "*Namaste!*\n\n🚀 *Exciting News!* Our new AI Chatbot is HERE! 🤖\n\nTransform your customer service with 24/7 support & seamless conversations. Be among the *first 50* to get a *20% launch discount!*\n\n👉 Learn more & claim offer: [YourLink]",
+      field2: "*Hello!*\n\n🎉 Introducing {{ProductName}}! 🎉\n\nSupercharge your support with our intelligent AI chatbot. Features:\n✅ 24/7 Availability\n✅ Natural Language Processing\n\n✨ Special Launch Offer: *20% OFF* for early birds! ✨\n\n🔗 Explore: [YourLink]",
+      field3: "*Greetings!*\n\nGet ready for the future of customer interaction! 💬 Our new *AI Chatbot* is now live.\n\nEnjoy round-the-clock assistance and smarter responses.\n\n*Limited Time Offer:* Secure your *20% discount* today!\n\n➡️ Discover: [YourLink]\n\n#AIChatbot #CustomerService #Innovation"
     }
   },
   {
@@ -160,7 +160,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     messageType: 'utility',
     templateContent: {
       field1: "Hi {{UserName}},\n\n🦷 *Appointment Tomorrow!* 🦷\n\nThis is a reminder for your appointment with *Dr. Smile* tomorrow at *10:00 AM* for a dental check-up.\n\n📍 {{ClinicAddress}}\n\nTo confirm, reply with \"YES\". To reschedule, reply with \"NO\" or call us at {{ClinicPhone}}.",
-      field2: "Hi {{UserName}},\n\n🗓️ *Friendly Reminder: Your Dental Check-up*\n\nHello {{UserName}},\n\nYour appointment with *Dr. Smile* is scheduled for tomorrow, {{Date}}, at *10:00 AM*.\n\nPlease reply *CONFIRM* to this message or call us at {{ClinicPhone}} if you need to reschedule.\n\nLooking forward to seeing your smile! 😊",
+      field2: "Hi {{UserName}},\n\n🗓️ *Friendly Reminder: Your Dental Check-up*\n\nYour appointment with *Dr. Smile* is scheduled for tomorrow, {{Date}}, at *10:00 AM*.\n\nPlease reply *CONFIRM* to this message or call us at {{ClinicPhone}} if you need to reschedule.\n\nLooking forward to seeing your smile! 😊",
       field3: "Hi {{UserName}},\n\n✨ *Just a Quick Heads-Up!* ✨\n\nDon't forget your dental appointment with *Dr. Smile*!\n*Date:* Tomorrow, {{Date}}\n*Time:* 10:00 AM\n*Service:* Dental Check-up\n\nIf you can make it, great! If not, please let us know by replying or calling {{ClinicPhone}}."
     }
   },
@@ -192,9 +192,9 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     dataAiHint: 'Announce a 24-hour flash sale with 30% off everything site-wide. Use urgency.',
     messageType: 'marketing',
     templateContent: {
-      field1: "🚨 *FLASH SALE ALERT!* 🚨\n\nFor *24 HOURS ONLY*, get *30% OFF EVERYTHING* site-wide! 🛍️\n\nDon't miss out on incredible deals!\n\n👉 Shop Now: [YourLink]\n\n_Sale ends {{EndTime}}!_ ⏳",
-      field2: "💥 *HUGE SAVINGS!* 💥\n\nOur 24-Hour Flash Sale is LIVE! Enjoy a whopping *30% DISCOUNT* on all products.\n\nTreat yourself or find the perfect gift! 🎁\n\n🔗 Link: [YourLink]\n\n*Hurry, time is running out!*",
-      field3: "🔥 *IT'S HAPPENING!* 🔥\n\n*30% OFF EVERYTHING!* Yes, you read that right! Our exclusive 24-hour flash sale starts NOW.\n\nStock up on your favorites before it's too late!\n\n➡️ Go, Go, Go: [YourLink]\n\n#FlashSale #LimitedTimeOffer #Deals"
+      field1: "*Hi there!*\n\n🚨 *FLASH SALE ALERT!* 🚨\n\nFor *24 HOURS ONLY*, get *30% OFF EVERYTHING* site-wide! 🛍️\n\nDon't miss out on incredible deals!\n\n👉 Shop Now: [YourLink]\n\n_Sale ends {{EndTime}}!_ ⏳",
+      field2: "*Hey!*\n\n💥 *HUGE SAVINGS!* 💥\n\nOur 24-Hour Flash Sale is LIVE! Enjoy a whopping *30% DISCOUNT* on all products.\n\nTreat yourself or find the perfect gift! 🎁\n\n🔗 Link: [YourLink]\n\n*Hurry, time is running out!*",
+      field3: "*Hello!*\n\n🔥 *IT'S HAPPENING!* 🔥\n\n*30% OFF EVERYTHING!* Yes, you read that right! Our exclusive 24-hour flash sale starts NOW.\n\nStock up on your favorites before it's too late!\n\n➡️ Go, Go, Go: [YourLink]\n\n#FlashSale #LimitedTimeOffer #Deals"
     }
   },
   {
@@ -315,7 +315,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     templateContent: {
       field1: "Hi {{UserName}},\n\n✅ *Support Ticket Received: #{{TicketID}}*\n\nThanks for contacting us! We've received your support request (Ticket ID: {{TicketID}}).\n\nOur team will get back to you within {{ResponseTimeEstimate_e.g.,_24_business_hours}}.\n\nRegards,\nThe {{AppName}} Support Team",
       field2: "Hi {{UserName}},\n\nGot it! 👍 Your support query has been logged as ticket *#{{TicketID}}*.\n\nWe're on it! Expect a response from our support specialists within {{ResponseTimeEstimate}}.\n\nIn the meantime, you might find our FAQ helpful: [FAQLink]",
-      field3: "Hi {{UserName}},\n\nHello {{UserName}},\n\nThis confirms we've received your inquiry (Ticket: *{{TicketID}}*).\n\nOur support ninjas are reviewing it and will reply as soon as possible, typically within {{ResponseTimeEstimate}}.\n\nThank you for your patience!"
+      field3: "Hi {{UserName}},\n\nThis confirms we've received your inquiry (Ticket: *{{TicketID}}*).\n\nOur support ninjas are reviewing it and will reply as soon as possible, typically within {{ResponseTimeEstimate}}.\n\nThank you for your patience!"
     }
   },
   {
@@ -398,11 +398,9 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
             const styles = getTypeColorStyles(category.styleType);
             buttonSpecificClass = styles.filterButtonCategoryClasses;
           } else if (!isActive && category.value === "all") {
-            // Default hover for "All" button when not active and variant is "outline"
-            buttonSpecificClass = "hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring";
+            buttonSpecificClass = "hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring shadow-sm";
           }
-          // For active button, variant="default" handles styling, no extra classes needed here for category color.
-
+          
           return (
             <Button
               key={category.value}
@@ -411,7 +409,8 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
               onClick={() => setActiveFilter(category.value)}
               className={cn(
                 "rounded-full px-4 py-1.5 text-sm",
-                buttonSpecificClass
+                buttonSpecificClass,
+                isActive && "shadow-md" 
               )}
             >
               {category.label}
