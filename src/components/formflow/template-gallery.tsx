@@ -70,7 +70,7 @@ const getTypeColorStyles = (type: MessageType): TypeColorStyle => {
 
 const TemplateItem: FC<TemplateItemProps> = (props) => {
   const { title, dataAiHint, templateContent, onClick, messageType } = props;
-  const previewText = templateContent.field1?.split('\n').slice(0, 3).join('\n') + (templateContent.field1 && templateContent.field1.split('\n').length > 3 ? '...' : '');
+  const previewText = templateContent.field1 || "";
   const { borderClasses, textHeaderClass, cardBackgroundClass } = getTypeColorStyles(messageType);
 
   return (
@@ -91,8 +91,8 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
         {title}
       </p>
       <div 
-        className="w-full h-20 bg-muted/50 dark:bg-muted/30 p-2 rounded-md overflow-hidden text-xs text-foreground/80 whitespace-pre-line"
-        style={{ WebkitLineClamp: 4, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}
+        className="w-full h-20 bg-[#DCF8C6] p-2 rounded-md overflow-hidden text-xs text-zinc-800 whitespace-pre-line"
+        style={{ WebkitLineClamp: 5, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}
       >
         {previewText || "No preview available"}
       </div>
@@ -428,5 +428,7 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
 };
 
 export default TemplateGallery;
+
+    
 
     
