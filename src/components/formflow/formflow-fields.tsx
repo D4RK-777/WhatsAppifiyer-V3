@@ -18,7 +18,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -241,7 +240,7 @@ function FormFlowFields() {
                 onClick={handleGetSuggestions}
                 disabled={isLoadingSuggestions}
                 className={cn(
-                  "w-full", 
+                  "w-1/2", // Changed from w-full
                   "relative overflow-hidden", 
                   "bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900", 
                   "text-slate-100", 
@@ -311,7 +310,7 @@ function FormFlowFields() {
                             handleCopy(fieldName);
                           }}
                           className={cn(
-                            "w-full shadow-sm", // Added shadow-sm
+                            "w-full shadow-sm",
                             hoveredVariation === fieldName && "ring-2 ring-primary ring-offset-1 ring-offset-background"
                           )}
                           disabled={!field.value}
@@ -348,3 +347,4 @@ export default FormFlowFields;
     
 
     
+
