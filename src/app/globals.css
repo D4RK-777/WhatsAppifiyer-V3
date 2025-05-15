@@ -86,3 +86,48 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .animate-sparkle-icon > svg { /* Target the SVG directly inside the button */
+    animation: sparkle-effect 2.5s infinite ease-in-out;
+  }
+  @keyframes sparkle-effect {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    20% { transform: scale(1.15) rotate(5deg); opacity: 0.7; }
+    40% { transform: scale(0.9) rotate(-5deg); opacity: 1; }
+    60% { transform: scale(1.1) rotate(3deg); opacity: 0.8; }
+    80% { transform: scale(0.95) rotate(-3deg); opacity: 1; }
+  }
+
+  .galaxy-stars-effect::before {
+    content: '';
+    position: absolute;
+    inset: 0; /* Cover the entire button */
+    z-index: -1; /* Place behind button content */
+    background-image: 
+      radial-gradient(1px 1px at 20px 30px, white, transparent),
+      radial-gradient(1px 1px at 40px 70px, white, transparent),
+      radial-gradient(1px 1px at 50px 160px, white, transparent),
+      radial-gradient(1.5px 1.5px at 90px 40px, white, transparent),
+      radial-gradient(1px 1px at 130px 80px, white, transparent),
+      radial-gradient(1px 1px at 160px 120px, rgba(255,255,255,0.5), transparent),
+      radial-gradient(0.75px 0.75px at 70px 20px, rgba(255,255,255,0.7), transparent),
+      radial-gradient(0.75px 0.75px at 100px 150px, rgba(255,255,255,0.6), transparent);
+    background-size: 200px 200px; /* Size of the repeating star pattern */
+    animation: move-stars 60s linear infinite;
+    opacity: 0.7;
+    transform: rotate(0deg); /* Initial state for rotation */
+    transition: transform 1.5s ease-in-out; /* Transition for rotation on hover */
+  }
+  .galaxy-stars-effect:hover::before {
+    transform: rotate(360deg); /* Rotate on hover */
+  }
+  @keyframes move-stars {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: -200px -200px; /* Move one full pattern cycle */
+    }
+  }
+}
