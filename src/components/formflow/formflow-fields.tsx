@@ -35,7 +35,7 @@ const formSchema = z.object({
     .min(1, "This field cannot be empty if you want AI suggestions.")
     .max(1000, "Input must be 1000 characters or less.")
     .describe("User's text to convert or an idea for message generation.")
-    .optional(), // Made optional to allow form submission without it if not getting AI suggestions
+    .optional(), 
   messageType: z.enum(messageTypesArray, {
     required_error: "Please select a message type.",
   }),
@@ -93,15 +93,13 @@ function FormFlowFields() {
   const currentYourTextOrIdea = form.watch("yourTextOrIdea");
 
   useEffect(() => {
-    const typingSpeed = 100;
-    const deletingSpeed = 50;
+    const typingSpeed = 100; // Was 150
+    const deletingSpeed = 50; // Was 75
     const pauseDuration = 2000;
 
     const handleTypewriter = () => {
       if (currentYourTextOrIdea && currentYourTextOrIdea.length > 0) {
-        // If user has typed something, stop the animation by not setting a new timeout.
-        // The actual placeholder attribute of the textarea will be empty if there's user input.
-        if (animatedPlaceholder !== "") setAnimatedPlaceholder(""); // Clear our animated placeholder
+        if (animatedPlaceholder !== "") setAnimatedPlaceholder("");
         return;
       }
 
@@ -114,10 +112,9 @@ function FormFlowFields() {
         } else {
           setIsDeleting(false);
           setCurrentTipIndex((prevIndex) => (prevIndex + 1) % placeholderTips.length);
-          // charIndex is already 0
           typewriterTimeoutRef.current = setTimeout(handleTypewriter, pauseDuration / 2);
         }
-      } else { // Typing
+      } else { 
         if (charIndex < currentTip.length) {
           setAnimatedPlaceholder(currentTip.substring(0, charIndex + 1));
           setCharIndex(charIndex + 1);
@@ -129,7 +126,17 @@ function FormFlowFields() {
       }
     };
 
-    typewriterTimeoutRef.current = setTimeout(handleTypewriter, isDeleting ? deletingSpeed : typingSpeed);
+    // Start the animation only if the textarea is empty
+    if (!currentYourTextOrIdea || currentYourTextOrIdea.length === 0) {
+        typewriterTimeoutRef.current = setTimeout(handleTypewriter, isDeleting ? deletingSpeed : typingSpeed);
+    } else {
+        // Clear any existing animation if user types
+        if (typewriterTimeoutRef.current) {
+            clearTimeout(typewriterTimeoutRef.current);
+        }
+        if (animatedPlaceholder !== "") setAnimatedPlaceholder(""); // Clear animated placeholder
+    }
+
 
     return () => {
       if (typewriterTimeoutRef.current) {
@@ -174,7 +181,7 @@ function FormFlowFields() {
     setIsLoadingSuggestions(true);
     try {
       const suggestionsInput: SuggestFormFieldsInput = {
-        context: yourTextOrIdea || "", // Ensure context is not undefined
+        context: yourTextOrIdea || "", 
         messageType,
         field1: field1 || "", 
         field2: field2 || "",
@@ -258,9 +265,9 @@ function FormFlowFields() {
       const suggestionsInput: SuggestFormFieldsInput = {
         context: yourTextOrIdea,
         messageType,
-        field1: fieldName === 'field1' ? form.getValues().field1 : "", // Pass current value if regenerating this one
-        field2: fieldName === 'field2' ? form.getValues().field2 : "",
-        field3: fieldName === 'field3' ? form.getValues().field3 : "",
+        // When regenerating a specific field, we don't need to pass its current content.
+        // The AI will use the main context to generate three new suggestions,
+        // and we'll pick the one corresponding to the field being regenerated.
       };
       const newSuggestions = await suggestFormFields(suggestionsInput);
 
@@ -300,7 +307,7 @@ function FormFlowFields() {
                 <FormItem id="tour-target-input-area">
                   <FormControl>
                     <Textarea
-                      placeholder={animatedPlaceholder}
+                      placeholder={currentYourTextOrIdea && currentYourTextOrIdea.length > 0 ? "" : animatedPlaceholder}
                       className="resize-none rounded-md text-base shadow-[0_0_5px_hsl(var(--accent)_/_0.4)] focus-visible:ring-0 focus-visible:shadow-[0_0_12px_hsl(var(--accent)_/_0.75)] transition-shadow duration-200 ease-in-out"
                       rows={8}
                       {...field}
