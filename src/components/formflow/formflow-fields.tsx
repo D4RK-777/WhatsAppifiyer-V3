@@ -170,8 +170,8 @@ function FormFlowFields() {
     form.setValue("yourTextOrIdea", template.dataAiHint, { shouldValidate: true });
     form.setValue("messageType", template.messageType, { shouldValidate: true });
     form.setValue("field1", template.templateContent.field1 || "", { shouldValidate: true });
-    form.setValue("field2", template.templateContent.field2 || "", { shouldValidate: false }); 
-    form.setValue("field3", template.templateContent.field3 || "", { shouldValidate: false }); 
+    form.setValue("field2", template.templateContent.field2 || "", { shouldValidate: true }); 
+    form.setValue("field3", template.templateContent.field3 || "", { shouldValidate: true }); 
     setSelectedVariation(null); // Reset selection when template changes
     toast({
       title: `Template "${template.title}" Applied!`,
@@ -285,6 +285,7 @@ function FormFlowFields() {
               name="yourTextOrIdea"
               render={({ field }) => (
                 <FormItem>
+                  {/* <FormLabel className="text-lg font-semibold">Your Text / Message Idea</FormLabel> */}
                   <FormControl>
                     <Textarea
                       placeholder="Paste your SMS or text here, or describe your message idea (e.g., 'Weekend sale announcement for shoes'). You can also select a template below."

@@ -199,35 +199,25 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
     ? allFullTemplates 
     : allFullTemplates.filter(template => template.messageType === activeFilter);
   
-  // Ensure enough templates for 3 rows, or repeat if fewer
   let displayTemplates: TemplateItemProps[] = [];
   if (filteredTemplates.length > 0) {
-    // Create a list long enough for 3 distinct-ish rows if possible
-    // This logic can be simplified if specific row content isn't critical
-    // and repetition is acceptable.
-    const base = filteredTemplates.slice(0,8); // Max 8 unique for variety
-    while(displayTemplates.length < 24 && base.length > 0) { // Aim for up to 24 items for 3 rows of ~8
+    const base = filteredTemplates.slice(0,8); 
+    while(displayTemplates.length < 24 && base.length > 0) { 
         displayTemplates = displayTemplates.concat(base);
     }
-     // If still not enough, just repeat what we have to fill up
     if (displayTemplates.length === 0 && base.length > 0) displayTemplates = [...base, ...base, ...base];
-    else if (displayTemplates.length < 8 && displayTemplates.length > 0) { // if less than 8, repeat to make it look fuller
+    else if (displayTemplates.length < 8 && displayTemplates.length > 0) { 
         const currentDisplay = [...displayTemplates];
         while(displayTemplates.length < Math.max(8, currentDisplay.length * 2)) {
             displayTemplates = displayTemplates.concat(currentDisplay);
         }
     }
-     // Ensure we don't have too many if original list was small
     displayTemplates = displayTemplates.slice(0,24);
-
-
   }
-
 
   const row1Templates = displayTemplates.slice(0, Math.min(8, displayTemplates.length));
   const row2Templates = displayTemplates.slice(Math.min(8, displayTemplates.length), Math.min(16, displayTemplates.length));
   const row3Templates = displayTemplates.slice(Math.min(16, displayTemplates.length), Math.min(24, displayTemplates.length));
-
 
   const filterCategories: { label: string; value: FilterCategory }[] = [
     { label: "All", value: "all" },
@@ -246,6 +236,7 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
         {filterCategories.map(category => (
           <Button
             key={category.value}
+            type="button" // Prevent form submission behavior
             variant={activeFilter === category.value ? "default" : "outline"}
             onClick={() => setActiveFilter(category.value)}
             className="rounded-full px-4 py-1.5 text-sm"
