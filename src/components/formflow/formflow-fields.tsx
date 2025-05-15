@@ -204,7 +204,7 @@ function FormFlowFields() {
               name="messageType"
               render={({ field }) => (
                 <FormItem className="flex flex-col items-center">
-                  <FormLabel className="text-lg font-semibold text-foreground text-center">Message Type</FormLabel>
+                  <FormLabel className="text-lg font-semibold text-foreground text-center">Select the message type you want to send</FormLabel>
                   <FormControl>
                     <div className="flex flex-wrap gap-2 pt-1 justify-center">
                       {messageTypesArray.map((type) => (
@@ -220,9 +220,6 @@ function FormFlowFields() {
                       ))}
                     </div>
                   </FormControl>
-                  <FormDescription className="text-sm text-muted-foreground text-center">
-                    Select the primary purpose of your WhatsApp message.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
