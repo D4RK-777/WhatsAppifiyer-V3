@@ -27,7 +27,7 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
       setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
     };
     updateClock(); 
-    const timerId = setInterval(updateClock, 1000 * 60); 
+    const timerId = setInterval(updateClock, 1000 * 60); // Update every minute, not every second.
     return () => clearInterval(timerId);
   }, []);
 
@@ -41,9 +41,9 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
     <div className="flex justify-center items-start py-2">
       <div
         style={phoneStyle}
-        className="aspect-[9/19.5] bg-zinc-800 p-1.5 rounded-[40px] shadow-2xl overflow-hidden" // Removed border-4 border-zinc-900
+        className="aspect-[9/19.5] bg-zinc-800 p-2 rounded-[40px] shadow-2xl overflow-hidden" // Changed p-1.5 to p-2
       >
-        <div className="h-full w-full bg-background rounded-[30px] flex flex-col overflow-hidden">
+        <div className="h-full w-full bg-background rounded-[32px] flex flex-col overflow-hidden"> {/* Changed rounded-[30px] to rounded-[32px] */}
           {/* Status Bar */}
           <div className="px-3 pt-2 pb-1 flex justify-between items-center text-xs text-foreground/80 shrink-0">
             {currentTime === null ? (
