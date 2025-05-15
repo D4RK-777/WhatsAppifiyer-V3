@@ -24,7 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import TemplateGallery, { type TemplateItemProps } from "./template-gallery";
 import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
 import { Button } from "@/components/ui/button";
-import { Loader2, Copy, Sparkles, ThumbsUp, ThumbsDown, RefreshCw } from "lucide-react"; 
+import { Loader2, Copy, Sparkles, ThumbsUp, ThumbsDown } from "lucide-react"; 
 import PhonePreview from "./phone-preview";
 
 const messageTypesArray = ["marketing", "authentication", "utility", "service"] as const;
@@ -173,16 +173,10 @@ function FormFlowFields() {
 
   const handleRegenerate = (fieldName: VariationFieldName) => {
     toast({ title: `Regenerate Variation ${fieldName.charAt(fieldName.length - 1)} requested`, description: "This feature is coming soon! (placeholder)." });
-    // Placeholder for future AI call to regenerate a specific field
-    // For example:
-    // const currentValue = form.getValues(fieldName);
-    // const { yourTextOrIdea, messageType } = form.getValues();
-    // Call a new AI flow: regenerateSingleSuggestion({ originalText: yourTextOrIdea, messageType, fieldToRegenerate: fieldName, currentValue })
   };
 
 
   const onSubmit = (values: FormValues) => {
-    // This function is not currently triggered by any button, but kept for potential future use
     console.log("Form data (WhatsAppified variations):", values);
     toast({
       title: "Form Data Logged",
@@ -281,6 +275,28 @@ function FormFlowFields() {
                       onMouseLeave={() => setHoveredVariation(null)}
                     >
                       <FormLabel className="font-semibold text-foreground mb-1">WhatsApp Variation {index + 1}</FormLabel>
+                      <Button
+                        type="button"
+                        onClick={() => handleRegenerate(fieldName)}
+                        // For now, no individual loading state for regenerate. 
+                        // If implemented, disabled={isLoadingVariation[fieldName]}
+                        className={cn(
+                          "w-full max-w-[320px] mx-auto", 
+                          "relative overflow-hidden", 
+                          "bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900", 
+                          "text-slate-100", 
+                          "border border-purple-700", 
+                          "hover:border-purple-500", 
+                          "hover:from-indigo-900 hover:via-purple-800 hover:to-slate-800 hover:text-white", 
+                          "focus-visible:ring-purple-400", 
+                          "galaxy-stars-effect", 
+                          "animate-sparkle-icon", // Always sparkle for now as it's a placeholder
+                          "px-4 py-2 text-sm rounded-md mb-2" // Adjusted size and margin
+                        )}
+                      >
+                        <Sparkles className="mr-2 h-4 w-4" /> 
+                        Regenerate Variation {index + 1}
+                      </Button>
                       <div className="w-full p-0.5 rounded-[44px] transition-all cursor-default">
                         <FormControl>
                           <PhonePreview messageText={field.value} currentPhoneWidth={320} zoomLevel={1} />
@@ -311,9 +327,6 @@ function FormFlowFields() {
                           <Button variant="outline" size="icon" onClick={() => handleDislike(fieldName)} aria-label={`Dislike Variation ${index + 1}`}>
                             <ThumbsDown className="h-4 w-4" />
                           </Button>
-                          <Button variant="outline" size="icon" onClick={() => handleRegenerate(fieldName)} aria-label={`Regenerate Variation ${index + 1}`}>
-                            <RefreshCw className="h-4 w-4" />
-                          </Button>
                         </div>
                       </div>
                       <FormMessage />
@@ -333,5 +346,4 @@ function FormFlowFields() {
 }
 
 export default FormFlowFields;
-
     
