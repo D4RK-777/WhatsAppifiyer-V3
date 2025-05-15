@@ -194,9 +194,6 @@ function FormFlowFields() {
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription className="text-sm text-muted-foreground">
-                    This text or idea will be transformed by the AI into WhatsApp message variations.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
