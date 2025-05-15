@@ -2,6 +2,7 @@
 "use client";
 
 import type { FC } from 'react';
+import { cn } from "@/lib/utils";
 
 export interface TemplateItemProps {
   id: number;
@@ -17,13 +18,32 @@ export interface TemplateItemProps {
   onClick: (template: TemplateItemProps) => void;
 }
 
+const getTypeColorClasses = (type: TemplateItemProps['messageType']) => {
+  switch (type) {
+    case 'marketing':
+      return 'border-green-400 hover:border-green-500 focus-visible:ring-green-500';
+    case 'service':
+      return 'border-yellow-400 hover:border-yellow-500 focus-visible:ring-yellow-500';
+    case 'authentication':
+      return 'border-orange-400 hover:border-orange-500 focus-visible:ring-orange-500';
+    case 'utility':
+      return 'border-blue-400 hover:border-blue-500 focus-visible:ring-blue-500';
+    default:
+      return 'border-border hover:border-primary focus-visible:ring-ring';
+  }
+};
+
 const TemplateItem: FC<TemplateItemProps> = (props) => {
-  const { title, dataAiHint, templateContent, onClick } = props;
+  const { title, dataAiHint, templateContent, onClick, messageType } = props;
   const previewText = templateContent.field1?.split('\n').slice(0, 3).join('\n') + (templateContent.field1 && templateContent.field1.split('\n').length > 3 ? '...' : '');
+  const colorClasses = getTypeColorClasses(messageType);
 
   return (
     <div
-      className="flex-shrink-0 w-48 h-auto min-h-[9rem] bg-card border border-border rounded-lg shadow-lg p-3 mx-3 flex flex-col items-start justify-start hover:shadow-xl transition-shadow duration-300 cursor-pointer group"
+      className={cn(
+        "flex-shrink-0 w-48 h-auto min-h-[9rem] bg-card border-2 rounded-lg shadow-lg p-3 mx-3 flex flex-col items-start justify-start hover:shadow-xl transition-all duration-300 cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        colorClasses
+      )}
       onClick={() => onClick(props)}
       role="button"
       tabIndex={0}
@@ -76,7 +96,6 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 1,
     title: 'Product Launch (Marketing)',
-    // imageUrl: 'https://placehold.co/160x90.png', // Retained for data structure, not displayed
     dataAiHint: 'Announce our new AI-powered chatbot solution with a 20% launch discount for the first 50 customers. Highlight key features: 24/7 availability and natural language understanding.',
     messageType: 'marketing',
     templateContent: {
@@ -88,7 +107,6 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 2,
     title: 'OTP Verification (Auth)',
-    // imageUrl: 'https://placehold.co/160x90.png',
     dataAiHint: 'Generate a WhatsApp OTP message for login. The code is 123456 and it expires in 5 minutes.',
     messageType: 'authentication',
     templateContent: {
@@ -100,7 +118,6 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 3,
     title: 'Appointment Reminder (Utility)',
-    // imageUrl: 'https://placehold.co/160x90.png',
     dataAiHint: 'Remind a user about their dental check-up tomorrow at 10:00 AM with Dr. Smile.',
     messageType: 'utility',
     templateContent: {
@@ -112,7 +129,6 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 4,
     title: 'Order Shipped (Utility)',
-    // imageUrl: 'https://placehold.co/160x90.png',
     dataAiHint: 'Inform a customer their order #ABC12345 has shipped and provide tracking link XYZ.',
     messageType: 'utility',
     templateContent: {
@@ -124,7 +140,6 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 5,
     title: 'Support Ticket Update (Service)',
-    // imageUrl: 'https://placehold.co/160x90.png',
     dataAiHint: 'Provide an update on support ticket #TICKET101, stating the issue is being investigated.',
     messageType: 'service',
     templateContent: {
@@ -136,7 +151,6 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 6,
     title: 'Flash Sale (Marketing)',
-    // imageUrl: 'https://placehold.co/160x90.png',
     dataAiHint: 'Announce a 24-hour flash sale with 30% off everything site-wide. Use urgency.',
     messageType: 'marketing',
     templateContent: {
@@ -148,7 +162,6 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 7,
     title: 'Password Reset (Auth)',
-    // imageUrl: 'https://placehold.co/160x90.png',
     dataAiHint: 'User requested a password reset. Provide a secure link to reset.',
     messageType: 'authentication',
     templateContent: {
@@ -160,7 +173,6 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
    {
     id: 8,
     title: 'Service Maintenance (Utility)',
-    // imageUrl: 'https://placehold.co/160x90.png',
     dataAiHint: 'Inform users about upcoming scheduled maintenance for our app tonight from 2 AM to 4 AM. Mention service might be temporarily unavailable.',
     messageType: 'utility',
     templateContent: {
@@ -181,7 +193,8 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
   const typedDisplayTemplates = displayTemplates as TemplateItemProps[]; 
 
   const row1Templates = typedDisplayTemplates.slice(0, Math.min(7, typedDisplayTemplates.length));
-  const row2Start = Math.min(1, typedDisplayTemplates.length -1); 
+  // Ensure row2Start is not negative and row2End does not exceed length
+  const row2Start = Math.min(1, Math.max(0, typedDisplayTemplates.length -1));
   const row2End = Math.min(8, typedDisplayTemplates.length);
   const row2Templates = typedDisplayTemplates.length > 1 ? typedDisplayTemplates.slice(row2Start, row2End) : (typedDisplayTemplates.length === 1 ? typedDisplayTemplates.slice(0,1) : []);
   const row3Templates = typedDisplayTemplates.slice(0, Math.min(7, typedDisplayTemplates.length));

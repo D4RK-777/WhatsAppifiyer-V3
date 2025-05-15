@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { cn } from "@/lib/utils";
 
 import {
   Card,
@@ -47,7 +48,7 @@ const formSchema = z.object({
   }),
   field1: z
     .string()
-    .max(1500, "Suggestion 1 (Variation) must be 1500 characters or less.") // Increased max length for potentially longer formatted messages
+    .max(1500, "Suggestion 1 (Variation) must be 1500 characters or less.") 
     .optional()
     .describe("AI-generated Variation 1 of the WhatsApp message."),
   field2: z
@@ -66,14 +67,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 // Component to render WhatsApp-like formatted text
 const WhatsAppMessagePreview = ({ content }: { content: string | undefined }) => {
-  if (!content || content.trim() === "") {
-    return (
-      <div className="p-3 border rounded-md bg-muted/50 min-h-[100px] text-muted-foreground flex items-center justify-center text-sm">
-        AI-generated WhatsApp message variation will appear here.
-      </div>
-    );
-  }
-
+  
   let keyCounter = 0;
   const generateKey = (type: string) => `${type}-${keyCounter++}`;
 
@@ -125,16 +119,31 @@ const WhatsAppMessagePreview = ({ content }: { content: string | undefined }) =>
     // 5. Newlines and plain text
     return text.split(/(\\n)/g).map((part, index) => {
       if (part === '\\n') return <br key={generateKey(`br-${index}`)} />;
-      if (part) return <span key={generateKey(`text-${index}`)}>{part}</span>; // Wrap text for consistent handling
+      if (part) return <span key={generateKey(`text-${index}`)}>{part}</span>; 
       return null;
-    }).filter(Boolean); // Filter out nulls from empty parts
+    }).filter(Boolean); 
   };
   
-  const formattedNodes = parseTextToReact(content.replace(/\n/g, '\\n')); // Replace actual newlines with \n for parser
+  const formattedNodes = parseTextToReact(content?.replace(/\n/g, '\\n') || '');
 
   return (
-    <div className="p-3 border rounded-md bg-card shadow-sm text-card-foreground text-sm min-h-[100px] flex flex-col items-start justify-start overflow-y-auto">
-      {formattedNodes}
+    // Outer container: Simulates a phone body/frame
+    <div className="w-full max-w-[300px] mx-auto aspect-[9/17] bg-muted/30 p-1.5 rounded-[28px] shadow-xl border border-border flex flex-col overflow-hidden">
+      {/* Top "notch" or speaker area visual cue */}
+      <div className="h-5 bg-foreground/10 w-20 mx-auto rounded-b-lg mb-1 shrink-0"></div>
+
+      {/* "Screen" area where the message content is displayed */}
+      <div className="flex-grow bg-card rounded-[20px] text-card-foreground text-sm overflow-y-auto p-3 flex flex-col items-start">
+        {(!content || content.trim() === "") ? (
+          <div className="flex-grow w-full flex items-center justify-center text-muted-foreground text-xs p-2 text-center">
+            AI-generated WhatsApp message variation will appear here.
+          </div>
+        ) : (
+          <div className="w-full"> {/* Wrapper to ensure content flows correctly */}
+            {formattedNodes}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -287,17 +296,17 @@ function FormFlowFields() {
               )}
             />
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-10 pt-4">
               <FormField
                 control={form.control}
                 name="field1"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-primary/90">WhatsApp Variation 1</FormLabel>
+                  <FormItem className="flex flex-col items-center">
+                    <FormLabel className="font-semibold text-primary/90 mb-2">WhatsApp Variation 1</FormLabel>
                     <FormControl>
                       <WhatsAppMessagePreview content={field.value} />
                     </FormControl>
-                     <FormDescription className="text-xs text-muted-foreground">
+                     <FormDescription className="text-xs text-muted-foreground mt-2">
                       AI-generated variation.
                     </FormDescription>
                     <FormMessage />
@@ -308,12 +317,12 @@ function FormFlowFields() {
                 control={form.control}
                 name="field2"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-primary/90">WhatsApp Variation 2</FormLabel>
+                  <FormItem className="flex flex-col items-center">
+                    <FormLabel className="font-semibold text-primary/90 mb-2">WhatsApp Variation 2</FormLabel>
                     <FormControl>
                        <WhatsAppMessagePreview content={field.value} />
                     </FormControl>
-                    <FormDescription className="text-xs text-muted-foreground">
+                    <FormDescription className="text-xs text-muted-foreground mt-2">
                       AI-generated variation.
                     </FormDescription>
                     <FormMessage />
@@ -324,12 +333,12 @@ function FormFlowFields() {
                 control={form.control}
                 name="field3"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-primary/90">WhatsApp Variation 3</FormLabel>
+                  <FormItem className="flex flex-col items-center">
+                    <FormLabel className="font-semibold text-primary/90 mb-2">WhatsApp Variation 3</FormLabel>
                     <FormControl>
                        <WhatsAppMessagePreview content={field.value} />
                     </FormControl>
-                     <FormDescription className="text-xs text-muted-foreground">
+                     <FormDescription className="text-xs text-muted-foreground mt-2">
                       AI-generated variation.
                     </FormDescription>
                     <FormMessage />
@@ -367,5 +376,3 @@ function FormFlowFields() {
 }
 
 export default FormFlowFields;
-
-    
