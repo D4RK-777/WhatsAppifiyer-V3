@@ -268,7 +268,7 @@ function FormFlowFields() {
                         aria-label={`Select WhatsApp Variation ${index + 1}`}
                       >
                         <FormControl>
-                          <PhonePreview messageText={field.value} currentPhoneWidth={280} zoomLevel={1} />
+                          <PhonePreview messageText={field.value} currentPhoneWidth={320} zoomLevel={1} />
                         </FormControl>
                       </div>
                       <Button
@@ -279,7 +279,7 @@ function FormFlowFields() {
                           e.stopPropagation(); 
                           handleCopy(fieldName);
                         }}
-                        className="w-full max-w-[280px] mx-auto mt-2"
+                        className="w-full max-w-[320px] mx-auto mt-2"
                         disabled={!field.value}
                       >
                         <Copy className="mr-2 h-4 w-4" />
