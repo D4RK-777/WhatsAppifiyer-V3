@@ -91,7 +91,7 @@ const WhatsAppMessageBubble: React.FC<WhatsAppMessageBubbleProps> = ({
         )}
       >
         <div className={cn(
-            "text-sm text-black dark:text-white leading-snug break-words whitespace-pre-line"
+            "text-sm text-black dark:text-white leading-relaxed break-words whitespace-pre-line" // Changed leading-snug to leading-relaxed
           )}
         >
           {formattedNodes}
