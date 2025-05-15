@@ -21,19 +21,20 @@ export interface TemplateItemProps {
   onClick: (template: TemplateItemProps) => void;
 }
 
+// WhatsApp-inspired color palette
 const whatsappColors = {
-  mainActiveGreen: '#128C7E',
-  hoverMainActiveGreen: '#0F7A6E',
-  brightGreenMarketing: '#25D366',
-  lightBlueAuthUtility: '#34B7F1',
+  mainActiveGreen: '#128C7E',      
+  hoverMainActiveGreen: '#0F7A6E', 
+  brightGreenMarketing: '#25D366',   
+  lightBlueAuthUtility: '#34B7F1', 
   neutralServiceGrey: '#737373',    
   darkServiceGrey: '#a1a1aa',       
-  cardBgLight: '#ECE5DD',
-  cardBgDark: '#131C21', 
-  darkTealHeaderLight: '#075E54',
-  darkHeaderTextDark: '#9ADBC4', 
-  lightGreenPreviewBg: '#DCF8C6',
-  previewBoxText: '#111B21',
+  cardBgLight: '#ECE5DD',           
+  cardBgDark: '#131C21',            
+  darkTealHeaderLight: '#075E54',   
+  darkHeaderTextDark: '#9ADBC4',    
+  lightGreenPreviewBg: '#DCF8C6',   
+  previewBoxText: '#111B21',        
 };
 
 interface TypeStyle {
@@ -44,45 +45,47 @@ interface TypeStyle {
 }
 
 const getTypeSpecificStyles = (type: MessageType): TypeStyle => {
-  const cardBg = `bg-[${whatsappColors.cardBgLight}] dark:bg-[${whatsappColors.cardBgDark}]`;
-  const headerText = `text-[${whatsappColors.darkTealHeaderLight}] dark:text-[${whatsappColors.darkHeaderTextDark}]`;
+  const cardBg = `bg-[${whatsappColors.cardBgLight}] dark:bg-slate-800`;
+  
+  let headerTextLight = whatsappColors.darkTealHeaderLight; // Default for most
+  let headerTextDark = whatsappColors.darkHeaderTextDark;
+  let categoryLabelLight = whatsappColors.darkTealHeaderLight; // Default
+  let categoryLabelDark = whatsappColors.darkHeaderTextDark;
+  let borderClassValue = 'border-border'; // Default
 
   switch (type) {
     case 'marketing':
-      return {
-        cardBackgroundClass: cardBg,
-        borderClass: `border-[${whatsappColors.brightGreenMarketing}]`,
-        textHeaderClass: headerText,
-        categoryLabelClass: `text-[${whatsappColors.brightGreenMarketing}]`,
-      };
-    case 'service':
-      return {
-        cardBackgroundClass: cardBg,
-        borderClass: `border-[${whatsappColors.neutralServiceGrey}] dark:border-[${whatsappColors.darkServiceGrey}]`,
-        textHeaderClass: headerText,
-        categoryLabelClass: `text-[${whatsappColors.neutralServiceGrey}] dark:text-[${whatsappColors.darkServiceGrey}]`,
-      };
+      borderClassValue = `border-[${whatsappColors.brightGreenMarketing}]`;
+      categoryLabelLight = `text-[${whatsappColors.brightGreenMarketing}]`;
+      categoryLabelDark = `text-[${whatsappColors.brightGreenMarketing}]`;
+      // Keep header text as default darkTealHeaderLight for contrast on beige
+      break;
     case 'authentication':
     case 'utility':
-      return {
-        cardBackgroundClass: cardBg,
-        borderClass: `border-[${whatsappColors.lightBlueAuthUtility}]`,
-        textHeaderClass: headerText,
-        categoryLabelClass: `text-[${whatsappColors.lightBlueAuthUtility}]`,
-      };
-    default: // Should not happen for a card, but provide fallback
-      return {
-        cardBackgroundClass: cardBg,
-        borderClass: 'border-border',
-        textHeaderClass: headerText,
-        categoryLabelClass: 'text-foreground',
-      };
+      borderClassValue = `border-[${whatsappColors.lightBlueAuthUtility}]`;
+      categoryLabelLight = `text-[${whatsappColors.lightBlueAuthUtility}]`;
+      categoryLabelDark = `text-[${whatsappColors.lightBlueAuthUtility}]`;
+      // Keep header text as default darkTealHeaderLight for contrast
+      break;
+    case 'service':
+      borderClassValue = `border-[${whatsappColors.neutralServiceGrey}] dark:border-[${whatsappColors.darkServiceGrey}]`;
+      categoryLabelLight = `text-[${whatsappColors.neutralServiceGrey}]`;
+      categoryLabelDark = `text-[${whatsappColors.darkServiceGrey}]`;
+      // Keep header text as default darkTealHeaderLight for contrast
+      break;
   }
+
+  return {
+    cardBackgroundClass: cardBg,
+    borderClass: borderClassValue,
+    textHeaderClass: `text-[${headerTextLight}] dark:text-[${headerTextDark}]`,
+    categoryLabelClass: `${categoryLabelLight} dark:${categoryLabelDark}`,
+  };
 };
 
 const TemplateItem: FC<TemplateItemProps> = (props) => {
   const { title, dataAiHint, templateContent, onClick, messageType } = props;
-  const previewText = templateContent.field1 || "";
+  const previewText = templateContent.field1 || ""; 
   const styles = getTypeSpecificStyles(messageType);
 
   return (
@@ -118,6 +121,7 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
     </div>
   );
 };
+
 
 interface TemplateRowProps {
   templates: TemplateItemProps[];
@@ -379,18 +383,17 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
   let displayTemplates: TemplateItemProps[] = [];
   if (filteredTemplates.length > 0) {
     const base = filteredTemplates;
-    while(displayTemplates.length < 24 && base.length > 0) { // Ensure we have enough for 3 rows of roughly 8
+    while(displayTemplates.length < 24 && base.length > 0) { 
         displayTemplates = displayTemplates.concat(base);
     }
-    // If after concatenation, we still have less than (e.g. 8 for 3 rows), duplicate more selectively
-    if (displayTemplates.length === 0 && base.length > 0) displayTemplates = [...base, ...base, ...base]; // Fallback for very few templates
-    else if (displayTemplates.length < 8 && displayTemplates.length > 0) { // Make sure at least 8 items if possible
+    if (displayTemplates.length === 0 && base.length > 0) displayTemplates = [...base, ...base, ...base]; 
+    else if (displayTemplates.length < 8 && displayTemplates.length > 0) { 
         const currentDisplay = [...displayTemplates];
-        while(displayTemplates.length < Math.max(8, currentDisplay.length * 2) ) { // Max items for performance
+        while(displayTemplates.length < Math.max(8, currentDisplay.length * 2) ) { 
             displayTemplates = displayTemplates.concat(currentDisplay);
         }
     }
-    displayTemplates = displayTemplates.slice(0,24); // Cap at 24 for performance
+    displayTemplates = displayTemplates.slice(0,24); 
   }
 
 
@@ -416,40 +419,15 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
       <div className="flex justify-center gap-2 mb-6 flex-wrap">
         {filterCategories.map(category => {
           const isActive = activeFilter === category.value;
-          
-          // Base classes for all buttons
-          let buttonClasses = `rounded-full px-4 py-1.5 text-sm transition-all duration-200 ease-in-out shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[${whatsappColors.mainActiveGreen}]`;
-
-          if (isActive) {
-            buttonClasses = cn(
-              buttonClasses,
-              `bg-[${whatsappColors.mainActiveGreen}] text-white border-[${whatsappColors.mainActiveGreen}] hover:bg-[${whatsappColors.hoverMainActiveGreen}] hover:border-[${whatsappColors.hoverMainActiveGreen}]`
-            );
-          } else {
-            // Common hover for all inactive buttons
-            buttonClasses = cn(
-              buttonClasses,
-              `hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}]`
-            );
-
-            // Specific base styles for inactive buttons
-            if (category.value === "all") {
-              buttonClasses = cn(buttonClasses, `bg-background text-foreground border-border`);
-            } else if (category.value === "marketing") {
-              buttonClasses = cn(buttonClasses, `bg-background text-[${whatsappColors.brightGreenMarketing}] border-[${whatsappColors.brightGreenMarketing}]`);
-            } else if (category.value === "authentication" || category.value === "utility") {
-              buttonClasses = cn(buttonClasses, `bg-background text-[${whatsappColors.lightBlueAuthUtility}] border-[${whatsappColors.lightBlueAuthUtility}]`);
-            } else if (category.value === "service") {
-              buttonClasses = cn(buttonClasses, `bg-background text-[${whatsappColors.neutralServiceGrey}] dark:text-[${whatsappColors.darkServiceGrey}] border-[${whatsappColors.neutralServiceGrey}] dark:border-[${whatsappColors.darkServiceGrey}]`);
-            }
-          }
-
           return (
             <Button
               key={category.value}
               type="button"
+              variant={isActive ? "default" : "outline"}
               onClick={() => setActiveFilter(category.value)}
-              className={buttonClasses}
+              className={cn(
+                "rounded-full px-4 py-1.5 text-sm shadow-sm transition-colors duration-200 ease-in-out",
+              )}
             >
               {category.label}
             </Button>
@@ -467,5 +445,3 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
 };
 
 export default TemplateGallery;
-
-    
