@@ -33,7 +33,7 @@ import TemplateGallery, { type TemplateItemProps } from "./template-gallery";
 import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
 import { Button } from "@/components/ui/button";
 import { Loader2, Copy } from "lucide-react";
-import PhonePreview from "./phone-preview"; // Import the new PhonePreview
+import PhonePreview from "./phone-preview";
 
 const formSchema = z.object({
   yourTextOrIdea: z
@@ -46,7 +46,7 @@ const formSchema = z.object({
   }),
   field1: z
     .string()
-    .max(1500, "Suggestion 1 (Variation) must be 1500 characters or less.") 
+    .max(1500, "Suggestion 1 (Variation) must be 1500 characters or less.")
     .optional()
     .describe("AI-generated Variation 1 of the WhatsApp message."),
   field2: z
@@ -85,8 +85,8 @@ function FormFlowFields() {
     form.setValue("yourTextOrIdea", template.dataAiHint, { shouldValidate: true });
     form.setValue("messageType", template.messageType, { shouldValidate: true });
     form.setValue("field1", template.templateContent.field1 || "", { shouldValidate: true });
-    form.setValue("field2", template.templateContent.field2 || "", { shouldValidate: true }); 
-    form.setValue("field3", template.templateContent.field3 || "", { shouldValidate: true }); 
+    form.setValue("field2", template.templateContent.field2 || "", { shouldValidate: true });
+    form.setValue("field3", template.templateContent.field3 || "", { shouldValidate: true });
     setSelectedVariation(null);
     toast({
       title: `Template "${template.title}" Applied!`,
@@ -212,7 +212,7 @@ function FormFlowFields() {
               name="messageType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-lg font-semibold">Message Type</FormLabel>
+                  <FormLabel className="text-lg font-semibold text-foreground">Message Type</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value || undefined} >
                     <FormControl>
                       <SelectTrigger className="rounded-md shadow-sm text-base focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]">
@@ -252,7 +252,7 @@ function FormFlowFields() {
               </Button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-2 gap-y-6 pt-4"> {/* Reduced gap-x */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-2 gap-y-6 pt-4">
               {(['field1', 'field2', 'field3'] as VariationFieldName[]).map((fieldName, index) => (
                 <FormField
                   key={fieldName}
@@ -263,8 +263,8 @@ function FormFlowFields() {
                       <FormLabel className="font-semibold text-foreground mb-1">WhatsApp Variation {index + 1}</FormLabel>
                       <div
                         className={cn(
-                          "w-full p-0.5 rounded-[44px] transition-all cursor-pointer", // Slightly larger radius for selection ring
-                          selectedVariation === fieldName ? "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-lg" : "hover:ring-1 hover:ring-primary/50"
+                          "w-full p-0.5 rounded-[44px] transition-all cursor-pointer",
+                          selectedVariation === fieldName ? "shadow-lg" : "" // Removed ring, kept shadow for selection
                         )}
                         onClick={() => setSelectedVariation(fieldName)}
                         role="button"
@@ -274,7 +274,6 @@ function FormFlowFields() {
                         aria-label={`Select WhatsApp Variation ${index + 1}`}
                       >
                         <FormControl>
-                          {/* Use new PhonePreview component */}
                           <PhonePreview messageText={field.value} currentPhoneWidth={280} zoomLevel={1} />
                         </FormControl>
                       </div>
@@ -286,7 +285,7 @@ function FormFlowFields() {
                           e.stopPropagation(); 
                           handleCopy(fieldName);
                         }}
-                        className="w-full max-w-[280px] mx-auto mt-2" // Match phone width
+                        className="w-full max-w-[280px] mx-auto mt-2"
                         disabled={!field.value}
                       >
                         <Copy className="mr-2 h-4 w-4" />

@@ -17,7 +17,7 @@ interface PhonePreviewProps {
 const PhonePreview: React.FC<PhonePreviewProps> = ({
   messageText,
   contactName = "Chat Inc.",
-  currentPhoneWidth = 280, // Adjusted for fitting three previews
+  currentPhoneWidth = 280,
   zoomLevel = 1.0,
 }) => {
   const [currentTime, setCurrentTime] = useState<string | null>(null);
@@ -26,8 +26,8 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
     const updateClock = () => {
       setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
     };
-    updateClock(); // Initial call
-    const timerId = setInterval(updateClock, 1000 * 60); // Update every minute
+    updateClock(); 
+    const timerId = setInterval(updateClock, 1000 * 60); 
     return () => clearInterval(timerId);
   }, []);
 
@@ -41,7 +41,7 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
     <div className="flex justify-center items-start py-2">
       <div
         style={phoneStyle}
-        className="aspect-[9/19.5] bg-zinc-800 p-1.5 rounded-[40px] border-4 border-zinc-900 shadow-2xl overflow-hidden"
+        className="aspect-[9/19.5] bg-zinc-800 p-1.5 rounded-[40px] shadow-2xl overflow-hidden" // Removed border-4 border-zinc-900
       >
         <div className="h-full w-full bg-background rounded-[30px] flex flex-col overflow-hidden">
           {/* Status Bar */}
@@ -102,4 +102,3 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
 };
 
 export default PhonePreview;
-
