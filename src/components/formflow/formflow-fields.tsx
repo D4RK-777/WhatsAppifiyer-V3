@@ -14,7 +14,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,7 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import TemplateGallery, { type TemplateItemProps } from "./template-gallery";
 import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
 import { Button } from "@/components/ui/button";
-import { Loader2, Copy, Sparkles } from "lucide-react"; 
+import { Loader2, Copy, Sparkles, ThumbsUp, ThumbsDown, RefreshCw } from "lucide-react"; 
 import PhonePreview from "./phone-preview";
 
 const messageTypesArray = ["marketing", "authentication", "utility", "service"] as const;
@@ -63,7 +62,7 @@ type VariationFieldName = 'field1' | 'field2' | 'field3';
 function FormFlowFields() {
   const { toast } = useToast();
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
-  const [selectedVariation, setSelectedVariation] = useState<VariationFieldName | null>(null);
+  const [hoveredVariation, setHoveredVariation] = useState<VariationFieldName | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -82,7 +81,6 @@ function FormFlowFields() {
     form.setValue("field1", template.templateContent.field1 || "", { shouldValidate: true });
     form.setValue("field2", template.templateContent.field2 || "", { shouldValidate: true });
     form.setValue("field3", template.templateContent.field3 || "", { shouldValidate: true });
-    setSelectedVariation(null);
     toast({
       title: `Template "${template.title}" Applied!`,
       description: "Text/Idea, message type, and initial field content pre-populated. Edit or get AI suggestions.",
@@ -110,7 +108,6 @@ function FormFlowFields() {
     if (hasError) return;
 
     setIsLoadingSuggestions(true);
-    setSelectedVariation(null); 
     try {
       const suggestionsInput: SuggestFormFieldsInput = {
         context: yourTextOrIdea,
@@ -165,15 +162,31 @@ function FormFlowFields() {
       });
     }
   };
+  
+  const handleLike = (fieldName: VariationFieldName) => {
+    toast({ title: `Liked Variation ${fieldName.charAt(fieldName.length - 1)}`, description: "Feedback submitted (placeholder)." });
+  };
+
+  const handleDislike = (fieldName: VariationFieldName) => {
+    toast({ title: `Disliked Variation ${fieldName.charAt(fieldName.length - 1)}`, description: "Feedback submitted (placeholder)." });
+  };
+
+  const handleRegenerate = (fieldName: VariationFieldName) => {
+    toast({ title: `Regenerate Variation ${fieldName.charAt(fieldName.length - 1)} requested`, description: "This feature is coming soon! (placeholder)." });
+    // Placeholder for future AI call to regenerate a specific field
+    // For example:
+    // const currentValue = form.getValues(fieldName);
+    // const { yourTextOrIdea, messageType } = form.getValues();
+    // Call a new AI flow: regenerateSingleSuggestion({ originalText: yourTextOrIdea, messageType, fieldToRegenerate: fieldName, currentValue })
+  };
+
 
   const onSubmit = (values: FormValues) => {
     // This function is not currently triggered by any button, but kept for potential future use
     console.log("Form data (WhatsAppified variations):", values);
-    const selectedValue = selectedVariation ? values[selectedVariation] : "No variation selected";
-    console.log("Selected variation content:", selectedValue);
     toast({
-      title: "Form Data & Selection Logged",
-      description: `Current variations logged. Selected: ${selectedVariation || 'None'}.`,
+      title: "Form Data Logged",
+      description: `Current variations logged to console.`,
     });
   };
 
@@ -262,41 +275,47 @@ function FormFlowFields() {
                   control={form.control}
                   name={fieldName}
                   render={({ field }) => (
-                    <FormItem className="flex flex-col items-center space-y-2">
+                    <FormItem 
+                      className="flex flex-col items-center space-y-2"
+                      onMouseEnter={() => setHoveredVariation(fieldName)}
+                      onMouseLeave={() => setHoveredVariation(null)}
+                    >
                       <FormLabel className="font-semibold text-foreground mb-1">WhatsApp Variation {index + 1}</FormLabel>
-                      <div
-                        className={cn(
-                          "w-full p-0.5 rounded-[44px] transition-all cursor-pointer", 
-                           selectedVariation === fieldName ? "shadow-lg" : "" 
-                        )}
-                        onClick={() => setSelectedVariation(fieldName)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedVariation(fieldName);}}
-                        aria-pressed={selectedVariation === fieldName}
-                        aria-label={`Select WhatsApp Variation ${index + 1}`}
-                      >
+                      <div className="w-full p-0.5 rounded-[44px] transition-all cursor-default">
                         <FormControl>
                           <PhonePreview messageText={field.value} currentPhoneWidth={320} zoomLevel={1} />
                         </FormControl>
                       </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation(); 
-                          handleCopy(fieldName);
-                        }}
-                        className="w-full max-w-[320px] mx-auto mt-2"
-                        disabled={!field.value}
-                      >
-                        <Copy className="mr-2 h-4 w-4" />
-                        Copy Variation {index + 1}
-                      </Button>
-                       <FormDescription className="text-xs text-muted-foreground">
-                        {selectedVariation === fieldName ? "Selected. " : ""}Click preview to select.
-                      </FormDescription>
+                      <div className="w-full max-w-[320px] mx-auto mt-2 flex flex-col space-y-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation(); 
+                            handleCopy(fieldName);
+                          }}
+                          className={cn(
+                            "w-full",
+                            hoveredVariation === fieldName && "ring-2 ring-primary ring-offset-1 ring-offset-background"
+                          )}
+                          disabled={!field.value}
+                        >
+                          <Copy className="mr-2 h-4 w-4" />
+                          Copy Variation {index + 1}
+                        </Button>
+                        <div className="flex justify-center space-x-2">
+                          <Button variant="outline" size="icon" onClick={() => handleLike(fieldName)} aria-label={`Like Variation ${index + 1}`}>
+                            <ThumbsUp className="h-4 w-4" />
+                          </Button>
+                          <Button variant="outline" size="icon" onClick={() => handleDislike(fieldName)} aria-label={`Dislike Variation ${index + 1}`}>
+                            <ThumbsDown className="h-4 w-4" />
+                          </Button>
+                          <Button variant="outline" size="icon" onClick={() => handleRegenerate(fieldName)} aria-label={`Regenerate Variation ${index + 1}`}>
+                            <RefreshCw className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -314,3 +333,5 @@ function FormFlowFields() {
 }
 
 export default FormFlowFields;
+
+    
