@@ -1,19 +1,22 @@
 
 "use client";
 
-import type { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+
+export type MessageType = "marketing" | "authentication" | "utility" | "service";
+type FilterCategory = "all" | MessageType;
 
 export interface TemplateItemProps {
   id: number;
   title: string;
-  // imageUrl: string; // No longer strictly needed for display, but kept for data structure consistency if needed elsewhere.
-  dataAiHint: string; // This will be used as the context (user's text/idea) for the AI
-  messageType: "marketing" | "authentication" | "utility" | "service";
+  dataAiHint: string; 
+  messageType: MessageType;
   templateContent: { 
-    field1?: string; // Pre-filled content for variation 1
-    field2?: string; // Pre-filled content for variation 2
-    field3?: string; // Pre-filled content for variation 3
+    field1?: string; 
+    field2?: string; 
+    field3?: string; 
   };
   onClick: (template: TemplateItemProps) => void;
 }
@@ -183,31 +186,80 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   }
 ];
 
-const displayTemplates = whatsAppTemplates.slice(0, 8);
-
 interface TemplateGalleryProps {
   onTemplateClick: (template: TemplateItemProps) => void;
 }
 
 const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
-  const typedDisplayTemplates = displayTemplates as TemplateItemProps[]; 
+  const [activeFilter, setActiveFilter] = useState<FilterCategory>("all");
 
-  const row1Templates = typedDisplayTemplates.slice(0, Math.min(7, typedDisplayTemplates.length));
-  // Ensure row2Start is not negative and row2End does not exceed length
-  const row2Start = Math.min(1, Math.max(0, typedDisplayTemplates.length -1));
-  const row2End = Math.min(8, typedDisplayTemplates.length);
-  const row2Templates = typedDisplayTemplates.length > 1 ? typedDisplayTemplates.slice(row2Start, row2End) : (typedDisplayTemplates.length === 1 ? typedDisplayTemplates.slice(0,1) : []);
-  const row3Templates = typedDisplayTemplates.slice(0, Math.min(7, typedDisplayTemplates.length));
+  const allFullTemplates = whatsAppTemplates as TemplateItemProps[];
 
+  const filteredTemplates = activeFilter === "all" 
+    ? allFullTemplates 
+    : allFullTemplates.filter(template => template.messageType === activeFilter);
+  
+  // Ensure enough templates for 3 rows, or repeat if fewer
+  let displayTemplates: TemplateItemProps[] = [];
+  if (filteredTemplates.length > 0) {
+    // Create a list long enough for 3 distinct-ish rows if possible
+    // This logic can be simplified if specific row content isn't critical
+    // and repetition is acceptable.
+    const base = filteredTemplates.slice(0,8); // Max 8 unique for variety
+    while(displayTemplates.length < 24 && base.length > 0) { // Aim for up to 24 items for 3 rows of ~8
+        displayTemplates = displayTemplates.concat(base);
+    }
+     // If still not enough, just repeat what we have to fill up
+    if (displayTemplates.length === 0 && base.length > 0) displayTemplates = [...base, ...base, ...base];
+    else if (displayTemplates.length < 8 && displayTemplates.length > 0) { // if less than 8, repeat to make it look fuller
+        const currentDisplay = [...displayTemplates];
+        while(displayTemplates.length < Math.max(8, currentDisplay.length * 2)) {
+            displayTemplates = displayTemplates.concat(currentDisplay);
+        }
+    }
+     // Ensure we don't have too many if original list was small
+    displayTemplates = displayTemplates.slice(0,24);
+
+
+  }
+
+
+  const row1Templates = displayTemplates.slice(0, Math.min(8, displayTemplates.length));
+  const row2Templates = displayTemplates.slice(Math.min(8, displayTemplates.length), Math.min(16, displayTemplates.length));
+  const row3Templates = displayTemplates.slice(Math.min(16, displayTemplates.length), Math.min(24, displayTemplates.length));
+
+
+  const filterCategories: { label: string; value: FilterCategory }[] = [
+    { label: "All", value: "all" },
+    { label: "Marketing", value: "marketing" },
+    { label: "Authentication", value: "authentication" },
+    { label: "Utility", value: "utility" },
+    { label: "Service", value: "service" },
+  ];
 
   return (
     <div className="pt-6 border-t border-border mt-6">
-      <h3 className="text-xl font-semibold text-center mb-6 text-primary">
-        Explore WhatsApp FormFlow Templates
+      <h3 className="text-xl font-semibold text-center mb-4 text-primary">
+        Explore WhatsApp Templates
       </h3>
+      <div className="flex justify-center gap-2 mb-6 flex-wrap">
+        {filterCategories.map(category => (
+          <Button
+            key={category.value}
+            variant={activeFilter === category.value ? "default" : "outline"}
+            onClick={() => setActiveFilter(category.value)}
+            className="rounded-full px-4 py-1.5 text-sm"
+          >
+            {category.label}
+          </Button>
+        ))}
+      </div>
       {row1Templates.length > 0 && <TemplateRow templates={row1Templates} direction="left" speed="60s" onTemplateClick={onTemplateClick} />}
       {row2Templates.length > 0 && <TemplateRow templates={row2Templates} direction="right" speed="75s" onTemplateClick={onTemplateClick} />}
       {row3Templates.length > 0 && <TemplateRow templates={row3Templates} direction="left" speed="65s" onTemplateClick={onTemplateClick} />}
+       {filteredTemplates.length === 0 && activeFilter !== "all" && (
+        <p className="text-center text-muted-foreground mt-4">No templates found for "{activeFilter}" category.</p>
+      )}
     </div>
   );
 };

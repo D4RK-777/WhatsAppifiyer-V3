@@ -6,8 +6,8 @@ import { Toaster } from "@/components/ui/toaster";
 // Removed geistSans and geistMono font objects
 
 export const metadata: Metadata = {
-  title: 'FormFlow',
-  description: 'An intelligent form assistant by Firebase Studio',
+  title: 'WhatsApp Message Assistant',
+  description: 'AI-powered WhatsApp message generation and formatting',
 };
 
 export default function RootLayout({
