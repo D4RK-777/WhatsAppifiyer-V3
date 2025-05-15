@@ -66,6 +66,8 @@ Apply WhatsApp formatting best practices to ALL THREE suggestions:
 - Use \`\`\`monospace\`\`\` for codes (like OTPs: \`\`\`123456\`\`\`), specific URLs, or technical details.
 - Incorporate emojis appropriately to enhance engagement, convey emotion, and improve visual appeal. Ensure emojis are relevant to the message content and the '{{{messageType}}}' (e.g., 🚀 for launches, 🔒 for security, 🗓️ for reminders, ℹ️ for information).
 - Keep messages concise, clear, and actionable, tailoring the tone and style to the specified '{{{messageType}}}'.
+- **IMPORTANT: If a message starts with a greeting like "Hi {{UserName}}," or "Hello {{Name}}," always insert two newline characters (\\n\\n) after the greeting line to create a blank line for better readability before the main message body.** For example:
+  "Hi {{UserName}},\\n\\nThis is the rest of the message..."
 - Ensure "Suggestion 1", "Suggestion 2", and "Suggestion 3" are distinct from each other in terms of phrasing, emphasis, or structure, while conveying the same core message based on the user's input.
 
 Based on all the above, provide three polished, WhatsApp-formatted message variations for "Suggestion 1", "Suggestion 2", and "Suggestion 3".`,
@@ -82,5 +84,3 @@ const suggestFormFieldsFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    

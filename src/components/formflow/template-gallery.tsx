@@ -121,12 +121,12 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
   {
     id: 3,
     title: 'Appointment Reminder (Utility)',
-    dataAiHint: 'Remind a user about their dental check-up tomorrow at 10:00 AM with Dr. Smile.',
+    dataAiHint: 'Remind a user about their dental check-up tomorrow at 10:00 AM with Dr. Smile. Include options to confirm or reschedule.',
     messageType: 'utility',
     templateContent: {
-      field1: "🗓️ *Appointment Reminder*\n\nHi {{UserName}},\nThis is a friendly reminder for your dental check-up with *Dr. Smile* tomorrow, {{Date}}, at *10:00 AM*.\n\nSee you soon!",
-      field2: "Just a heads up! ⏰ Your appointment with *Dr. Smile* is scheduled for tomorrow at *10:00 AM*.\n\n📍 {{ClinicAddress}}\n📞 {{ClinicPhone}}\n\nNeed to reschedule? Reply to this message or call us.",
-      field3: "Hi {{UserName}}! Don't forget your dental appointment:\n\n*Service:* Check-up\n*Provider:* Dr. Smile\n*Date:* Tomorrow, {{Date}}\n*Time:* 10:00 AM\n\nWe look forward to seeing you! 😊"
+      field1: "🦷 *Appointment Tomorrow!* 🦷\n\nHi {{UserName}},\n\nThis is a reminder for your appointment with *Dr. Smile* tomorrow at *10:00 AM* for a dental check-up.\n\n📍 {{ClinicAddress}}\n\nTo confirm, reply with \"YES\". To reschedule, reply with \"NO\" or call us at {{ClinicPhone}}.",
+      field2: "🗓️ *Friendly Reminder: Your Dental Check-up*\n\nHello {{UserName}},\n\nYour appointment with *Dr. Smile* is scheduled for tomorrow, {{Date}}, at *10:00 AM*.\n\nPlease reply *CONFIRM* to this message or call us at {{ClinicPhone}} if you need to reschedule.\n\nLooking forward to seeing your smile! 😊",
+      field3: "✨ *Just a Quick Heads-Up!* ✨\n\nHi {{UserName}},\n\nDon't forget your dental appointment with *Dr. Smile*!\n*Date:* Tomorrow, {{Date}}\n*Time:* 10:00 AM\n*Service:* Dental Check-up\n\nIf you can make it, great! If not, please let us know by replying or calling {{ClinicPhone}}."
     }
   },
   {
@@ -135,9 +135,9 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     dataAiHint: 'Inform a customer their order #ABC12345 has shipped and provide tracking link XYZ.',
     messageType: 'utility',
     templateContent: {
-      field1: "🚚 *Your Order #ABC12345 Has Shipped!* 🎉\n\nGreat news, {{UserName}}! Your items are on their way.\n\nTrack your package: [TrackingLinkXYZ]\n\nEstimated delivery: {{DeliveryDate}}",
-      field2: "Good news! 📦 Your order *#ABC12345* is now en route!\n\nYou can follow its journey here: [TrackingLinkXYZ]\n\nExpected arrival: {{DeliveryDate}}. We hope you love your purchase!",
-      field3: "Update on your order *#ABC12345*:\nIt's shipped! 🥳\n\n*Tracking:* [TrackingLinkXYZ]\n*Carrier:* {{CarrierName}}\n\nGet ready for your goodies!"
+      field1: "🚚 *Your Order #ABC12345 Has Shipped!* 🎉\n\nGreat news, {{UserName}}!\n\nYour items are on their way.\n\nTrack your package: [TrackingLinkXYZ]\n\nEstimated delivery: {{DeliveryDate}}",
+      field2: "📦 *On Its Way!* Your Order: #ABC12345\n\nHi {{UserName}},\n\nGood news! Your order is now en route!\n\nFollow its journey here: [TrackingLinkXYZ]\n\nExpected arrival: {{DeliveryDate}}. We hope you love your purchase!",
+      field3: "Update on your order *#ABC12345*:\n\nIt's shipped! 🥳\n\n*Tracking:* [TrackingLinkXYZ]\n*Carrier:* {{CarrierName}}\n\nGet ready for your goodies, {{UserName}}!"
     }
   },
   {
@@ -146,9 +146,9 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     dataAiHint: 'Provide an update on support ticket #TICKET101, stating the issue is being investigated.',
     messageType: 'service',
     templateContent: {
-      field1: "ℹ️ *Update on Support Ticket #TICKET101*\n\nHi {{UserName}},\nOur team is currently investigating the issue you reported. We'll provide another update within 24 hours.\n\nThank you for your patience,\n{{YourCompanyName}} Support",
+      field1: "ℹ️ *Update on Support Ticket #TICKET101*\n\nHi {{UserName}},\n\nOur team is currently investigating the issue you reported. We'll provide another update within 24 hours.\n\nThank you for your patience,\n{{YourCompanyName}} Support",
       field2: "Hello {{UserName}},\n\nThis is an update regarding your support ticket *#TICKET101*.\n\n*Status:* Under Investigation\n_We are actively working on it and will get back to you soon._\n\nThanks for reaching out!",
-      field3: "Support Update for Ticket *#TICKET101*:\n\nDear {{UserName}},\nWe've received your query and our technical team is looking into it. We appreciate your patience and will update you as soon as we have more information.\n\nWarm regards,\nCustomer Care"
+      field3: "Support Update for Ticket *#TICKET101*:\n\nDear {{UserName}},\n\nWe've received your query and our technical team is looking into it. We appreciate your patience and will update you as soon as we have more information.\n\nWarm regards,\nCustomer Care"
     }
   },
   {
@@ -168,9 +168,9 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     dataAiHint: 'User requested a password reset. Provide a secure link to reset.',
     messageType: 'authentication',
     templateContent: {
-      field1: "🔑 *Password Reset Request*\n\nHi {{UserName}},\nWe received a request to reset your password. Click the link below to set a new one:\n\n[PasswordResetLink]\n\n_If you didn't request this, please ignore this message._",
-      field2: "Need to reset your password? No problem!\n\nUse this secure link to create a new password for your account: \n[PasswordResetLink]\n\nThis link will expire in {{ExpiryTime}}.\n\nFor your security, do not share this link.",
-      field3: "*Security Alert: Password Reset*\n\nHello {{UserName}},\nTo reset your password, please follow this link: [PasswordResetLink]\n\nIf this wasn't you, your account is secure, and no action is needed. However, you may want to update your password as a precaution."
+      field1: "🔑 *Password Reset Request*\n\nHi {{UserName}},\n\nWe received a request to reset your password. Click the link below to set a new one:\n\n[PasswordResetLink]\n\n_If you didn't request this, please ignore this message._",
+      field2: "Need to reset your password? No problem!\n\nHi {{UserName}},\n\nUse this secure link to create a new password for your account: \n[PasswordResetLink]\n\nThis link will expire in {{ExpiryTime}}.\n\nFor your security, do not share this link.",
+      field3: "*Security Alert: Password Reset*\n\nHello {{UserName}},\n\nTo reset your password, please follow this link: [PasswordResetLink]\n\nIf this wasn't you, your account is secure, and no action is needed. However, you may want to update your password as a precaution."
     }
   },
    {
@@ -179,7 +179,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     dataAiHint: 'Inform users about upcoming scheduled maintenance for our app tonight from 2 AM to 4 AM. Mention service might be temporarily unavailable.',
     messageType: 'utility',
     templateContent: {
-      field1: "⚙️ *Scheduled Maintenance Notice* ⚙️\n\nHi there,\nOur app will undergo scheduled maintenance *tonight from 2 AM to 4 AM {{TimeZone}}* to improve performance.\n\nServices may be temporarily unavailable during this time. We apologize for any inconvenience.",
+      field1: "⚙️ *Scheduled Maintenance Notice* ⚙️\n\nHi there,\n\nOur app will undergo scheduled maintenance *tonight from 2 AM to 4 AM {{TimeZone}}* to improve performance.\n\nServices may be temporarily unavailable during this time. We apologize for any inconvenience.",
       field2: "*Important Service Update*\n\nPlease be advised of a planned maintenance window for {{AppName}}:\n\n*Date:* Today/Tonight\n*Time:* 2:00 AM - 4:00 AM {{TimeZone}}\n\nDuring this period, access to the app might be intermittent. Thank you for your understanding.",
       field3: "🔧 Heads up! We're making {{AppName}} even better!\n\nScheduled maintenance is planned for *tonight, 2 AM - 4 AM {{TimeZone}}*.\n\nYou might experience temporary service disruptions. We'll be back up and running smoothly ASAP! 👍"
     }
@@ -235,8 +235,8 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     messageType: 'authentication',
     templateContent: {
       field1: "✅ *Verify Your Account*\n\nWelcome to {{AppName}}! Please click the link below to verify your email and activate your account:\n\n[VerificationLink]\n\n_Link expires in 24 hours._",
-      field2: "Almost there, {{UserName}}! Just one more step to get started with {{AppName}}.\n\nVerify your account: [VerificationLink]\n\nIf you didn't sign up, please ignore this message.",
-      field3: "🔐 *Confirm Your Email for {{AppName}}*\n\nThanks for signing up! Click here to complete your registration:\n\n[VerificationLink]\n\n_This ensures your account is secure._"
+      field2: "Almost there, {{UserName}}!\n\nJust one more step to get started with {{AppName}}.\n\nVerify your account: [VerificationLink]\n\nIf you didn't sign up, please ignore this message.",
+      field3: "🔐 *Confirm Your Email for {{AppName}}*\n\nThanks for signing up, {{UserName}}!\n\nClick here to complete your registration:\n\n[VerificationLink]\n\n_This ensures your account is secure._"
     }
   },
   {
@@ -246,8 +246,8 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     messageType: 'authentication',
     templateContent: {
       field1: "🛡️ *Security Alert* 🛡️\n\nWe detected a new login to your {{AppName}} account from {{DeviceLocation}} at {{Time}}.\n\nIf this was you, no action is needed.\nIf not, please secure your account immediately: [SecureAccountLink]\n\nThanks, The {{AppName}} Team",
-      field2: "*New Login Detected for {{AppName}}*\n\nWas this you? A login just occurred from:\nDevice: {{DeviceType}}\nLocation: {{LocationApprox}}\n\nNot you? [LinkToReportSuspiciousActivity]\nYes, this was me.",
-      field3: "Hi {{UserName}}, for your security, we're notifying you of a login from a new device/location for your {{AppName}} account.\n\nDate: {{Date}}\nTime: {{Time}}\nApprox. Location: {{Location}}\n\nIf this wasn't you, please change your password and review your account activity here: [SecuritySettingsLink]"
+      field2: "*New Login Detected for {{AppName}}*\n\nWas this you, {{UserName}}? A login just occurred from:\nDevice: {{DeviceType}}\nLocation: {{LocationApprox}}\n\nNot you? [LinkToReportSuspiciousActivity]\nYes, this was me.",
+      field3: "Hi {{UserName}},\n\nFor your security, we're notifying you of a login from a new device/location for your {{AppName}} account.\n\nDate: {{Date}}\nTime: {{Time}}\nApprox. Location: {{Location}}\n\nIf this wasn't you, please change your password and review your account activity here: [SecuritySettingsLink]"
     }
   },
   {
@@ -256,9 +256,9 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     dataAiHint: "Confirm customer {{CustomerName}}'s order #{{OrderID}} for {{TotalAmount}}. Mention expected delivery window {{DeliveryWindow}}.",
     messageType: 'utility',
     templateContent: {
-      field1: "✅ *Order Confirmed! #{{OrderID}}* ✅\n\nThanks for your order, {{CustomerName}}! Your order for {{TotalAmount}} has been successfully placed.\n\nWe'll notify you when it ships. Estimated delivery: {{DeliveryWindow}}.\n\nTrack progress: [OrderTrackingLink]",
-      field2: "🎉 *Your {{AppName}} Order #{{OrderID}} is Confirmed!* 🎉\n\nHi {{CustomerName}},\nWe've received your order totaling {{TotalAmount}}.\n\nExpected delivery: {{DeliveryWindow}}.\nYou can view your order details here: [OrderDetailsLink]\n\nThanks for shopping with us!",
-      field3: "Order #{{OrderID}} received!\n\nAmount: {{TotalAmount}}\nItems: {{ShortListOfItemsOrItemCount}}\n\nWe're preparing your order for shipment. You'll get another update soon!\n\n_Questions? Contact us at {{SupportEmailOrPhone}}._"
+      field1: "✅ *Order Confirmed! #{{OrderID}}* ✅\n\nThanks for your order, {{CustomerName}}!\n\nYour order for {{TotalAmount}} has been successfully placed.\n\nWe'll notify you when it ships. Estimated delivery: {{DeliveryWindow}}.\n\nTrack progress: [OrderTrackingLink]",
+      field2: "🎉 *Your {{AppName}} Order #{{OrderID}} is Confirmed!* 🎉\n\nHi {{CustomerName}},\n\nWe've received your order totaling {{TotalAmount}}.\n\nExpected delivery: {{DeliveryWindow}}.\nYou can view your order details here: [OrderDetailsLink]\n\nThanks for shopping with us!",
+      field3: "Order #{{OrderID}} received!\n\nHi {{CustomerName}},\n\nAmount: {{TotalAmount}}\nItems: {{ShortListOfItemsOrItemCount}}\n\nWe're preparing your order for shipment. You'll get another update soon!\n\n_Questions? Contact us at {{SupportEmailOrPhone}}._"
     }
   },
   {
@@ -267,9 +267,9 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     dataAiHint: "Remind user {{UserName}} their {{SubscriptionName}} subscription is renewing on {{RenewalDate}} for {{RenewalAmount}}.",
     messageType: 'utility',
     templateContent: {
-      field1: "🔔 *Subscription Renewal Reminder* 🔔\n\nHi {{UserName}},\nYour {{SubscriptionName}} subscription is due for renewal on *{{RenewalDate}}* for {{RenewalAmount}}.\n\nNo action is needed if you wish to continue. To manage your subscription: [SubscriptionManagementLink]\n\nThanks for being a valued subscriber!",
-      field2: "Heads up, {{UserName}}! Your {{SubscriptionName}} plan will automatically renew on {{RenewalDate}}.\n\nAmount: {{RenewalAmount}}\n\nManage your subscription settings here: [Link]\n\n_Stay with us to keep enjoying {{KeyBenefit}}!_",
-      field3: "🗓️ *Friendly Renewal Notice*\n\nYour {{SubscriptionName}} subscription is set to renew on {{RenewalDate}}.\n\nTo ensure uninterrupted access to {{Feature}}, no action is required. Your payment method will be charged {{RenewalAmount}}.\n\nUpdate payment or cancel: [LinkToAccount]"
+      field1: "🔔 *Subscription Renewal Reminder* 🔔\n\nHi {{UserName}},\n\nYour {{SubscriptionName}} subscription is due for renewal on *{{RenewalDate}}* for {{RenewalAmount}}.\n\nNo action is needed if you wish to continue. To manage your subscription: [SubscriptionManagementLink]\n\nThanks for being a valued subscriber!",
+      field2: "Heads up, {{UserName}}!\n\nYour {{SubscriptionName}} plan will automatically renew on {{RenewalDate}}.\n\nAmount: {{RenewalAmount}}\n\nManage your subscription settings here: [Link]\n\n_Stay with us to keep enjoying {{KeyBenefit}}!_",
+      field3: "🗓️ *Friendly Renewal Notice*\n\nHi {{UserName}},\n\nYour {{SubscriptionName}} subscription is set to renew on {{RenewalDate}}.\n\nTo ensure uninterrupted access to {{Feature}}, no action is required. Your payment method will be charged {{RenewalAmount}}.\n\nUpdate payment or cancel: [LinkToAccount]"
     }
   },
   {
@@ -278,8 +278,8 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     dataAiHint: "Confirm receipt of {{UserName}}'s support query, provide ticket ID {{TicketID}}, and set {{ResponseTimeEstimate}} for response.",
     messageType: 'service',
     templateContent: {
-      field1: "✅ *Support Ticket Received: #{{TicketID}}*\n\nHi {{UserName}},\nThanks for contacting us! We've received your support request (Ticket ID: {{TicketID}}).\n\nOur team will get back to you within {{ResponseTimeEstimate_e.g.,_24_business_hours}}.\n\nRegards,\nThe {{AppName}} Support Team",
-      field2: "Got it! 👍 Your support query has been logged as ticket *#{{TicketID}}*.\n\nWe're on it! Expect a response from our support specialists within {{ResponseTimeEstimate}}.\n\nIn the meantime, you might find our FAQ helpful: [FAQLink]",
+      field1: "✅ *Support Ticket Received: #{{TicketID}}*\n\nHi {{UserName}},\n\nThanks for contacting us! We've received your support request (Ticket ID: {{TicketID}}).\n\nOur team will get back to you within {{ResponseTimeEstimate_e.g.,_24_business_hours}}.\n\nRegards,\nThe {{AppName}} Support Team",
+      field2: "Got it! 👍 Your support query has been logged as ticket *#{{TicketID}}*.\n\nHi {{UserName}},\n\nWe're on it! Expect a response from our support specialists within {{ResponseTimeEstimate}}.\n\nIn the meantime, you might find our FAQ helpful: [FAQLink]",
       field3: "Hello {{UserName}},\n\nThis confirms we've received your inquiry (Ticket: *{{TicketID}}*).\n\nOur support ninjas are reviewing it and will reply as soon as possible, typically within {{ResponseTimeEstimate}}.\n\nThank you for your patience!"
     }
   },
@@ -290,8 +290,8 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     messageType: 'service',
     templateContent: {
       field1: "Hi {{UserName}},\n\nWe see your support ticket #{{TicketID}} was recently resolved. We'd love to hear about your experience!\n\nCould you take a moment to rate our support? [FeedbackLink]\n\nYour feedback helps us improve! 🙏",
-      field2: "Hope we helped! 😊\n\nNow that your issue (Ticket #{{TicketID}}) is resolved, would you mind sharing your feedback on our service?\n\nIt's quick: [SurveyLink]\n\nThanks for helping us get better!",
-      field3: "🌟 *How did we do?* 🌟\n\nRegarding your recent support interaction for ticket #{{TicketID}}, we'd appreciate your honest feedback.\n\nClick here to share your thoughts: [FeedbackFormLink]\n\n_Your input is invaluable!_"
+      field2: "Hope we helped! 😊\n\nHi {{UserName}},\n\nNow that your issue (Ticket #{{TicketID}}) is resolved, would you mind sharing your feedback on our service?\n\nIt's quick: [SurveyLink]\n\nThanks for helping us get better!",
+      field3: "🌟 *How did we do?* 🌟\n\nHi {{UserName}},\n\nRegarding your recent support interaction for ticket #{{TicketID}}, we'd appreciate your honest feedback.\n\nClick here to share your thoughts: [FeedbackFormLink]\n\n_Your input is invaluable!_"
     }
   },
   {
@@ -301,7 +301,7 @@ const whatsAppTemplates: Omit<TemplateItemProps, 'onClick'>[] = [
     messageType: 'service',
     templateContent: {
       field1: "🎉 *Welcome to {{AppName}}, {{UserName}}!* 🎉\n\nWe're thrilled to have you on board! Get started by exploring {{KeyFeatureDescription_e.g.,_our_dashboard}} here: [LinkToFeatureOrDashboard]\n\nQuestions? Check out our guide: [GettingStartedGuideLink]",
-      field2: "Hey {{UserName}}! Welcome to the {{AppName}} family! 👋\n\nReady to dive in? Your first step could be to {{ActionableNextStep_e.g.,_set_up_your_profile}}.\n\nLet us know if you need anything!\n\n_The {{AppName}} Team_",
+      field2: "Hey {{UserName}}! 👋\n\nWelcome to the {{AppName}} family!\n\nReady to dive in? Your first step could be to {{ActionableNextStep_e.g.,_set_up_your_profile}}.\n\nLet us know if you need anything!\n\n_The {{AppName}} Team_",
       field3: "Welcome aboard, {{UserName}}! 🚀\n\nSuper excited you've joined {{AppName}}!\n\nHere's a quick tip to get you started: {{QuickTip}}.\n\nExplore more features: [AppFeaturesLink]\n\nHappy {{AppActivity_e.g.,_messaging}}!"
     }
   }
@@ -384,6 +384,3 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
 };
 
 export default TemplateGallery;
-
-
-    
