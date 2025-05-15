@@ -166,8 +166,6 @@ function FormFlowFields() {
     }
   };
 
-  // This onSubmit is not strictly necessary if the primary action is AI suggestions and copying.
-  // Kept for potential future use or if there's a scenario to submit the whole form.
   const onSubmit = (values: FormValues) => {
     console.log("Form data (WhatsAppified variations):", values);
     const selectedValue = selectedVariation ? values[selectedVariation] : "No variation selected";
@@ -188,7 +186,6 @@ function FormFlowFields() {
               name="yourTextOrIdea"
               render={({ field }) => (
                 <FormItem>
-                  {/* <FormLabel className="text-lg font-semibold text-foreground">Your Text / Message Idea</FormLabel> */}
                   <FormControl>
                     <Textarea
                       placeholder="Paste your SMS or text here, or describe your message idea (e.g., 'Weekend sale announcement for shoes'). You can also select a template below."
@@ -216,10 +213,10 @@ function FormFlowFields() {
                       {messageTypesArray.map((type) => (
                         <Button
                           key={type}
-                          type="button" // Important to prevent form submission
+                          type="button"
                           variant={field.value === type ? "default" : "outline"}
                           onClick={() => field.onChange(type)}
-                          className="capitalize flex-grow sm:flex-grow-0" // Grow on small screens, not on larger
+                          className="capitalize flex-grow sm:flex-grow-0 rounded-full px-4 py-1.5 text-sm"
                         >
                           {type}
                         </Button>
