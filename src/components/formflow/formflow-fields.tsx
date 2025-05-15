@@ -93,8 +93,8 @@ function FormFlowFields() {
   const currentYourTextOrIdea = form.watch("yourTextOrIdea");
 
   useEffect(() => {
-    const typingSpeed = 100; // Was 150
-    const deletingSpeed = 50; // Was 75
+    const typingSpeed = 100; 
+    const deletingSpeed = 50; 
     const pauseDuration = 2000;
 
     const handleTypewriter = () => {
@@ -126,15 +126,13 @@ function FormFlowFields() {
       }
     };
 
-    // Start the animation only if the textarea is empty
     if (!currentYourTextOrIdea || currentYourTextOrIdea.length === 0) {
         typewriterTimeoutRef.current = setTimeout(handleTypewriter, isDeleting ? deletingSpeed : typingSpeed);
     } else {
-        // Clear any existing animation if user types
         if (typewriterTimeoutRef.current) {
             clearTimeout(typewriterTimeoutRef.current);
         }
-        if (animatedPlaceholder !== "") setAnimatedPlaceholder(""); // Clear animated placeholder
+        if (animatedPlaceholder !== "") setAnimatedPlaceholder(""); 
     }
 
 
@@ -265,9 +263,6 @@ function FormFlowFields() {
       const suggestionsInput: SuggestFormFieldsInput = {
         context: yourTextOrIdea,
         messageType,
-        // When regenerating a specific field, we don't need to pass its current content.
-        // The AI will use the main context to generate three new suggestions,
-        // and we'll pick the one corresponding to the field being regenerated.
       };
       const newSuggestions = await suggestFormFields(suggestionsInput);
 
@@ -427,7 +422,7 @@ function FormFlowFields() {
                           }}
                           className={cn(
                             "w-full shadow-sm",
-                            hoveredVariation === fieldName && "ring-2 ring-primary ring-offset-1 ring-offset-background"
+                            hoveredVariation === fieldName && "ring-2 ring-primary ring-offset-1 ring-offset-background text-foreground"
                           )}
                           disabled={!field.value}
                         >
