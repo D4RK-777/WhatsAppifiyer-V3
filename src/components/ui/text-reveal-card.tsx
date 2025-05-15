@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useEffect, useRef, useState, memo } from "react";
 import { motion } from "framer-motion";
@@ -93,9 +94,9 @@ export const TextRevealCard = ({
         >
           <p
             style={{
-              textShadow: "4px 4px 15px rgba(0,0,0,0.1)", // Adjusted shadow for lighter bg
+              textShadow: "4px 4px 15px rgba(0,0,0,0.1)", 
             }}
-            className="text-base sm:text-[3rem] py-10 font-bold text-primary bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/80"
+            className="text-base sm:text-[3rem] py-10 font-bold text-primary bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/80 text-center"
           >
             {revealText}
           </p>
@@ -110,8 +111,8 @@ export const TextRevealCard = ({
           className="h-40 w-[8px] bg-gradient-to-b from-transparent via-border to-transparent absolute z-50 will-change-transform"
         ></motion.div>
 
-        <div className="overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,white,transparent)]">
-          <p className="text-base sm:text-[3rem] py-10 font-bold text-muted-foreground/50">
+        <div className="w-full overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,white,transparent)]">
+          <p className="text-base sm:text-[3rem] py-10 font-bold text-muted-foreground/50 text-center">
             {text}
           </p>
           <MemoizedStars />
@@ -173,8 +174,8 @@ const Stars = () => {
             left: `${random() * 100}%`,
             width: `2px`,
             height: `2px`,
-            backgroundColor: "hsl(var(--foreground))", // Use foreground for stars for better visibility on light bg
-            opacity: 0.3, // Reduce star opacity
+            backgroundColor: "hsl(var(--foreground))", 
+            opacity: 0.3, 
             borderRadius: "50%",
             zIndex: 1,
           }}
