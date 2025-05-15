@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -130,4 +131,15 @@ body {
       background-position: -200px -200px; /* Move one full pattern cycle */
     }
   }
+
+  /* Tour highlight style */
+  .tour-step-highlight {
+    outline: 3px solid hsl(var(--primary) / 0.9); /* Brighter, more solid outline */
+    box-shadow: 0 0 0 4px hsl(var(--background)), 0 0 20px 8px hsl(var(--primary) / 0.7); /* Inner contrasting shadow + outer glow */
+    border-radius: var(--radius); /* Consistent rounding */
+    transition: outline 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+    position: relative; /* Ensure z-index is respected if ever needed, though overlay is on top */
+    z-index: 51 !important; /* Attempt to bring it above the dialog overlay, may not work perfectly */
+  }
 }
+

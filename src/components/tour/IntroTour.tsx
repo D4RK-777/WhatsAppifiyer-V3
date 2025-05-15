@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -13,13 +13,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, CheckCircle, Gift, MessageSquareText, Sparkles, Target, TextCursorInput } from 'lucide-react';
 
-const TOUR_STORAGE_KEY = 'whatsappifyIntroTourSeen_v1'; // Added _v1 to potentially reset for users if tour changes significantly
+const TOUR_STORAGE_KEY = 'whatsappifyIntroTourSeen_v1';
 
 interface TourStep {
   title: string;
   description: React.ReactNode;
   icon?: React.ElementType;
-  targetId?: string; // ID of the element to scroll to
+  targetId?: string; 
 }
 
 const tourSteps: TourStep[] = [
@@ -44,7 +44,7 @@ const tourSteps: TourStep[] = [
     title: "3. Transform Your Text",
     description: "Click the 'Transform text into something magical' button. Our AI will then generate three distinct WhatsApp message variations for you.",
     icon: Sparkles,
-    targetId: "tour-target-transform-button-container", // Target the container for better visibility
+    targetId: "tour-target-transform-button-container",
   },
   {
     title: "4. Review Variations & Copy",
@@ -56,7 +56,7 @@ const tourSteps: TourStep[] = [
     title: "5. Explore Templates",
     description: "Need inspiration or a quick start? Browse our template gallery. Click any template to pre-fill the form with its content and message type.",
     icon: Gift,
-    targetId: "tour-target-template-gallery-container", // Target the container
+    targetId: "tour-target-template-gallery-container",
   },
   {
     title: "You're All Set!",
@@ -69,6 +69,7 @@ const IntroTour: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [isClient, setIsClient] = useState(false);
+  const highlightedElementRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     setIsClient(true); 
@@ -84,17 +85,31 @@ const IntroTour: React.FC = () => {
   }, [isClient]);
 
   useEffect(() => {
-    if (isOpen && isClient) {
-      const step = tourSteps[currentStep];
-      if (step.targetId) {
-        const element = document.getElementById(step.targetId);
-        if (element) {
-          // Timeout to allow dialog to render before scrolling
-          setTimeout(() => {
-            element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-          }, 100); // Small delay
-        }
+    const currentTargetId = tourSteps[currentStep]?.targetId;
+
+    // Cleanup previous highlight
+    if (highlightedElementRef.current) {
+      highlightedElementRef.current.classList.remove('tour-step-highlight');
+      highlightedElementRef.current = null;
+    }
+
+    if (isOpen && isClient && currentTargetId) {
+      const element = document.getElementById(currentTargetId);
+      if (element) {
+        setTimeout(() => { // Ensure dialog is rendered before scrolling/highlighting
+          element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+          element.classList.add('tour-step-highlight');
+          highlightedElementRef.current = element;
+        }, 150); // Increased delay slightly
       }
+    }
+
+    // Cleanup on tour close or step change without target
+    if (!isOpen || !currentTargetId) {
+        if (highlightedElementRef.current) {
+            highlightedElementRef.current.classList.remove('tour-step-highlight');
+            highlightedElementRef.current = null;
+        }
     }
   }, [currentStep, isOpen, isClient]);
 
@@ -112,19 +127,25 @@ const IntroTour: React.FC = () => {
     }
   };
 
-  const handleFinish = () => {
+  const handleFinishOrSkip = () => {
     setIsOpen(false);
+    if (highlightedElementRef.current) {
+        highlightedElementRef.current.classList.remove('tour-step-highlight');
+        highlightedElementRef.current = null;
+    }
     if (isClient) {
       localStorage.setItem(TOUR_STORAGE_KEY, 'true');
     }
   };
+
+  const handleFinish = () => {
+    // setCurrentStep to the last step to ensure cleanup effect runs if needed, then close
+    setCurrentStep(tourSteps.length - 1); 
+    handleFinishOrSkip();
+  };
   
   const handleSkip = () => {
-    setIsOpen(false);
-    setCurrentStep(tourSteps.length -1); 
-    if (isClient) {
-      localStorage.setItem(TOUR_STORAGE_KEY, 'true');
-    }
+    handleFinishOrSkip();
   };
 
   if (!isClient || !isOpen) {
@@ -138,7 +159,7 @@ const IntroTour: React.FC = () => {
       if (!open) {
         handleSkip(); 
       }
-      setIsOpen(open);
+      // setIsOpen(open); // Let the skip/finish handlers manage isOpen
     }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="items-center text-center">
