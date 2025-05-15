@@ -41,9 +41,9 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
     <div className="flex justify-center items-start py-2">
       <div
         style={phoneStyle}
-        className="aspect-[9/19.5] bg-zinc-800 p-2 rounded-[40px] shadow-2xl overflow-hidden" // Changed p-1.5 to p-2
+        className="aspect-[9/19.5] bg-zinc-800 p-2 rounded-[40px] shadow-2xl overflow-hidden"
       >
-        <div className="h-full w-full bg-background rounded-[32px] flex flex-col overflow-hidden"> {/* Changed rounded-[30px] to rounded-[32px] */}
+        <div className="h-full w-full bg-background rounded-[32px] flex flex-col overflow-hidden">
           {/* Status Bar */}
           <div className="px-3 pt-2 pb-1 flex justify-between items-center text-xs text-foreground/80 shrink-0">
             {currentTime === null ? (
@@ -59,18 +59,21 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
           </div>
 
           {/* WhatsApp Business Header */}
-          <div className="bg-primary px-3 py-2 flex items-center space-x-3 text-primary-foreground shrink-0">
-            <div className="p-1.5 bg-primary-foreground/20 rounded-full">
-              <User size={20} className="text-primary-foreground" />
+          <div 
+            className="px-3 py-2 flex items-center space-x-3 text-primary-foreground shrink-0"
+            style={{ backgroundColor: '#075E54' }}
+          >
+            <div className="p-1 bg-black/20 rounded-full"> {/* Adjusted padding and background for avatar container */}
+              <User size={18} className="text-white" /> {/* Adjusted icon size and made color explicit white */}
             </div>
             <div className="flex-grow">
-              <div className="font-semibold text-sm">{contactName}</div>
-              <div className="text-xs text-primary-foreground/80">Business Account</div>
+              <div className="font-semibold text-xs text-white">{contactName}</div> {/* Adjusted text size and made color explicit white */}
+              <div className="text-xs text-white/80">Business Account</div> {/* Made color explicit white/80 */}
             </div>
             <div className="flex items-center space-x-3">
-              <Phone size={18} />
-              <Video size={18} />
-              <MoreVertical size={18} />
+              <Phone size={16} className="text-white/90 hover:text-white" /> {/* Adjusted icon size and color */}
+              <Video size={16} className="text-white/90 hover:text-white" /> {/* Adjusted icon size and color */}
+              <MoreVertical size={16} className="text-white/90 hover:text-white" /> {/* Adjusted icon size and color */}
             </div>
           </div>
 
