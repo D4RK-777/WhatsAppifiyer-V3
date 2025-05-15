@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import TemplateGallery, { type TemplateItemProps, type MessageType as TemplateMessageType } from "./template-gallery";
+import TemplateGallery, { type TemplateItemProps } from "./template-gallery";
 import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
 import { Button } from "@/components/ui/button";
 import { Loader2, Copy } from "lucide-react";
@@ -206,10 +206,10 @@ function FormFlowFields() {
               control={form.control}
               name="messageType"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-lg font-semibold text-foreground">Message Type</FormLabel>
+                <FormItem className="flex flex-col items-center">
+                  <FormLabel className="text-lg font-semibold text-foreground text-center">Message Type</FormLabel>
                   <FormControl>
-                    <div className="flex flex-wrap gap-2 pt-1">
+                    <div className="flex flex-wrap gap-2 pt-1 justify-center">
                       {messageTypesArray.map((type) => (
                         <Button
                           key={type}
@@ -223,7 +223,7 @@ function FormFlowFields() {
                       ))}
                     </div>
                   </FormControl>
-                  <FormDescription className="text-sm text-muted-foreground">
+                  <FormDescription className="text-sm text-muted-foreground text-center">
                     Select the primary purpose of your WhatsApp message.
                   </FormDescription>
                   <FormMessage />
