@@ -198,7 +198,7 @@ function FormFlowFields() {
                     <Textarea
                       placeholder="Paste your SMS or text here, or describe your message idea (e.g., 'Weekend sale announcement for shoes'). You can also select a template below."
                       className="resize-none rounded-md text-base shadow-[0_0_5px_hsl(var(--accent)_/_0.4)] focus-visible:ring-0 focus-visible:shadow-[0_0_12px_hsl(var(--accent)_/_0.75)] transition-shadow duration-200 ease-in-out"
-                      rows={4}
+                      rows={8}
                       {...field}
                     />
                   </FormControl>
@@ -240,7 +240,7 @@ function FormFlowFields() {
                 onClick={handleGetSuggestions}
                 disabled={isLoadingSuggestions}
                 className={cn(
-                  "w-1/2", // Changed from w-full
+                  "w-1/2", 
                   "relative overflow-hidden", 
                   "bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900", 
                   "text-slate-100", 
@@ -275,17 +275,11 @@ function FormFlowFields() {
                       onMouseLeave={() => setHoveredVariation(null)}
                     >
                       <FormLabel className="font-semibold text-foreground mb-1">WhatsApp Variation {index + 1}</FormLabel>
-                      <div className="w-full p-0.5 rounded-[44px] transition-all cursor-default">
-                        <FormControl>
-                          <PhonePreview messageText={field.value} currentPhoneWidth={320} zoomLevel={1} />
-                        </FormControl>
-                      </div>
-                      <div className="w-full max-w-[320px] mx-auto mt-2 flex flex-col space-y-2">
-                        <Button
+                       <Button
                           type="button"
                           onClick={() => handleRegenerate(fieldName)}
                           className={cn(
-                            "w-full", 
+                            "w-full max-w-[320px] mx-auto", 
                             "relative overflow-hidden", 
                             "bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900", 
                             "text-slate-100", 
@@ -295,12 +289,18 @@ function FormFlowFields() {
                             "focus-visible:ring-purple-400", 
                             "galaxy-stars-effect", 
                             "animate-sparkle-icon", 
-                            "px-4 py-2 text-sm rounded-md" 
+                            "px-4 py-2 text-sm rounded-md mb-2" 
                           )}
                         >
                           <Sparkles className="mr-2 h-4 w-4" /> 
                           Regenerate Variation {index + 1}
                         </Button>
+                      <div className="w-full p-0.5 rounded-[44px] transition-all cursor-default">
+                        <FormControl>
+                          <PhonePreview messageText={field.value} currentPhoneWidth={320} zoomLevel={1} />
+                        </FormControl>
+                      </div>
+                      <div className="w-full max-w-[320px] mx-auto mt-2 flex flex-col space-y-2">
                         <Button
                           type="button"
                           variant="outline"
@@ -347,4 +347,5 @@ export default FormFlowFields;
     
 
     
+
 
