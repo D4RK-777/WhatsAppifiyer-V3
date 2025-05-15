@@ -35,7 +35,7 @@ import { useToast } from "@/hooks/use-toast";
 import TemplateGallery, { type TemplateItemProps } from "./template-gallery";
 import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Copy } from "lucide-react";
 
 const formSchema = z.object({
   yourTextOrIdea: z
@@ -64,6 +64,7 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
+type VariationFieldName = 'field1' | 'field2' | 'field3';
 
 // Component to render WhatsApp-like formatted text
 const WhatsAppMessagePreview = ({ content }: { content: string | undefined }) => {
@@ -152,6 +153,7 @@ const WhatsAppMessagePreview = ({ content }: { content: string | undefined }) =>
 function FormFlowFields() {
   const { toast } = useToast();
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [selectedVariation, setSelectedVariation] = useState<VariationFieldName | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -170,6 +172,7 @@ function FormFlowFields() {
     form.setValue("field1", template.templateContent.field1 || "", { shouldValidate: true });
     form.setValue("field2", template.templateContent.field2 || "", { shouldValidate: false }); 
     form.setValue("field3", template.templateContent.field3 || "", { shouldValidate: false }); 
+    setSelectedVariation(null); // Reset selection when template changes
     toast({
       title: `Template "${template.title}" Applied!`,
       description: "Text/Idea, message type, and initial field content pre-populated. Edit or get AI suggestions.",
@@ -197,6 +200,7 @@ function FormFlowFields() {
     if (hasError) return;
 
     setIsLoadingSuggestions(true);
+    setSelectedVariation(null); // Reset selection on new suggestions
     try {
       const suggestionsInput: SuggestFormFieldsInput = {
         context: yourTextOrIdea,
@@ -226,12 +230,40 @@ function FormFlowFields() {
     }
   };
 
+  const handleCopy = async (fieldName: VariationFieldName) => {
+    const contentToCopy = form.getValues(fieldName);
+    if (contentToCopy) {
+      try {
+        await navigator.clipboard.writeText(contentToCopy);
+        toast({
+          title: "Copied!",
+          description: `Variation ${fieldName.charAt(fieldName.length - 1)} copied to clipboard.`,
+        });
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+        toast({
+          title: "Error Copying",
+          description: "Could not copy text to clipboard.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      toast({
+        title: "Nothing to Copy",
+        description: "This variation is empty.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const onSubmit = (values: FormValues) => {
     // This function is not currently tied to a submit button but might be used for other submission logic.
     console.log("Form data (WhatsAppified variations):", values);
+    const selectedValue = selectedVariation ? values[selectedVariation] : "No variation selected";
+    console.log("Selected variation content:", selectedValue);
     toast({
-      title: "Form Data Logged",
-      description: "Current WhatsApp variations have been logged to the console.",
+      title: "Form Data & Selection Logged",
+      description: `Current variations logged. Selected: ${selectedVariation || 'None'}.`,
     });
   };
 
@@ -253,7 +285,6 @@ function FormFlowFields() {
               name="yourTextOrIdea"
               render={({ field }) => (
                 <FormItem>
-                  {/* FormLabel removed as per user request */}
                   <FormControl>
                     <Textarea
                       placeholder="Paste your SMS or text here, or describe your message idea (e.g., 'Weekend sale announcement for shoes'). You can also select a template below."
@@ -276,7 +307,7 @@ function FormFlowFields() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-lg font-semibold">Message Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || undefined} >
                     <FormControl>
                       <SelectTrigger className="rounded-md shadow-sm text-base focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]">
                         <SelectValue placeholder="Select a message type" />
@@ -316,54 +347,52 @@ function FormFlowFields() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-10 pt-4">
-              <FormField
-                control={form.control}
-                name="field1"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col items-center">
-                    <FormLabel className="font-semibold text-foreground mb-2">WhatsApp Variation 1</FormLabel>
-                    <FormControl>
-                      <WhatsAppMessagePreview content={field.value} />
-                    </FormControl>
-                     <FormDescription className="text-xs text-muted-foreground mt-2">
-                      AI-generated variation.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="field2"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col items-center">
-                    <FormLabel className="font-semibold text-foreground mb-2">WhatsApp Variation 2</FormLabel>
-                    <FormControl>
-                       <WhatsAppMessagePreview content={field.value} />
-                    </FormControl>
-                    <FormDescription className="text-xs text-muted-foreground mt-2">
-                      AI-generated variation.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="field3"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col items-center">
-                    <FormLabel className="font-semibold text-foreground mb-2">WhatsApp Variation 3</FormLabel>
-                    <FormControl>
-                       <WhatsAppMessagePreview content={field.value} />
-                    </FormControl>
-                     <FormDescription className="text-xs text-muted-foreground mt-2">
-                      AI-generated variation.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {(['field1', 'field2', 'field3'] as VariationFieldName[]).map((fieldName, index) => (
+                <FormField
+                  key={fieldName}
+                  control={form.control}
+                  name={fieldName}
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col items-center space-y-2">
+                      <FormLabel className="font-semibold text-foreground mb-1">WhatsApp Variation {index + 1}</FormLabel>
+                      <div
+                        className={cn(
+                          "w-full p-0.5 rounded-[32px] transition-all cursor-pointer", // Adjusted rounding to encapsulate phone mock
+                          selectedVariation === fieldName ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : "hover:ring-1 hover:ring-primary/50"
+                        )}
+                        onClick={() => setSelectedVariation(fieldName)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedVariation(fieldName);}}
+                        aria-pressed={selectedVariation === fieldName}
+                        aria-label={`Select WhatsApp Variation ${index + 1}`}
+                      >
+                        <FormControl>
+                          <WhatsAppMessagePreview content={field.value} />
+                        </FormControl>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent click from bubbling to the selection div
+                          handleCopy(fieldName);
+                        }}
+                        className="w-full max-w-[300px] mx-auto mt-2"
+                        disabled={!field.value}
+                      >
+                        <Copy className="mr-2 h-4 w-4" />
+                        Copy Variation {index + 1}
+                      </Button>
+                       <FormDescription className="text-xs text-muted-foreground">
+                        {selectedVariation === fieldName ? "Selected. " : ""}AI-generated. Click preview to select.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
             </div>
           </CardContent>
           <TemplateGallery onTemplateClick={handleTemplateSelect} />
@@ -374,5 +403,3 @@ function FormFlowFields() {
 }
 
 export default FormFlowFields;
-
-    
