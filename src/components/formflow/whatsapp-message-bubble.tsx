@@ -86,18 +86,18 @@ const WhatsAppMessageBubble: React.FC<WhatsAppMessageBubbleProps> = ({
     <div className="w-full flex mb-2">
       <div
         className={cn(
-          "max-w-[75%] p-2 rounded-lg shadow",
+          "max-w-[80%] p-2 rounded-lg shadow", // Increased max-width from 75% to 80%
           isSender ? "bg-[#E9FDC9] dark:bg-[#55752F] ml-auto rounded-br-none" : "bg-card dark:bg-neutral-700 mr-auto rounded-bl-none"
         )}
       >
         <div className={cn(
-            "text-sm text-black dark:text-white leading-relaxed break-words whitespace-pre-line" // Changed leading-snug to leading-relaxed
+            "text-xs text-black dark:text-white leading-relaxed break-words whitespace-pre-line" // Changed text-sm to text-xs
           )}
         >
           {formattedNodes}
         </div>
         <div className={cn(
-          "text-xs mt-1",
+          "text-xs mt-1", // Timestamp text size also text-xs
           isSender ? "text-right text-neutral-500 dark:text-neutral-400" : "text-left text-neutral-500 dark:text-neutral-400"
         )}>
           {timestamp}
