@@ -188,11 +188,12 @@ function FormFlowFields() {
               name="yourTextOrIdea"
               render={({ field }) => (
                 <FormItem>
+                  {/* <FormLabel className="text-lg font-semibold text-foreground">Your Text / Message Idea</FormLabel> */}
                   <FormControl>
                     <Textarea
                       placeholder="Paste your SMS or text here, or describe your message idea (e.g., 'Weekend sale announcement for shoes'). You can also select a template below."
-                      className="resize-none rounded-md shadow-sm text-base focus-visible:ring-0 focus-visible:shadow-[0_0_10px_hsl(var(--accent)_/_0.7)]"
-                      rows={3}
+                      className="resize-none rounded-md text-base shadow-[0_0_5px_hsl(var(--accent)_/_0.4)] focus-visible:ring-0 focus-visible:shadow-[0_0_12px_hsl(var(--accent)_/_0.75)] transition-shadow duration-200 ease-in-out"
+                      rows={4}
                       {...field}
                     />
                   </FormControl>
@@ -263,7 +264,7 @@ function FormFlowFields() {
                       <div
                         className={cn(
                           "w-full p-0.5 rounded-[44px] transition-all cursor-pointer",
-                          selectedVariation === fieldName ? "shadow-lg" : "" 
+                           selectedVariation === fieldName ? "shadow-lg" : "" 
                         )}
                         onClick={() => setSelectedVariation(fieldName)}
                         role="button"
@@ -308,3 +309,4 @@ function FormFlowFields() {
 }
 
 export default FormFlowFields;
+
