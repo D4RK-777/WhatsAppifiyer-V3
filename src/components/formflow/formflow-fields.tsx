@@ -33,6 +33,7 @@ import TemplateGallery, { type TemplateItemProps } from "./template-gallery";
 import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
 import { Button } from "@/components/ui/button";
 import { Loader2, Copy } from "lucide-react";
+import PhonePreview from "./phone-preview"; // Import the new PhonePreview
 
 const formSchema = z.object({
   yourTextOrIdea: z
@@ -63,91 +64,6 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 type VariationFieldName = 'field1' | 'field2' | 'field3';
 
-// Component to render WhatsApp-like formatted text
-const WhatsAppMessagePreview = ({ content }: { content: string | undefined }) => {
-  
-  let keyCounter = 0;
-  const generateKey = (type: string) => `${type}-${keyCounter++}`;
-
-  const parseTextToReact = (text: string): React.ReactNode[] => {
-    if (!text) return [];
-
-    // 1. ```codeblock``` (multiline, non-greedy)
-    const codeMatch = text.match(/^(.*?)```([\s\S]*?)```(.*)$/s);
-    if (codeMatch) {
-      return [
-        ...parseTextToReact(codeMatch[1]), // Before
-        <pre key={generateKey('codeblock')} className="bg-muted p-2 my-1 rounded-md text-sm font-mono whitespace-pre-wrap break-all">
-          <code>{codeMatch[2]}</code>
-        </pre>,
-        ...parseTextToReact(codeMatch[3])  // After
-      ];
-    }
-
-    // 2. *bold* (non-greedy, content must exist)
-    const boldMatch = text.match(/^(.*?)\*([^*]+?)\*(.*)$/s);
-    if (boldMatch) {
-      return [
-        ...parseTextToReact(boldMatch[1]),
-        <strong key={generateKey('bold')}>{parseTextToReact(boldMatch[2])}</strong>,
-        ...parseTextToReact(boldMatch[3])
-      ];
-    }
-
-    // 3. _italic_ (non-greedy, content must exist)
-    const italicMatch = text.match(/^(.*?)_([^_]+?)_(.*)$/s);
-    if (italicMatch) {
-      return [
-        ...parseTextToReact(italicMatch[1]),
-        <em key={generateKey('italic')}>{parseTextToReact(italicMatch[2])}</em>,
-        ...parseTextToReact(italicMatch[3])
-      ];
-    }
-    
-    // 4. ~strikethrough~ (non-greedy, content must exist)
-    const strikeMatch = text.match(/^(.*?)~([^~]+?)~(.*)$/s);
-    if (strikeMatch) {
-      return [
-        ...parseTextToReact(strikeMatch[1]),
-        <del key={generateKey('strike')}>{parseTextToReact(strikeMatch[2])}</del>,
-        ...parseTextToReact(strikeMatch[3])
-      ];
-    }
-
-    // 5. Newlines and plain text
-    return text.split(/(\\n)/g).map((part, index) => {
-      if (part === '\\n') return <br key={generateKey(`br-${index}`)} />;
-      if (part) return <span key={generateKey(`text-${index}`)}>{part}</span>; 
-      return null;
-    }).filter(Boolean); 
-  };
-  
-  const formattedNodes = parseTextToReact(content?.replace(/\n/g, '\\n') || '');
-
-  return (
-    // Outer container: Simulates a phone body/frame
-    <div className="w-full max-w-[300px] mx-auto aspect-[9/17] bg-secondary p-2 rounded-[36px] shadow-2xl border border-border flex flex-col overflow-hidden">
-      {/* Top "notch" or speaker area visual cue */}
-      <div className="h-2.5 w-20 bg-background mx-auto rounded-b-md mt-1 mb-2 shrink-0"></div>
-
-      {/* "Screen" area where the message content is displayed */}
-      <div className="flex-grow bg-card rounded-[24px] text-card-foreground text-sm overflow-y-auto p-3 flex flex-col">
-        {(!content || content.trim() === "") ? (
-          <div className="flex-grow w-full flex items-center justify-center text-muted-foreground text-xs p-2 text-center">
-            AI-generated WhatsApp message variation will appear here.
-          </div>
-        ) : (
-          <div className="w-full leading-snug">
-            {formattedNodes}
-          </div>
-        )}
-      </div>
-      {/* Bottom Home Bar Area (Visual Cue) */}
-      <div className="h-1.5 w-28 bg-background mx-auto rounded-full mt-2 mb-1 shrink-0"></div>
-    </div>
-  );
-};
-
 
 function FormFlowFields() {
   const { toast } = useToast();
@@ -171,7 +87,7 @@ function FormFlowFields() {
     form.setValue("field1", template.templateContent.field1 || "", { shouldValidate: true });
     form.setValue("field2", template.templateContent.field2 || "", { shouldValidate: true }); 
     form.setValue("field3", template.templateContent.field3 || "", { shouldValidate: true }); 
-    setSelectedVariation(null); // Reset selection when template changes
+    setSelectedVariation(null);
     toast({
       title: `Template "${template.title}" Applied!`,
       description: "Text/Idea, message type, and initial field content pre-populated. Edit or get AI suggestions.",
@@ -199,7 +115,7 @@ function FormFlowFields() {
     if (hasError) return;
 
     setIsLoadingSuggestions(true);
-    setSelectedVariation(null); // Reset selection on new suggestions
+    setSelectedVariation(null); 
     try {
       const suggestionsInput: SuggestFormFieldsInput = {
         context: yourTextOrIdea,
@@ -256,7 +172,6 @@ function FormFlowFields() {
   };
 
   const onSubmit = (values: FormValues) => {
-    // This function is not currently tied to a submit button but might be used for other submission logic.
     console.log("Form data (WhatsAppified variations):", values);
     const selectedValue = selectedVariation ? values[selectedVariation] : "No variation selected";
     console.log("Selected variation content:", selectedValue);
@@ -337,7 +252,7 @@ function FormFlowFields() {
               </Button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-10 pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-2 gap-y-6 pt-4"> {/* Reduced gap-x */}
               {(['field1', 'field2', 'field3'] as VariationFieldName[]).map((fieldName, index) => (
                 <FormField
                   key={fieldName}
@@ -348,8 +263,8 @@ function FormFlowFields() {
                       <FormLabel className="font-semibold text-foreground mb-1">WhatsApp Variation {index + 1}</FormLabel>
                       <div
                         className={cn(
-                          "w-full p-0.5 rounded-[40px] transition-all cursor-pointer", 
-                          selectedVariation === fieldName ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : "hover:ring-1 hover:ring-primary/50"
+                          "w-full p-0.5 rounded-[44px] transition-all cursor-pointer", // Slightly larger radius for selection ring
+                          selectedVariation === fieldName ? "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-lg" : "hover:ring-1 hover:ring-primary/50"
                         )}
                         onClick={() => setSelectedVariation(fieldName)}
                         role="button"
@@ -359,7 +274,8 @@ function FormFlowFields() {
                         aria-label={`Select WhatsApp Variation ${index + 1}`}
                       >
                         <FormControl>
-                          <WhatsAppMessagePreview content={field.value} />
+                          {/* Use new PhonePreview component */}
+                          <PhonePreview messageText={field.value} currentPhoneWidth={280} zoomLevel={1} />
                         </FormControl>
                       </div>
                       <Button
@@ -370,14 +286,14 @@ function FormFlowFields() {
                           e.stopPropagation(); 
                           handleCopy(fieldName);
                         }}
-                        className="w-full max-w-[300px] mx-auto mt-2"
+                        className="w-full max-w-[280px] mx-auto mt-2" // Match phone width
                         disabled={!field.value}
                       >
                         <Copy className="mr-2 h-4 w-4" />
                         Copy Variation {index + 1}
                       </Button>
                        <FormDescription className="text-xs text-muted-foreground">
-                        {selectedVariation === fieldName ? "Selected. " : ""}AI-generated. Click preview to select.
+                        {selectedVariation === fieldName ? "Selected. " : ""}Click preview to select.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
