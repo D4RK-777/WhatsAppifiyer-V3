@@ -126,22 +126,24 @@ const WhatsAppMessagePreview = ({ content }: { content: string | undefined }) =>
 
   return (
     // Outer container: Simulates a phone body/frame
-    <div className="w-full max-w-[300px] mx-auto aspect-[9/17] bg-muted/30 p-1.5 rounded-[28px] shadow-xl border border-border flex flex-col overflow-hidden">
+    <div className="w-full max-w-[300px] mx-auto aspect-[9/17] bg-secondary p-2 rounded-[36px] shadow-2xl border border-border flex flex-col overflow-hidden">
       {/* Top "notch" or speaker area visual cue */}
-      <div className="h-5 bg-foreground/10 w-20 mx-auto rounded-b-lg mb-1 shrink-0"></div>
+      <div className="h-2.5 w-20 bg-background mx-auto rounded-b-md mt-1 mb-2 shrink-0"></div>
 
       {/* "Screen" area where the message content is displayed */}
-      <div className="flex-grow bg-card rounded-[20px] text-card-foreground text-sm overflow-y-auto p-3 flex flex-col items-start">
+      <div className="flex-grow bg-card rounded-[24px] text-card-foreground text-sm overflow-y-auto p-3 flex flex-col">
         {(!content || content.trim() === "") ? (
           <div className="flex-grow w-full flex items-center justify-center text-muted-foreground text-xs p-2 text-center">
             AI-generated WhatsApp message variation will appear here.
           </div>
         ) : (
-          <div className="w-full leading-snug"> {/* Added leading-snug for tighter line spacing */}
+          <div className="w-full leading-snug">
             {formattedNodes}
           </div>
         )}
       </div>
+      {/* Bottom Home Bar Area (Visual Cue) */}
+      <div className="h-1.5 w-28 bg-background mx-auto rounded-full mt-2 mb-1 shrink-0"></div>
     </div>
   );
 };
@@ -274,7 +276,6 @@ function FormFlowFields() {
               name="yourTextOrIdea"
               render={({ field }) => (
                 <FormItem>
-                  {/* <FormLabel className="text-lg font-semibold">Your Text / Message Idea</FormLabel> */}
                   <FormControl>
                     <Textarea
                       placeholder="Paste your SMS or text here, or describe your message idea (e.g., 'Weekend sale announcement for shoes'). You can also select a template below."
@@ -347,7 +348,7 @@ function FormFlowFields() {
                       <FormLabel className="font-semibold text-foreground mb-1">WhatsApp Variation {index + 1}</FormLabel>
                       <div
                         className={cn(
-                          "w-full p-0.5 rounded-[32px] transition-all cursor-pointer", // Adjusted rounding to encapsulate phone mock
+                          "w-full p-0.5 rounded-[40px] transition-all cursor-pointer", 
                           selectedVariation === fieldName ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : "hover:ring-1 hover:ring-primary/50"
                         )}
                         onClick={() => setSelectedVariation(fieldName)}
@@ -366,7 +367,7 @@ function FormFlowFields() {
                         variant="outline"
                         size="sm"
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevent click from bubbling to the selection div
+                          e.stopPropagation(); 
                           handleCopy(fieldName);
                         }}
                         className="w-full max-w-[300px] mx-auto mt-2"
@@ -393,6 +394,3 @@ function FormFlowFields() {
 }
 
 export default FormFlowFields;
-
-    
-
