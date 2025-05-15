@@ -28,41 +28,43 @@ interface TypeColorStyle {
   filterButtonCategoryClasses: string; // For non-active outline filter buttons (base and hover)
 }
 
+const whatsappGreyCardBackground = 'bg-slate-100 dark:bg-slate-800';
+
 const getTypeColorStyles = (type: MessageType): TypeColorStyle => {
   switch (type) {
     case 'marketing':
       return {
         borderClasses: 'border-green-400 hover:border-green-500 focus-visible:ring-green-500',
         textHeaderClass: 'text-green-700 dark:text-green-500',
-        cardBackgroundClass: 'bg-green-50 dark:bg-green-900/30',
+        cardBackgroundClass: whatsappGreyCardBackground,
         filterButtonCategoryClasses: 'border-green-400 text-green-700 dark:text-green-500 hover:bg-green-100 dark:hover:bg-green-800/40 hover:text-green-700 dark:hover:text-green-300 focus-visible:ring-green-500',
       };
     case 'service':
       return {
         borderClasses: 'border-yellow-400 hover:border-yellow-500 focus-visible:ring-yellow-500',
         textHeaderClass: 'text-yellow-600 dark:text-yellow-400',
-        cardBackgroundClass: 'bg-yellow-50 dark:bg-yellow-900/30',
+        cardBackgroundClass: whatsappGreyCardBackground,
         filterButtonCategoryClasses: 'border-yellow-400 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-800/40 hover:text-yellow-700 dark:hover:text-yellow-300 focus-visible:ring-yellow-500',
       };
     case 'authentication':
       return {
         borderClasses: 'border-orange-400 hover:border-orange-500 focus-visible:ring-orange-500',
         textHeaderClass: 'text-orange-700 dark:text-orange-500',
-        cardBackgroundClass: 'bg-orange-50 dark:bg-orange-900/30',
+        cardBackgroundClass: whatsappGreyCardBackground,
         filterButtonCategoryClasses: 'border-orange-400 text-orange-700 dark:text-orange-500 hover:bg-orange-100 dark:hover:bg-orange-800/40 hover:text-orange-700 dark:hover:text-orange-300 focus-visible:ring-orange-500',
       };
     case 'utility':
       return {
         borderClasses: 'border-blue-400 hover:border-blue-500 focus-visible:ring-blue-500',
         textHeaderClass: 'text-blue-700 dark:text-blue-500',
-        cardBackgroundClass: 'bg-blue-50 dark:bg-blue-900/30',
+        cardBackgroundClass: whatsappGreyCardBackground,
         filterButtonCategoryClasses: 'border-blue-400 text-blue-700 dark:text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-800/40 hover:text-blue-700 dark:hover:text-blue-300 focus-visible:ring-blue-500',
       };
     default: // Should not be reached if types are correct
       return {
         borderClasses: 'border-border hover:border-primary focus-visible:ring-ring',
         textHeaderClass: 'text-primary',
-        cardBackgroundClass: 'bg-card',
+        cardBackgroundClass: whatsappGreyCardBackground,
         filterButtonCategoryClasses: 'hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring', // Default fallback for filter button
       };
   }
@@ -428,6 +430,8 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
 };
 
 export default TemplateGallery;
+
+    
 
     
 
