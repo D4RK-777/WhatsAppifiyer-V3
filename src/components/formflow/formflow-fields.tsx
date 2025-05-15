@@ -63,6 +63,8 @@ function FormFlowFields() {
   const { toast } = useToast();
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [hoveredVariation, setHoveredVariation] = useState<VariationFieldName | null>(null);
+  const [regeneratingField, setRegeneratingField] = useState<VariationFieldName | null>(null);
+
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -171,8 +173,53 @@ function FormFlowFields() {
     toast({ title: `Disliked Variation ${fieldName.charAt(fieldName.length - 1)}`, description: "Feedback submitted (placeholder)." });
   };
 
-  const handleRegenerate = (fieldName: VariationFieldName) => {
-    toast({ title: `Regenerate Variation ${fieldName.charAt(fieldName.length - 1)} requested`, description: "This feature is coming soon! (placeholder)." });
+  const handleRegenerate = async (fieldName: VariationFieldName) => {
+    const { yourTextOrIdea, messageType } = form.getValues();
+
+    if (!yourTextOrIdea.trim()) {
+      form.setError("yourTextOrIdea", { type: "manual", message: "Please provide your text or an idea first." });
+      toast({ title: "Input Missing", description: "Please provide your text or an idea before regenerating.", variant: "destructive" });
+      return;
+    } else {
+      form.clearErrors("yourTextOrIdea");
+    }
+    if (!messageType) {
+      form.setError("messageType", { type: "manual", message: "Please select a message type first." });
+      toast({ title: "Message Type Missing", description: "Please select a message type before regenerating.", variant: "destructive" });
+      return;
+    } else {
+      form.clearErrors("messageType");
+    }
+
+    setRegeneratingField(fieldName);
+    try {
+      // For regeneration, we get all three new suggestions
+      // and pick the one corresponding to the field being regenerated.
+      const suggestionsInput: SuggestFormFieldsInput = {
+        context: yourTextOrIdea,
+        messageType,
+        // We could pass current values here to guide the AI, but for simplicity
+        // let's get three completely fresh ones and pick one.
+        field1: fieldName === 'field1' ? form.getValues().field1 : "",
+        field2: fieldName === 'field2' ? form.getValues().field2 : "",
+        field3: fieldName === 'field3' ? form.getValues().field3 : "",
+      };
+      const newSuggestions = await suggestFormFields(suggestionsInput);
+
+      if (fieldName === 'field1') {
+        form.setValue("field1", newSuggestions.suggestion1, { shouldValidate: true });
+      } else if (fieldName === 'field2') {
+        form.setValue("field2", newSuggestions.suggestion2, { shouldValidate: true });
+      } else if (fieldName === 'field3') {
+        form.setValue("field3", newSuggestions.suggestion3, { shouldValidate: true });
+      }
+      toast({ title: `Variation ${fieldName.charAt(fieldName.length - 1)} Regenerated!`, description: "A new suggestion has been populated." });
+    } catch (error) {
+      console.error(`Error regenerating ${fieldName}:`, error);
+      toast({ title: "Regeneration Error", description: `Failed to regenerate Variation ${fieldName.charAt(fieldName.length - 1)}. Please try again.`, variant: "destructive" });
+    } finally {
+      setRegeneratingField(null);
+    }
   };
 
 
@@ -238,7 +285,7 @@ function FormFlowFields() {
                 id="tour-target-transform-button"
                 type="button"
                 onClick={handleGetSuggestions}
-                disabled={isLoadingSuggestions}
+                disabled={isLoadingSuggestions || regeneratingField !== null}
                 className={cn(
                   "w-1/2", 
                   "relative overflow-hidden", 
@@ -249,7 +296,7 @@ function FormFlowFields() {
                   "hover:from-indigo-900 hover:via-purple-800 hover:to-slate-800 hover:text-white", 
                   "focus-visible:ring-purple-400", 
                   "galaxy-stars-effect", 
-                  !isLoadingSuggestions && "animate-sparkle-icon", 
+                  !isLoadingSuggestions && regeneratingField === null && "animate-sparkle-icon", 
                   "px-6 py-3 text-base rounded-lg" 
                 )}
               >
@@ -275,32 +322,37 @@ function FormFlowFields() {
                       onMouseLeave={() => setHoveredVariation(null)}
                     >
                       <FormLabel className="font-semibold text-foreground mb-1">WhatsApp Variation {index + 1}</FormLabel>
-                       <Button
-                          type="button"
-                          onClick={() => handleRegenerate(fieldName)}
-                          className={cn(
-                            "w-full max-w-[320px] mx-auto", 
-                            "relative overflow-hidden", 
-                            "bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900", 
-                            "text-slate-100", 
-                            "border border-purple-700", 
-                            "hover:border-purple-500", 
-                            "hover:from-indigo-900 hover:via-purple-800 hover:to-slate-800 hover:text-white", 
-                            "focus-visible:ring-purple-400", 
-                            "galaxy-stars-effect", 
-                            "animate-sparkle-icon", 
-                            "px-4 py-2 text-sm rounded-md mb-2" 
-                          )}
-                        >
-                          <Sparkles className="mr-2 h-4 w-4" /> 
-                          Regenerate Variation {index + 1}
-                        </Button>
                       <div className="w-full p-0.5 rounded-[44px] transition-all cursor-default">
                         <FormControl>
                           <PhonePreview messageText={field.value} currentPhoneWidth={320} zoomLevel={1} />
                         </FormControl>
                       </div>
                       <div className="w-full max-w-[320px] mx-auto mt-2 flex flex-col space-y-2">
+                         <Button
+                            type="button"
+                            onClick={() => handleRegenerate(fieldName)}
+                            disabled={isLoadingSuggestions || regeneratingField !== null}
+                            className={cn(
+                              "w-full", 
+                              "relative overflow-hidden", 
+                              "bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900", 
+                              "text-slate-100", 
+                              "border border-purple-700", 
+                              "hover:border-purple-500", 
+                              "hover:from-indigo-900 hover:via-purple-800 hover:to-slate-800 hover:text-white", 
+                              "focus-visible:ring-purple-400", 
+                              "galaxy-stars-effect", 
+                              (!isLoadingSuggestions && regeneratingField !== fieldName) && "animate-sparkle-icon", 
+                              "px-4 py-2 text-sm rounded-md" 
+                            )}
+                          >
+                            {regeneratingField === fieldName ? (
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                              <Sparkles className="mr-2 h-4 w-4" /> 
+                            )}
+                            Regenerate Variation {index + 1}
+                          </Button>
                         <Button
                           type="button"
                           variant="outline"
@@ -347,5 +399,6 @@ export default FormFlowFields;
     
 
     
+
 
 
