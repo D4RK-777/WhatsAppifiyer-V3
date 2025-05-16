@@ -99,11 +99,11 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
       aria-label={`Select ${title} template`}
       data-ai-hint={dataAiHint.split(' ').slice(0, 2).join(' ')}
     >
-      <p
-        className="text-[0.6rem] font-bold uppercase tracking-wider mb-0.5 px-2 py-0.5 rounded-md inline-block bg-black text-white"
-      >
-        {messageType}
-      </p>
+      <div className="w-full flex justify-start">
+        <span className="text-[0.6rem] font-bold uppercase tracking-wider mb-0.5 px-2 py-0.5 rounded-md bg-black text-white whitespace-nowrap">
+          {messageType}
+        </span>
+      </div>
       <p className={cn("text-xs font-semibold mb-1 w-full text-left pl-0.5", styles.textHeaderClass)}>
         {title}
       </p>
@@ -435,7 +435,7 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
                 variantClasses = `text-[${whatsappColors.neutralServiceGrey}] dark:text-[${whatsappColors.darkServiceGrey}] border-[${whatsappColors.neutralServiceGrey}] dark:border-[${whatsappColors.darkServiceGrey}] hover:bg-[${whatsappColors.neutralServiceGrey}] hover:text-white`;
                 break;
               default: // all
-                variantClasses = "text-foreground border-border hover:bg-accent";
+                variantClasses = "text-black border-border hover:bg-accent hover:text-accent-foreground";
             }
           }
           
