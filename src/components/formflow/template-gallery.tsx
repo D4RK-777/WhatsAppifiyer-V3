@@ -87,7 +87,7 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
   return (
     <div
       className={cn(
-        "flex-shrink-0 w-48 h-auto min-h-[10rem] border-2 rounded-lg p-2 mx-3 flex flex-col items-start justify-start group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all duration-300 shadow-md hover:shadow-xl cursor-pointer",
+        "flex-shrink-0 w-48 h-auto min-h-[12rem] border-2 rounded-lg p-2 mx-3 flex flex-col group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all duration-300 shadow-md hover:shadow-xl cursor-pointer",
         styles.cardBackgroundClass,
         styles.borderClass,
         `hover:border-[${whatsappColors.mainActiveGreen}]`
@@ -100,22 +100,18 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
       data-ai-hint={dataAiHint.split(' ').slice(0, 2).join(' ')}
     >
       <p
-        className={cn(
-          "text-[0.6rem] font-bold uppercase tracking-wider mb-0.5 px-2 py-0.5 rounded-md inline-block",
-          `bg-[${whatsappColors.categoryLabelBlackBg}] text-[${whatsappColors.categoryLabelWhiteText}]` // Direct black background, white text
-        )}
+        className="text-[0.6rem] font-bold uppercase tracking-wider mb-0.5 px-2 py-0.5 rounded-md inline-block bg-black text-white"
       >
         {messageType}
       </p>
-      <p className={cn("text-xs font-semibold mb-1 truncate w-full", styles.textHeaderClass)}>
+      <p className={cn("text-xs font-semibold mb-1 w-full text-left pl-0.5", styles.textHeaderClass)}>
         {title}
       </p>
       <div
         className={cn(
-          "w-full h-20 p-2 rounded-md overflow-hidden text-xs whitespace-pre-line",
-          `bg-[${whatsappColors.lightGreenPreviewBg}] text-[${whatsappColors.previewBoxText}]`
+          "w-full flex-1 p-2 rounded-md overflow-hidden text-xs whitespace-pre-line min-h-[6rem] bg-[#DCF8C6] text-[#111B21]"
         )}
-        style={{ WebkitLineClamp: 5, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' } as React.CSSProperties}
+        style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' } as React.CSSProperties}
       >
         {previewText || "No preview available"}
       </div>
@@ -417,39 +413,49 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
       <h3 className="text-xl font-semibold text-center mb-4 text-primary">
         Explore WhatsApp Templates
       </h3>
-      <div className="flex justify-center gap-2 mb-6 flex-wrap">
+      <div className="flex flex-wrap gap-2 pt-1 justify-center">
         {filterCategories.map(category => {
           const isActive = activeFilter === category.value;
+          const baseClasses = "inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border bg-background hover:bg-accent hover:text-accent-foreground h-10 capitalize flex-grow sm:flex-grow-0 rounded-full px-4 py-1.5 text-sm";
+          
+          let variantClasses = "";
+          
+          if (isActive) {
+            variantClasses = `bg-[${whatsappColors.mainActiveGreen}] hover:bg-[${whatsappColors.hoverMainActiveGreen}] text-white border-[${whatsappColors.mainActiveGreen}]`;
+          } else {
+            switch(category.value) {
+              case 'marketing':
+                variantClasses = `text-[${whatsappColors.brightGreenMarketing}] border-[${whatsappColors.brightGreenMarketing}] hover:bg-[${whatsappColors.brightGreenMarketing}] hover:text-white`;
+                break;
+              case 'authentication':
+              case 'utility':
+                variantClasses = `text-[${whatsappColors.lightBlueAuthUtility}] border-[${whatsappColors.lightBlueAuthUtility}] hover:bg-[${whatsappColors.lightBlueAuthUtility}] hover:text-white`;
+                break;
+              case 'service':
+                variantClasses = `text-[${whatsappColors.neutralServiceGrey}] dark:text-[${whatsappColors.darkServiceGrey}] border-[${whatsappColors.neutralServiceGrey}] dark:border-[${whatsappColors.darkServiceGrey}] hover:bg-[${whatsappColors.neutralServiceGrey}] hover:text-white`;
+                break;
+              default: // all
+                variantClasses = "text-foreground border-border hover:bg-accent";
+            }
+          }
+          
           return (
-            <Button
+            <button
               key={category.value}
               type="button"
               onClick={() => setActiveFilter(category.value)}
-              variant={isActive ? "default" : "outline"}
-              className={cn(
-                "rounded-full px-4 py-1.5 text-sm shadow-sm transition-colors duration-200 ease-in-out focus-visible:ring-2 focus-visible:ring-offset-2",
-                isActive 
-                  ? `focus-visible:ring-[${whatsappColors.mainActiveGreen}] bg-[${whatsappColors.mainActiveGreen}] hover:bg-[${whatsappColors.hoverMainActiveGreen}] border-[${whatsappColors.mainActiveGreen}] text-white`
-                  : category.value === 'all' 
-                    ? `text-foreground border-border hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-ring`
-                    : category.value === 'marketing'
-                      ? `text-[${whatsappColors.brightGreenMarketing}] border-[${whatsappColors.brightGreenMarketing}] hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-[${whatsappColors.brightGreenMarketing}]`
-                      : (category.value === 'authentication' || category.value === 'utility')
-                        ? `text-[${whatsappColors.lightBlueAuthUtility}] border-[${whatsappColors.lightBlueAuthUtility}] hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-[${whatsappColors.lightBlueAuthUtility}]`
-                        : category.value === 'service'
-                          ? `text-[${whatsappColors.neutralServiceGrey}] dark:text-[${whatsappColors.darkServiceGrey}] border-[${whatsappColors.neutralServiceGrey}] dark:border-[${whatsappColors.darkServiceGrey}] hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-[${whatsappColors.neutralServiceGrey}]`
-                          : '' 
-              )}
+              className={`${baseClasses} ${variantClasses}`}
+              data-component-name="FilterButton"
             >
-              {category.label}
-            </Button>
+              {category.label.toLowerCase()}
+            </button>
           );
         })}
       </div>
       {row1Templates.length > 0 && <TemplateRow templates={row1Templates} direction="left" speed="60s" onTemplateClick={onTemplateClick} />}
       {row2Templates.length > 0 && <TemplateRow templates={row2Templates} direction="right" speed="75s" onTemplateClick={onTemplateClick} />}
       {row3Templates.length > 0 && <TemplateRow templates={row3Templates} direction="left" speed="65s" onTemplateClick={onTemplateClick} />}
-       {filteredTemplates.length === 0 && activeFilter !== "all" && (
+      {filteredTemplates.length === 0 && activeFilter !== "all" && (
         <p className="text-center text-muted-foreground mt-4">No templates found for "{activeFilter}" category.</p>
       )}
     </div>

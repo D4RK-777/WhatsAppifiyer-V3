@@ -94,9 +94,9 @@ function FormFlowFields() {
   const currentYourTextOrIdea = form.watch("yourTextOrIdea");
 
   useEffect(() => {
-    const typingSpeed = 100;
-    const deletingSpeed = 50;
-    const pauseDuration = 2000;
+    const typingSpeed = 40; // Increased from 100ms to 40ms for faster typing
+    const deletingSpeed = 20; // Increased from 50ms to 20ms for faster deleting
+    const pauseDuration = 1000; // Reduced from 2000ms to 1000ms for shorter pause
     let effectIsActive = true; 
 
     const cleanupTypewriter = () => {
@@ -201,18 +201,30 @@ function FormFlowFields() {
 
     setIsLoadingSuggestions(true);
     try {
-      const suggestionsInput: SuggestFormFieldsInput = {
-        context: yourTextOrIdea || "", 
-        messageType,
-        field1: field1 || "", 
-        field2: field2 || "",
-        field3: field3 || "",
-      };
+      const response = await fetch('/api/suggestions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          context: yourTextOrIdea || "",
+          messageType,
+          field1: field1 || "",
+          field2: field2 || "",
+          field3: field3 || "",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const suggestions = await response.json();
       
-      const suggestions: SuggestFormFieldsOutput = await suggestFormFields(suggestionsInput);
       form.setValue("field1", suggestions.suggestion1, { shouldValidate: true });
       form.setValue("field2", suggestions.suggestion2, { shouldValidate: true });
       form.setValue("field3", suggestions.suggestion3, { shouldValidate: true });
+      
       toast({
         title: "WhatsApp Variations Loaded!",
         description: "AI-powered WhatsApp message variations populated.",
@@ -231,25 +243,46 @@ function FormFlowFields() {
 
   const handleCopy = async (fieldName: VariationFieldName) => {
     const contentToCopy = form.getValues(fieldName);
-    if (contentToCopy) {
-      try {
-        await navigator.clipboard.writeText(contentToCopy);
-        toast({
-          title: "Copied!",
-          description: `Variation ${fieldName.charAt(fieldName.length - 1)} copied to clipboard.`,
-        });
-      } catch (err) {
-        console.error('Failed to copy: ', err);
-        toast({
-          title: "Error Copying",
-          description: "Could not copy text to clipboard.",
-          variant: "destructive",
-        });
-      }
-    } else {
+    if (!contentToCopy) {
       toast({
         title: "Nothing to Copy",
         description: "This variation is empty.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Try modern clipboard API first
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(contentToCopy);
+      } else {
+        // Fallback for browsers that don't support the Clipboard API
+        const textarea = document.createElement('textarea');
+        textarea.value = contentToCopy;
+        textarea.style.position = 'fixed';
+        document.body.appendChild(textarea);
+        textarea.select();
+        
+        try {
+          const successful = document.execCommand('copy');
+          if (!successful) {
+            throw new Error('Copy command was unsuccessful');
+          }
+        } finally {
+          document.body.removeChild(textarea);
+        }
+      }
+      
+      toast({
+        title: "Copied!",
+        description: `Variation ${fieldName.charAt(fieldName.length - 1)} copied to clipboard.`,
+      });
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+      toast({
+        title: "Error Copying",
+        description: "Could not copy text to clipboard. Please check your browser permissions.",
         variant: "destructive",
       });
     }
@@ -283,12 +316,23 @@ function FormFlowFields() {
 
     setRegeneratingField(fieldName);
     try {
-      const suggestionsInput: SuggestFormFieldsInput = {
-        context: yourTextOrIdea,
-        messageType,
-        // Not passing field1, field2, field3 to get entirely new suggestions
-      };
-      const newSuggestions = await suggestFormFields(suggestionsInput);
+      const response = await fetch('/api/suggestions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          context: yourTextOrIdea,
+          messageType,
+          // Not passing field1, field2, field3 to get entirely new suggestions
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const newSuggestions = await response.json();
 
       if (fieldName === 'field1') {
         form.setValue("field1", newSuggestions.suggestion1, { shouldValidate: true });
