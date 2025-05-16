@@ -24,7 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import TemplateGallery, { type TemplateItemProps } from "./template-gallery";
 import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
 import { Button } from "@/components/ui/button";
-import { Loader2, Copy, Sparkles, ThumbsUp, ThumbsDown, RefreshCw } from "lucide-react"; 
+import { Loader2, Copy, Sparkles, ThumbsUp, ThumbsDown } from "lucide-react"; 
 import PhonePreview from "./phone-preview";
 
 const messageTypesArray = ["marketing", "authentication", "utility", "service"] as const;
@@ -34,8 +34,7 @@ const formSchema = z.object({
     .string()
     .min(1, "This field cannot be empty if you want AI suggestions.")
     .max(1000, "Input must be 1000 characters or less.")
-    .describe("User's text to convert or an idea for message generation.")
-    .optional(), 
+    .describe("User's text to convert or an idea for message generation."),
   messageType: z.enum(messageTypesArray, {
     required_error: "Please select a message type.",
   }),
@@ -78,6 +77,8 @@ function FormFlowFields() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [charIndex, setCharIndex] = useState(0);
   const typewriterTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isTextareaFocused, setIsTextareaFocused] = useState(false);
+
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -93,13 +94,48 @@ function FormFlowFields() {
   const currentYourTextOrIdea = form.watch("yourTextOrIdea");
 
   useEffect(() => {
-    const typingSpeed = 100; 
-    const deletingSpeed = 50; 
+    const typingSpeed = 100;
+    const deletingSpeed = 50;
     const pauseDuration = 2000;
+    let effectIsActive = true; // Flag to prevent state updates if component unmounts
 
+    const cleanupTypewriter = () => {
+      if (typewriterTimeoutRef.current) {
+        clearTimeout(typewriterTimeoutRef.current);
+        typewriterTimeoutRef.current = null;
+      }
+    };
+
+    // Scenario 1: User has typed something in the textarea
+    if (currentYourTextOrIdea && currentYourTextOrIdea.length > 0) {
+      cleanupTypewriter();
+      if (animatedPlaceholder !== "") {
+        setAnimatedPlaceholder("");
+      }
+      return () => { effectIsActive = false; cleanupTypewriter(); };
+    }
+
+    // Scenario 2: Textarea is focused by the user and is empty
+    if (isTextareaFocused) {
+      cleanupTypewriter();
+      if (animatedPlaceholder !== "") {
+        setAnimatedPlaceholder("");
+      }
+      // Optionally, reset typewriter state for a clean start on blur if it remains empty
+      // setCurrentTipIndex(0); 
+      // setCharIndex(0);
+      // setIsDeleting(false);
+      return () => { effectIsActive = false; cleanupTypewriter(); };
+    }
+    
+    // Scenario 3: Textarea is NOT focused AND is empty -> Run typewriter animation
     const handleTypewriter = () => {
-      if (currentYourTextOrIdea && currentYourTextOrIdea.length > 0) {
+      if (!effectIsActive) return; // Prevent updates if effect was cleaned up
+
+      // Safety check: if focus changes or text is entered while timeout was pending
+      if (isTextareaFocused || (form.getValues("yourTextOrIdea") && form.getValues("yourTextOrIdea").length > 0)) {
         if (animatedPlaceholder !== "") setAnimatedPlaceholder("");
+        cleanupTypewriter();
         return;
       }
 
@@ -107,17 +143,17 @@ function FormFlowFields() {
       if (isDeleting) {
         if (charIndex > 0) {
           setAnimatedPlaceholder(currentTip.substring(0, charIndex - 1));
-          setCharIndex(charIndex - 1);
+          setCharIndex(c => c - 1);
           typewriterTimeoutRef.current = setTimeout(handleTypewriter, deletingSpeed);
         } else {
           setIsDeleting(false);
-          setCurrentTipIndex((prevIndex) => (prevIndex + 1) % placeholderTips.length);
+          setCurrentTipIndex(prevIndex => (prevIndex + 1) % placeholderTips.length);
           typewriterTimeoutRef.current = setTimeout(handleTypewriter, pauseDuration / 2);
         }
-      } else { 
+      } else { // Typing
         if (charIndex < currentTip.length) {
           setAnimatedPlaceholder(currentTip.substring(0, charIndex + 1));
-          setCharIndex(charIndex + 1);
+          setCharIndex(c => c + 1);
           typewriterTimeoutRef.current = setTimeout(handleTypewriter, typingSpeed);
         } else {
           setIsDeleting(true);
@@ -126,22 +162,19 @@ function FormFlowFields() {
       }
     };
 
-    if (!currentYourTextOrIdea || currentYourTextOrIdea.length === 0) {
-        typewriterTimeoutRef.current = setTimeout(handleTypewriter, isDeleting ? deletingSpeed : typingSpeed);
-    } else {
-        if (typewriterTimeoutRef.current) {
-            clearTimeout(typewriterTimeoutRef.current);
-        }
-        if (animatedPlaceholder !== "") setAnimatedPlaceholder(""); 
-    }
+    // Start or restart the typewriter animation
+    // A small delay can make restarts (e.g., after blur) feel smoother
+    typewriterTimeoutRef.current = setTimeout(handleTypewriter, 100); 
 
-
-    return () => {
-      if (typewriterTimeoutRef.current) {
-        clearTimeout(typewriterTimeoutRef.current);
-      }
-    };
-  }, [charIndex, isDeleting, currentTipIndex, currentYourTextOrIdea, animatedPlaceholder]);
+    return () => { effectIsActive = false; cleanupTypewriter(); };
+  }, [
+    currentYourTextOrIdea, 
+    isTextareaFocused, 
+    charIndex, 
+    isDeleting, 
+    currentTipIndex
+    // placeholderTips is stable, animatedPlaceholder is set by this effect so not a dependency
+  ]);
 
 
   const handleTemplateSelect = (template: TemplateItemProps) => {
@@ -306,6 +339,8 @@ function FormFlowFields() {
                       className="bg-[#ECE5DD] text-zinc-800 placeholder:text-zinc-600 resize-none rounded-md text-base shadow-[0_0_5px_hsl(var(--accent)_/_0.4)] focus-visible:ring-0 focus-visible:shadow-[0_0_12px_hsl(var(--accent)_/_0.75)] transition-shadow duration-200 ease-in-out"
                       rows={8}
                       {...field}
+                      onFocus={() => setIsTextareaFocused(true)}
+                      onBlur={() => setIsTextareaFocused(false)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -381,18 +416,12 @@ function FormFlowFields() {
                       onMouseLeave={() => setHoveredVariation(null)}
                     >
                       <FormLabel className="font-semibold text-foreground mb-1">WhatsApp Variation {index + 1}</FormLabel>
-                      <div className="w-full p-0.5 rounded-[44px] transition-all cursor-default">
-                        <FormControl>
-                          <PhonePreview messageText={field.value} currentPhoneWidth={320} zoomLevel={1} />
-                        </FormControl>
-                      </div>
-                      <div className="w-full max-w-[320px] mx-auto mt-2 flex flex-col space-y-2">
-                         <Button
+                       <Button
                             type="button"
                             onClick={() => handleRegenerate(fieldName)}
                             disabled={isLoadingSuggestions || regeneratingField !== null}
-                            className={cn(
-                              "w-full", 
+                             className={cn(
+                              "w-full max-w-[320px] mx-auto", 
                               "relative overflow-hidden", 
                               "bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900", 
                               "text-slate-100", 
@@ -402,7 +431,7 @@ function FormFlowFields() {
                               "focus-visible:ring-purple-400", 
                               "galaxy-stars-effect", 
                               (!isLoadingSuggestions && regeneratingField !== fieldName) && "animate-sparkle-icon", 
-                              "px-4 py-2 text-sm rounded-md" 
+                              "px-4 py-2 text-sm rounded-md mb-2" 
                             )}
                           >
                             {regeneratingField === fieldName ? (
@@ -412,6 +441,12 @@ function FormFlowFields() {
                             )}
                             Regenerate Variation {index + 1}
                           </Button>
+                      <div className="w-full p-0.5 rounded-[44px] transition-all cursor-default">
+                        <FormControl>
+                          <PhonePreview messageText={field.value} currentPhoneWidth={320} zoomLevel={1} />
+                        </FormControl>
+                      </div>
+                      <div className="w-full max-w-[320px] mx-auto mt-2 flex flex-col space-y-2">
                         <Button
                           type="button"
                           variant="outline"
@@ -458,5 +493,6 @@ export default FormFlowFields;
     
 
     
+
 
 
