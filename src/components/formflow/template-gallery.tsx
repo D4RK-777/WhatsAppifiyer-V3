@@ -26,22 +26,23 @@ const whatsappColors = {
   hoverMainActiveGreen: '#0F7A6E',
   brightGreenMarketing: '#25D366',
   lightBlueAuthUtility: '#34B7F1',
-  neutralServiceGrey: '#737373', // For Service type borders/text
-  darkServiceGrey: '#a1a1aa',   // Dark mode Service type
+  neutralServiceGrey: '#737373',
+  darkServiceGrey: '#a1a1aa',
   cardBgLight: '#ECE5DD',
-  cardBgDark: '#131C21', // A common WhatsApp dark chat background
+  cardBgDark: '#131C21',
   darkTealHeaderLight: '#075E54',
-  darkHeaderTextDark: '#9ADBC4', // Lighter teal for dark mode header text
+  darkHeaderTextDark: '#9ADBC4',
   lightGreenPreviewBg: '#DCF8C6',
-  previewBoxText: '#111B21', // Dark text for light green preview box
-  categoryLabelBlackBg: '#000000', // Pure black for the tag background
-  categoryLabelWhiteText: '#FFFFFF', // Pure white for the tag text
+  previewBoxText: '#111B21',
+  categoryLabelBlackBg: '#000000', 
+  categoryLabelWhiteText: '#FFFFFF',
 };
 
 interface TypeStyle {
   cardBackgroundClass: string;
   borderClass: string;
   textHeaderClass: string;
+  // categoryLabelClasses: string; // No longer needed as it's fixed
 }
 
 const getTypeSpecificStyles = (type: MessageType): TypeStyle => {
@@ -74,6 +75,7 @@ const getTypeSpecificStyles = (type: MessageType): TypeStyle => {
     cardBackgroundClass: cardBg,
     borderClass: borderClassValue,
     textHeaderClass: `text-[${headerTextLight}] dark:text-[${headerTextDark}]`,
+    // categoryLabelClasses will be applied directly in TemplateItem
   };
 };
 
@@ -97,9 +99,10 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
       aria-label={`Select ${title} template`}
       data-ai-hint={dataAiHint.split(' ').slice(0, 2).join(' ')}
     >
-      <p className={cn(
+      <p
+        className={cn(
           "text-[0.6rem] font-bold uppercase tracking-wider mb-0.5 px-2 py-0.5 rounded-md inline-block",
-          `bg-[${whatsappColors.categoryLabelBlackBg}] text-[${whatsappColors.categoryLabelWhiteText}]`
+          `bg-[${whatsappColors.categoryLabelBlackBg}] text-[${whatsappColors.categoryLabelWhiteText}]` // Direct black background, white text
         )}
       >
         {messageType}
@@ -425,14 +428,17 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
               variant={isActive ? "default" : "outline"}
               className={cn(
                 "rounded-full px-4 py-1.5 text-sm shadow-sm transition-colors duration-200 ease-in-out focus-visible:ring-2 focus-visible:ring-offset-2",
-                // Specific inactive styling for category buttons
-                !isActive && category.value === 'marketing' && `text-[${whatsappColors.brightGreenMarketing}] border-[${whatsappColors.brightGreenMarketing}] hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-[${whatsappColors.brightGreenMarketing}]`,
-                !isActive && (category.value === 'authentication' || category.value === 'utility') && `text-[${whatsappColors.lightBlueAuthUtility}] border-[${whatsappColors.lightBlueAuthUtility}] hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-[${whatsappColors.lightBlueAuthUtility}]`,
-                !isActive && category.value === 'service' && `text-[${whatsappColors.neutralServiceGrey}] dark:text-[${whatsappColors.darkServiceGrey}] border-[${whatsappColors.neutralServiceGrey}] dark:border-[${whatsappColors.darkServiceGrey}] hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-[${whatsappColors.neutralServiceGrey}]`,
-                // Default variant handles active state using theme's primary color
-                // Default variant outline hover also uses theme's accent (which is primary)
-                 isActive ? `focus-visible:ring-[${whatsappColors.mainActiveGreen}] bg-[${whatsappColors.mainActiveGreen}] hover:bg-[${whatsappColors.hoverMainActiveGreen}] border-[${whatsappColors.mainActiveGreen}] text-white` :
-                 category.value === 'all' ? `text-foreground border-border hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-ring` : ''
+                isActive 
+                  ? `focus-visible:ring-[${whatsappColors.mainActiveGreen}] bg-[${whatsappColors.mainActiveGreen}] hover:bg-[${whatsappColors.hoverMainActiveGreen}] border-[${whatsappColors.mainActiveGreen}] text-white`
+                  : category.value === 'all' 
+                    ? `text-foreground border-border hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-ring`
+                    : category.value === 'marketing'
+                      ? `text-[${whatsappColors.brightGreenMarketing}] border-[${whatsappColors.brightGreenMarketing}] hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-[${whatsappColors.brightGreenMarketing}]`
+                      : (category.value === 'authentication' || category.value === 'utility')
+                        ? `text-[${whatsappColors.lightBlueAuthUtility}] border-[${whatsappColors.lightBlueAuthUtility}] hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-[${whatsappColors.lightBlueAuthUtility}]`
+                        : category.value === 'service'
+                          ? `text-[${whatsappColors.neutralServiceGrey}] dark:text-[${whatsappColors.darkServiceGrey}] border-[${whatsappColors.neutralServiceGrey}] dark:border-[${whatsappColors.darkServiceGrey}] hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-[${whatsappColors.neutralServiceGrey}]`
+                          : '' 
               )}
             >
               {category.label}
@@ -451,3 +457,5 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
 };
 
 export default TemplateGallery;
+
+    
