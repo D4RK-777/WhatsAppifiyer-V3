@@ -97,7 +97,7 @@ function FormFlowFields() {
     const typingSpeed = 100;
     const deletingSpeed = 50;
     const pauseDuration = 2000;
-    let effectIsActive = true; // Flag to prevent state updates if component unmounts
+    let effectIsActive = true; 
 
     const cleanupTypewriter = () => {
       if (typewriterTimeoutRef.current) {
@@ -106,33 +106,25 @@ function FormFlowFields() {
       }
     };
 
-    // Scenario 1: User has typed something in the textarea
     if (currentYourTextOrIdea && currentYourTextOrIdea.length > 0) {
       cleanupTypewriter();
       if (animatedPlaceholder !== "") {
-        setAnimatedPlaceholder("");
+        setAnimatedPlaceholder(""); 
       }
       return () => { effectIsActive = false; cleanupTypewriter(); };
     }
 
-    // Scenario 2: Textarea is focused by the user and is empty
     if (isTextareaFocused) {
       cleanupTypewriter();
       if (animatedPlaceholder !== "") {
         setAnimatedPlaceholder("");
       }
-      // Optionally, reset typewriter state for a clean start on blur if it remains empty
-      // setCurrentTipIndex(0); 
-      // setCharIndex(0);
-      // setIsDeleting(false);
       return () => { effectIsActive = false; cleanupTypewriter(); };
     }
     
-    // Scenario 3: Textarea is NOT focused AND is empty -> Run typewriter animation
     const handleTypewriter = () => {
-      if (!effectIsActive) return; // Prevent updates if effect was cleaned up
+      if (!effectIsActive) return; 
 
-      // Safety check: if focus changes or text is entered while timeout was pending
       if (isTextareaFocused || (form.getValues("yourTextOrIdea") && form.getValues("yourTextOrIdea").length > 0)) {
         if (animatedPlaceholder !== "") setAnimatedPlaceholder("");
         cleanupTypewriter();
@@ -150,7 +142,7 @@ function FormFlowFields() {
           setCurrentTipIndex(prevIndex => (prevIndex + 1) % placeholderTips.length);
           typewriterTimeoutRef.current = setTimeout(handleTypewriter, pauseDuration / 2);
         }
-      } else { // Typing
+      } else { 
         if (charIndex < currentTip.length) {
           setAnimatedPlaceholder(currentTip.substring(0, charIndex + 1));
           setCharIndex(c => c + 1);
@@ -162,8 +154,6 @@ function FormFlowFields() {
       }
     };
 
-    // Start or restart the typewriter animation
-    // A small delay can make restarts (e.g., after blur) feel smoother
     typewriterTimeoutRef.current = setTimeout(handleTypewriter, 100); 
 
     return () => { effectIsActive = false; cleanupTypewriter(); };
@@ -172,8 +162,8 @@ function FormFlowFields() {
     isTextareaFocused, 
     charIndex, 
     isDeleting, 
-    currentTipIndex
-    // placeholderTips is stable, animatedPlaceholder is set by this effect so not a dependency
+    currentTipIndex,
+    form // Added form as dependency because form.getValues is used
   ]);
 
 
@@ -296,6 +286,7 @@ function FormFlowFields() {
       const suggestionsInput: SuggestFormFieldsInput = {
         context: yourTextOrIdea,
         messageType,
+        // Not passing field1, field2, field3 to get entirely new suggestions
       };
       const newSuggestions = await suggestFormFields(suggestionsInput);
 
@@ -416,12 +407,18 @@ function FormFlowFields() {
                       onMouseLeave={() => setHoveredVariation(null)}
                     >
                       <FormLabel className="font-semibold text-foreground mb-1">WhatsApp Variation {index + 1}</FormLabel>
-                       <Button
+                      <div className="w-full p-0.5 rounded-[44px] transition-all cursor-default">
+                        <FormControl>
+                          <PhonePreview messageText={field.value} currentPhoneWidth={320} zoomLevel={1} />
+                        </FormControl>
+                      </div>
+                      <div className="w-full max-w-[320px] mx-auto mt-2 flex flex-col space-y-2">
+                         <Button
                             type="button"
                             onClick={() => handleRegenerate(fieldName)}
                             disabled={isLoadingSuggestions || regeneratingField !== null}
                              className={cn(
-                              "w-full max-w-[320px] mx-auto", 
+                              "w-full", // Adjusted to full width within its container
                               "relative overflow-hidden", 
                               "bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900", 
                               "text-slate-100", 
@@ -431,7 +428,7 @@ function FormFlowFields() {
                               "focus-visible:ring-purple-400", 
                               "galaxy-stars-effect", 
                               (!isLoadingSuggestions && regeneratingField !== fieldName) && "animate-sparkle-icon", 
-                              "px-4 py-2 text-sm rounded-md mb-2" 
+                              "px-4 py-2 text-sm rounded-md" // Removed mb-2 as it's in a flex-col now
                             )}
                           >
                             {regeneratingField === fieldName ? (
@@ -441,12 +438,6 @@ function FormFlowFields() {
                             )}
                             Regenerate Variation {index + 1}
                           </Button>
-                      <div className="w-full p-0.5 rounded-[44px] transition-all cursor-default">
-                        <FormControl>
-                          <PhonePreview messageText={field.value} currentPhoneWidth={320} zoomLevel={1} />
-                        </FormControl>
-                      </div>
-                      <div className="w-full max-w-[320px] mx-auto mt-2 flex flex-col space-y-2">
                         <Button
                           type="button"
                           variant="outline"
@@ -493,6 +484,7 @@ export default FormFlowFields;
     
 
     
+
 
 
 
