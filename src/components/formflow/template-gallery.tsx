@@ -26,15 +26,16 @@ const whatsappColors = {
   hoverMainActiveGreen: '#0F7A6E',
   brightGreenMarketing: '#25D366',
   lightBlueAuthUtility: '#34B7F1',
-  neutralServiceGrey: '#737373',
-  darkServiceGrey: '#a1a1aa',
+  neutralServiceGrey: '#737373', // For Service type borders/text
+  darkServiceGrey: '#a1a1aa',   // Dark mode Service type
   cardBgLight: '#ECE5DD',
+  cardBgDark: '#131C21', // A common WhatsApp dark chat background
   darkTealHeaderLight: '#075E54',
-  darkHeaderTextDark: '#9ADBC4',
+  darkHeaderTextDark: '#9ADBC4', // Lighter teal for dark mode header text
   lightGreenPreviewBg: '#DCF8C6',
-  previewBoxText: '#111B21',
-  categoryLabelBlackBg: '#000000',
-  categoryLabelWhiteText: '#FFFFFF',
+  previewBoxText: '#111B21', // Dark text for light green preview box
+  categoryLabelBlackBg: '#000000', // Pure black for the tag background
+  categoryLabelWhiteText: '#FFFFFF', // Pure white for the tag text
 };
 
 interface TypeStyle {
@@ -44,7 +45,7 @@ interface TypeStyle {
 }
 
 const getTypeSpecificStyles = (type: MessageType): TypeStyle => {
-  const cardBg = `bg-[${whatsappColors.cardBgLight}] dark:bg-slate-800`;
+  const cardBg = `bg-[${whatsappColors.cardBgLight}] dark:bg-[${whatsappColors.cardBgDark}]`;
 
   let headerTextLight = whatsappColors.darkTealHeaderLight;
   let headerTextDark = whatsappColors.darkHeaderTextDark;
@@ -400,12 +401,12 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
   const row3Templates = displayTemplates.slice(itemsPerRow * 2, displayTemplates.length);
 
 
-  const filterCategories: { label: string; value: FilterCategory, styleType?: MessageType | 'all' }[] = [
-    { label: "All", value: "all", styleType: 'all'},
-    { label: "Marketing", value: "marketing", styleType: "marketing" },
-    { label: "Authentication", value: "authentication", styleType: "authentication" },
-    { label: "Utility", value: "utility", styleType: "utility" },
-    { label: "Service", value: "service", styleType: "service" },
+  const filterCategories: { label: string; value: FilterCategory }[] = [
+    { label: "All", value: "all"},
+    { label: "Marketing", value: "marketing" },
+    { label: "Authentication", value: "authentication" },
+    { label: "Utility", value: "utility" },
+    { label: "Service", value: "service" },
   ];
 
   return (
@@ -421,19 +422,17 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
               key={category.value}
               type="button"
               onClick={() => setActiveFilter(category.value)}
+              variant={isActive ? "default" : "outline"}
               className={cn(
-                "rounded-full px-4 py-1.5 text-sm shadow-sm transition-all duration-200 ease-in-out focus-visible:ring-2 focus-visible:ring-offset-2",
-                isActive
-                  ? 'bg-[#128C7E] hover:bg-[#0F7A6E] text-white border-[#128C7E] focus-visible:ring-[#128C7E]' // Active state
-                  : category.styleType === 'all'
-                    ? 'bg-background text-foreground border-border hover:bg-[#128C7E] hover:text-white hover:border-[#128C7E] focus-visible:ring-ring' // Inactive "All"
-                    : category.styleType === 'marketing'
-                      ? `bg-background text-[${whatsappColors.brightGreenMarketing}] border-[${whatsappColors.brightGreenMarketing}] hover:bg-[#128C7E] hover:text-white hover:border-[#128C7E] focus-visible:ring-[${whatsappColors.brightGreenMarketing}]`
-                      : category.styleType === 'authentication' || category.styleType === 'utility'
-                        ? `bg-background text-[${whatsappColors.lightBlueAuthUtility}] border-[${whatsappColors.lightBlueAuthUtility}] hover:bg-[#128C7E] hover:text-white hover:border-[#128C7E] focus-visible:ring-[${whatsappColors.lightBlueAuthUtility}]`
-                        : category.styleType === 'service'
-                          ? `bg-background text-[${whatsappColors.neutralServiceGrey}] dark:text-[${whatsappColors.darkServiceGrey}] border-[${whatsappColors.neutralServiceGrey}] dark:border-[${whatsappColors.darkServiceGrey}] hover:bg-[#128C7E] hover:text-white hover:border-[#128C7E] focus-visible:ring-[${whatsappColors.neutralServiceGrey}]`
-                          : 'bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground' // Fallback / Default outline
+                "rounded-full px-4 py-1.5 text-sm shadow-sm transition-colors duration-200 ease-in-out focus-visible:ring-2 focus-visible:ring-offset-2",
+                // Specific inactive styling for category buttons
+                !isActive && category.value === 'marketing' && `text-[${whatsappColors.brightGreenMarketing}] border-[${whatsappColors.brightGreenMarketing}] hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-[${whatsappColors.brightGreenMarketing}]`,
+                !isActive && (category.value === 'authentication' || category.value === 'utility') && `text-[${whatsappColors.lightBlueAuthUtility}] border-[${whatsappColors.lightBlueAuthUtility}] hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-[${whatsappColors.lightBlueAuthUtility}]`,
+                !isActive && category.value === 'service' && `text-[${whatsappColors.neutralServiceGrey}] dark:text-[${whatsappColors.darkServiceGrey}] border-[${whatsappColors.neutralServiceGrey}] dark:border-[${whatsappColors.darkServiceGrey}] hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-[${whatsappColors.neutralServiceGrey}]`,
+                // Default variant handles active state using theme's primary color
+                // Default variant outline hover also uses theme's accent (which is primary)
+                 isActive ? `focus-visible:ring-[${whatsappColors.mainActiveGreen}] bg-[${whatsappColors.mainActiveGreen}] hover:bg-[${whatsappColors.hoverMainActiveGreen}] border-[${whatsappColors.mainActiveGreen}] text-white` :
+                 category.value === 'all' ? `text-foreground border-border hover:bg-[${whatsappColors.mainActiveGreen}] hover:text-white hover:border-[${whatsappColors.mainActiveGreen}] focus-visible:ring-ring` : ''
               )}
             >
               {category.label}
@@ -452,4 +451,3 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
 };
 
 export default TemplateGallery;
-
