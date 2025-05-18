@@ -24,7 +24,11 @@ import { useToast } from "@/hooks/use-toast";
 import TemplateGallery, { type TemplateItemProps } from "./template-gallery";
 import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
 import { Button } from "@/components/ui/button";
-import { Loader2, Copy, Sparkles, ThumbsUp, ThumbsDown } from "lucide-react"; 
+import { CustomButton } from "@/components/ui/custom-button";
+import { WhatsAppifyButton } from "@/components/ui/whatsappify-button";
+import { RegenerateButton } from "@/components/ui/regenerate-button";
+// Tutorial components removed
+import { Copy, ThumbsUp, ThumbsDown } from "lucide-react"; 
 import PhonePreview from "./phone-preview";
 
 const messageTypesArray = ["marketing", "authentication", "utility", "service"] as const;
@@ -79,7 +83,6 @@ function FormFlowFields() {
   const typewriterTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
 
-
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -94,9 +97,9 @@ function FormFlowFields() {
   const currentYourTextOrIdea = form.watch("yourTextOrIdea");
 
   useEffect(() => {
-    const typingSpeed = 40; // Increased from 100ms to 40ms for faster typing
-    const deletingSpeed = 20; // Increased from 50ms to 20ms for faster deleting
-    const pauseDuration = 1000; // Reduced from 2000ms to 1000ms for shorter pause
+    const typingSpeed = 20; // Increased from 40ms to 20ms for faster typing
+    const deletingSpeed = 10; // Increased from 20ms to 10ms for faster deleting
+    const pauseDuration = 500; // Reduced from 1000ms to 500ms for shorter pause
     let effectIsActive = true; 
 
     const cleanupTypewriter = () => {
@@ -363,6 +366,8 @@ function FormFlowFields() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card className="shadow-xl rounded-xl bg-card p-6">
           <CardContent className="space-y-6 p-0">
+
+            
             <FormField
               control={form.control}
               name="yourTextOrIdea"
@@ -371,7 +376,7 @@ function FormFlowFields() {
                   <FormControl>
                     <Textarea
                       placeholder={currentYourTextOrIdea && currentYourTextOrIdea.length > 0 ? "" : animatedPlaceholder}
-                      className="bg-[#ECE5DD] text-zinc-800 placeholder:text-zinc-600 resize-none rounded-md text-base shadow-[0_0_5px_hsl(var(--accent)_/_0.4)] focus-visible:ring-0 focus-visible:shadow-[0_0_12px_hsl(var(--accent)_/_0.75)] transition-shadow duration-200 ease-in-out"
+                      className="bg-[#ECE5DD] text-zinc-800 placeholder:text-zinc-600 resize-none rounded-md text-base focus-visible:ring-0 transition-shadow duration-200 ease-in-out"
                       rows={8}
                       {...field}
                       onFocus={() => setIsTextareaFocused(true)}
@@ -392,15 +397,15 @@ function FormFlowFields() {
                   <FormControl>
                     <div className="flex flex-wrap gap-2 pt-1 justify-center">
                       {messageTypesArray.map((type) => (
-                        <Button
+                        <CustomButton
                           key={type}
                           type="button"
-                          variant={field.value === type ? "default" : "outline"}
                           onClick={() => field.onChange(type)}
-                          className="capitalize flex-grow sm:flex-grow-0 rounded-full px-4 py-1.5 text-sm"
+                          active={field.value === type}
+                          className="capitalize flex-grow sm:flex-grow-0"
                         >
                           {type}
-                        </Button>
+                        </CustomButton>
                       ))}
                     </div>
                   </FormControl>
@@ -410,32 +415,16 @@ function FormFlowFields() {
             />
             
             <div className="flex justify-center pt-4 pb-2" id="tour-target-transform-button-container">
-              <Button
+              <WhatsAppifyButton
                 id="tour-target-transform-button"
                 type="button"
                 onClick={handleGetSuggestions}
+                isLoading={isLoadingSuggestions}
                 disabled={isLoadingSuggestions || regeneratingField !== null}
-                className={cn(
-                  "w-1/2", 
-                  "relative overflow-hidden", 
-                  "bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900", 
-                  "text-slate-100", 
-                  "border border-purple-700", 
-                  "hover:border-purple-500", 
-                  "hover:from-indigo-900 hover:via-purple-800 hover:to-slate-800 hover:text-white", 
-                  "focus-visible:ring-purple-400", 
-                  "galaxy-stars-effect", 
-                  !isLoadingSuggestions && regeneratingField === null && "animate-sparkle-icon", 
-                  "px-6 py-3 text-base rounded-lg" 
-                )}
+                className="w-full max-w-md mx-auto"
               >
-                {isLoadingSuggestions ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Sparkles className="mr-2 h-4 w-4" /> 
-                )}
                 WhatsAppify Into Something Spectacular
-              </Button>
+              </WhatsAppifyButton>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-2 gap-y-6 pt-4" id="tour-target-variations-area">
@@ -457,31 +446,17 @@ function FormFlowFields() {
                         </FormControl>
                       </div>
                       <div className="w-full max-w-[320px] mx-auto mt-2 flex flex-col space-y-2">
-                         <Button
+                         <RegenerateButton
                             type="button"
                             onClick={() => handleRegenerate(fieldName)}
+                            isLoading={regeneratingField === fieldName}
                             disabled={isLoadingSuggestions || regeneratingField !== null}
-                             className={cn(
-                              "w-full", // Adjusted to full width within its container
-                              "relative overflow-hidden", 
-                              "bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900", 
-                              "text-slate-100", 
-                              "border border-purple-700", 
-                              "hover:border-purple-500", 
-                              "hover:from-indigo-900 hover:via-purple-800 hover:to-slate-800 hover:text-white", 
-                              "focus-visible:ring-purple-400", 
-                              "galaxy-stars-effect", 
-                              (!isLoadingSuggestions && regeneratingField !== fieldName) && "animate-sparkle-icon", 
-                              "px-4 py-2 text-sm rounded-md" // Removed mb-2 as it's in a flex-col now
+                            variationNumber={index + 1}
+                            className={cn(
+                              "w-full mt-2",
+                              regeneratingField === fieldName && "opacity-100"
                             )}
-                          >
-                            {regeneratingField === fieldName ? (
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            ) : (
-                              <Sparkles className="mr-2 h-4 w-4" /> 
-                            )}
-                            Regenerate Variation {index + 1}
-                          </Button>
+                          />
                         <Button
                           type="button"
                           variant="outline"

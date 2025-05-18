@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       {/* Removed font variables from body className */}
-      <body className="antialiased">
+      <body className="antialiased" suppressHydrationWarning>
         {children}
         <Toaster />
       </body>

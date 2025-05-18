@@ -1,0 +1,236 @@
+/* Tutorial Component Styles */
+
+/* Overlay */
+.tutorial-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+}
+
+/* Tooltip */
+.tutorial-tooltip {
+  position: absolute;
+  max-width: 380px;
+  width: calc(100% - 40px);
+  background-color: #FFFFFF;
+  color: #333333;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  z-index: 9999;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Close button */
+.tutorial-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.tutorial-close-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #333;
+}
+
+.tutorial-close-button:focus {
+  outline: 2px solid #25D366;
+  outline-offset: 2px;
+}
+
+/* Arrow */
+.tutorial-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+}
+
+.tutorial-arrow-top {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom-color: #FFFFFF;
+}
+
+.tutorial-arrow-right {
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-right-color: #FFFFFF;
+}
+
+.tutorial-arrow-bottom {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top-color: #FFFFFF;
+}
+
+.tutorial-arrow-left {
+  right: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left-color: #FFFFFF;
+}
+
+/* Content */
+.tutorial-content {
+  margin-bottom: 16px;
+}
+
+.tutorial-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #333333;
+}
+
+.tutorial-body {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #555555;
+}
+
+/* Progress indicator */
+.tutorial-progress {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 16px 0;
+}
+
+.tutorial-progress-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #E0E0E0;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tutorial-progress-dot:hover {
+  background-color: #BBBBBB;
+}
+
+.tutorial-progress-dot.active {
+  background-color: #25D366;
+  transform: scale(1.25);
+}
+
+/* Navigation */
+.tutorial-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.tutorial-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tutorial-button-skip {
+  background-color: transparent;
+  color: #666666;
+  border: none;
+}
+
+.tutorial-button-skip:hover {
+  color: #333333;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.tutorial-button-prev {
+  background-color: transparent;
+  color: #666666;
+  border: 1px solid #E0E0E0;
+}
+
+.tutorial-button-prev:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: #CCCCCC;
+}
+
+.tutorial-button-next {
+  background-color: #25D366;
+  color: white;
+  border: none;
+}
+
+.tutorial-button-next:hover {
+  background-color: #1FA855;
+}
+
+/* Highlight effect for target elements */
+.tutorial-highlight {
+  position: relative;
+  z-index: 9997;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 0 6px #25D366;
+  border-radius: 4px;
+  animation: tutorial-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes tutorial-pulse {
+  0% {
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 0 6px rgba(37, 211, 102, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 0 6px rgba(37, 211, 102, 1);
+  }
+  100% {
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 0 6px rgba(37, 211, 102, 0.8);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .tutorial-tooltip {
+    max-width: 320px;
+  }
+  
+  .tutorial-navigation {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .tutorial-button {
+    width: 100%;
+  }
+}
+
+/* Accessibility - reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .tutorial-tooltip {
+    transition: none;
+  }
+  
+  .tutorial-highlight {
+    animation: none;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 0 6px #25D366;
+  }
+}
