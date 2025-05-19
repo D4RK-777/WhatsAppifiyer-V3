@@ -16,21 +16,13 @@ const CustomButton = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={cn(
           'inline-flex items-center justify-center gap-2 whitespace-nowrap',
-          'h-9 px-3 text-xs font-semibold',
-          'border-0 cursor-pointer !rounded-full',
-          'bg-[#c2fbd7] text-black',
-          'hover:bg-[#075E54] hover:text-white',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-          'shadow-[0_4px_9px_-1px_rgba(0,0,0,0.25),0_2px_4px_-1px_rgba(0,0,0,0.15)]',
-          'shadow-[rgba(44,187,99,.35)_0_-25px_18px_-14px_inset]',
-          'hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05)]',
-          'active:shadow-[0_2px_4px_-1px_rgba(0,0,0,0.06),0_1px_2px_-1px_rgba(0,0,0,0.03)]',
-          'transition-shadow duration-200 ease-in-out',
-          'hover:-translate-y-0.5',
-          'transition-all duration-250',
-          'disabled:pointer-events-none disabled:opacity-50',
-          '[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
-          active && 'bg-[#075E54] text-white shadow-[0_4px_6px_-1px_rgba(0,0,0,0.2),0_2px_4px_-1px_rgba(0,0,0,0.15)]',
+          'ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+          'disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+          'shadow-md !rounded-full bg-[#c2fbd7] text-black hover:bg-[#075E54] hover:text-white border-0',
+          'shadow-[rgba(44,187,99,.2)_0_-25px_18px_-14px_inset,rgba(44,187,99,.15)_0_1px_2px,rgba(44,187,99,.15)_0_2px_4px,rgba(44,187,99,.15)_0_4px_8px,rgba(44,187,99,.15)_0_8px_16px,rgba(44,187,99,.15)_0_16px_32px]',
+          'hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:-translate-y-0.5',
+          'transition-all duration-250 font-semibold h-9 px-3 text-xs',
+          active && 'bg-[#075E54] text-white',
           className
         )}
         {...props}
