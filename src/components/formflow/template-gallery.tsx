@@ -87,7 +87,7 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
   return (
     <div
       className={cn(
-        "flex-shrink-0 w-48 h-auto min-h-[12rem] border-2 rounded-lg p-2 mx-3 flex flex-col group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all duration-300 shadow-md hover:shadow-xl cursor-pointer",
+        "flex-shrink-0 w-60 h-auto min-h-[14rem] border-2 rounded-lg p-2 mx-1 flex flex-col group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all duration-300 shadow-md hover:shadow-xl cursor-pointer",
         styles.cardBackgroundClass,
         styles.borderClass,
         `hover:border-[${whatsappColors.mainActiveGreen}]`
@@ -138,9 +138,9 @@ const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', spee
   const animationClass = direction === 'left' ? 'animate-scroll-left' : 'animate-scroll-right';
 
   return (
-    <div className="overflow-hidden w-full my-3">
+    <div className="overflow-hidden w-[100vw] my-3 -mx-0 relative left-0">
       <div
-        className={`flex ${animationClass}`}
+        className={`flex ${animationClass} min-w-max w-[200vw]`}
         style={{ animationDuration: speed }}
       >
         {duplicatedTemplates.map((template, index) => (
@@ -409,7 +409,7 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
   ];
 
   return (
-    <div className="pt-6 border-t border-border mt-6">
+    <div className="pt-6 border-t border-border mt-6 w-[100vw] max-w-[100vw] overflow-x-hidden ml-[calc(-50vw+50%)] mr-[calc(-50vw+50%)] px-0">
       <h3 className="text-xl font-semibold text-center mb-4 text-primary">
         Explore WhatsApp Templates
       </h3>
