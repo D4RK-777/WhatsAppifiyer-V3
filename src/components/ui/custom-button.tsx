@@ -21,7 +21,7 @@ const CustomButton = forwardRef<HTMLButtonElement, ButtonProps>(
           'bg-[#c2fbd7] text-black',
           'hover:bg-[#075E54] hover:text-white',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-          'shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)]',
+          'shadow-[0_4px_9px_-1px_rgba(0,0,0,0.25),0_2px_4px_-1px_rgba(0,0,0,0.15)]',
           'shadow-[rgba(44,187,99,.35)_0_-25px_18px_-14px_inset]',
           'hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05)]',
           'active:shadow-[0_2px_4px_-1px_rgba(0,0,0,0.06),0_1px_2px_-1px_rgba(0,0,0,0.03)]',

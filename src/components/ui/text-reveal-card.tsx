@@ -72,13 +72,13 @@ export const TextRevealCard = ({
       onTouchMove={touchMoveHandler}
       ref={cardRef}
       className={cn(
-        "bg-white w-full rounded-lg p-8 relative overflow-hidden", 
+        "bg-white w-full rounded-lg p-4 relative overflow-hidden", 
         className
       )}
     >
       {children}
 
-      <div className="h-32 relative flex items-center overflow-hidden bg-background/50 rounded-lg">
+      <div className="h-28 relative flex items-center overflow-hidden bg-background/50 rounded-lg">
         <motion.div
           style={{
             width: "100%",
@@ -99,7 +99,7 @@ export const TextRevealCard = ({
           <p
             style={{
             }}
-            className="text-base sm:text-xl md:text-2xl py-6 text-primary whitespace-pre-line"
+            className="text-base sm:text-xl md:text-2xl py-3 text-primary whitespace-pre-line"
           >
             {revealText}
           </p>
@@ -111,11 +111,11 @@ export const TextRevealCard = ({
             opacity: widthPercentage > 0 ? 1 : 0,
           }}
           transition={isMouseOver ? { duration: 0 } : { duration: 0.4 }}
-          className="h-32 w-[8px] bg-gradient-to-b from-transparent via-border to-transparent absolute z-50 will-change-transform"
+          className="h-28 w-[8px] bg-gradient-to-b from-transparent via-border to-transparent absolute z-50 will-change-transform"
         ></motion.div>
 
-        <div className="w-full overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,white,transparent)] text-center p-4">
-          <p className="text-base sm:text-xl md:text-2xl py-6 font-normal text-muted-foreground/70 whitespace-pre-line">
+        <div className="w-full overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,white,transparent)] text-center p-2">
+          <p className="text-base sm:text-xl md:text-2xl py-3 font-normal text-muted-foreground/70 whitespace-pre-line">
             {text}
           </p>
           {isClient && <Stars />} {/* Conditionally render Stars only on client */}
