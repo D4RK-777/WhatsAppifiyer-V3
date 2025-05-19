@@ -459,23 +459,26 @@ function FormFlowFields() {
                               regeneratingField === fieldName && "opacity-100"
                             )}
                           />
-                        <Button
+                        <button
                           type="button"
-                          variant="outline"
-                          size="sm"
                           onClick={(e) => {
                             e.stopPropagation(); 
                             handleCopy(fieldName);
                           }}
-                          className={cn(
-                            "w-full shadow-sm",
-                            hoveredVariation === fieldName && "ring-2 ring-primary ring-offset-1 ring-offset-background text-foreground"
-                          )}
                           disabled={!field.value}
+                          className={cn(
+                            'whatsapp-button w-full',
+                            'relative inline-flex items-center justify-center',
+                            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#075E54] focus-visible:ring-offset-2',
+                            hoveredVariation === fieldName && 'ring-2 ring-primary ring-offset-1 ring-offset-background text-foreground',
+                            !field.value && 'opacity-60 cursor-not-allowed'
+                          )}
                         >
-                          <Copy className="mr-2 h-4 w-4" />
-                          Copy Variation {index + 1}
-                        </Button>
+                          <div className="flex items-center justify-center gap-2">
+                            <Copy className="h-4 w-4" />
+                            <span className="font-semibold">Copy Variation {index + 1}</span>
+                          </div>
+                        </button>
                         <div className="flex justify-center space-x-2">
                           <Button variant="outline" size="icon" onClick={() => handleLike(fieldName)} aria-label={`Like Variation ${index + 1}`} className="shadow-sm">
                             <ThumbsUp className="h-4 w-4" />
