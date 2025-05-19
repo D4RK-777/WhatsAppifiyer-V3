@@ -78,7 +78,7 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
           </div>
 
           {/* Chat Area */}
-          <div className="flex-grow overflow-y-auto p-3" style={{ backgroundColor: '#ECE5DD' }}>
+          <div className="flex-grow overflow-y-auto p-3" style={{ backgroundImage: 'url(/whatsapp-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
             {messageText && messageText.trim() !== "" ? (
               <WhatsAppMessageBubble messageText={messageText} isSender={true} timestamp="10:00 AM" />
             ) : (
