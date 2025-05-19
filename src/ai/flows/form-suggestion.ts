@@ -36,44 +36,64 @@ const prompt = ai.definePrompt({
   name: 'suggestWhatsAppFormFieldsPrompt',
   input: {schema: SuggestFormFieldsInputSchema},
   output: {schema: SuggestFormFieldsOutputSchema},
-  prompt: `You are an expert AI assistant specializing in crafting engaging, natural, and effective WhatsApp messages.
-Your task is to take the user's input (which could be existing text to convert OR an idea for a new message), the selected message type, and any existing content in "Field 1", "Field 2", or "Field 3".
-Then, generate THREE DISTINCT VARIATIONS of a WhatsApp message based on this information. These variations should be provided for "Suggestion 1", "Suggestion 2", and "Suggestion 3". Each suggestion should be a complete, standalone message.
+  prompt: `You are a world-class marketing copywriter specializing in creating actual WhatsApp business messages. DO NOT DESCRIBE WHAT YOU WILL DO - JUST WRITE THE ACTUAL MESSAGES.
+
+Your task is to take the user's input and create THREE DISTINCT WhatsApp messages based on it. If the user asks for a specific tone (like "cheeky"), ACTUALLY USE THAT TONE in your writing.
 
 Message Type: {{{messageType}}}
 
 User Input (Text to convert or Idea for message):
 {{{context}}}
 
-Optional initial content for Field 1 (consider as a draft or starting point if provided; otherwise, generate fresh):
+Optional initial content for Field 1:
 {{{field1}}}
 
-Optional initial content for Field 2 (consider as a draft or starting point if provided; otherwise, generate fresh):
+Optional initial content for Field 2:
 {{{field2}}}
 
-Optional initial content for Field 3 (consider as a draft or starting point if provided; otherwise, generate fresh):
+Optional initial content for Field 3:
 {{{field3}}}
 
-The core goal is to produce three different, high-quality WhatsApp message variations for the user to choose from.
-- If "User Input" is existing text, transform it into three compelling WhatsApp versions.
-- If "User Input" is an idea, generate three distinct messages based on that idea and the "Message Type".
-- If "Field 1", "Field 2", or "Field 3" have content, use that as inspiration or a starting point for one or more variations, but ensure all three final suggestions are complete, refined, and WhatsApp-formatted. If a field is empty, generate a variation based on the "User Input" and "Message Type".
+IMPORTANT RULES:
+1. DO NOT write about how you'll create the message - JUST WRITE THE ACTUAL MESSAGES
+2. If the user requests a specific tone (like "cheeky", "funny", "professional"), USE THAT EXACT TONE
+3. For marketing messages about products, focus on benefits, features, and creating desire
+4. Create the actual content the user wants, not a description of what you'll do
 
-Apply WhatsApp formatting best practices to ALL THREE suggestions for a natural, readable, and engaging style:
+WHATSAPP FORMATTING RULES (EXTREMELY IMPORTANT):
+- YOU MUST USE ALL FORMATTING TYPES IN EVERY MESSAGE:
+  * *Bold* for headlines, product names, key benefits, and important points
+  * _Italics_ for emphasis, testimonials, or subtle points
+  * ~Strikethrough~ for discounts (e.g., ~$199~ now $99!)
+  * \`\`\`Monospace\`\`\` for discount codes, store locations, or important details
+- NEVER create a message without using ALL FOUR formatting types
+- Use emojis strategically to enhance the message (not replace text)
 
-- *Bolding:* Use *bold* for standalone salutations (e.g., *Namaste!*, *Hello!*), main headings, key calls to action, to draw attention to specific important words (e.g., *alert*), or truly critical information.
-- _Italics:_ Use _italics_ for sub-text, softer emphasis, or to highlight specific terms (e.g., _Limited time only_).
-- ~Strikethrough:~ Use ~strikethrough~ for discounts or old prices (e.g., ~Was $99~ Now $49!).
-- \`\`\`Monospace for Codes:\`\`\` Crucially, wrap all codes (like OTPs, discount codes, promo codes, specific URLs, or technical details) in triple backticks for monospace formatting. For example: \`\`\`YOGA20\`\`\` or \`\`\`*YOGA20*\`\`\` if the asterisks are part of the intended display of the code itself. Do NOT bold codes using asterisks *outside* the backticks; if a code needs to appear bold, put the asterisks *inside* the backticks.
-- **Line Breaks & Paragraphs:** Use double newline characters (\\n\\n) to create clear visual separation (a blank line) between distinct paragraphs or blocks of text. This is especially important:
-    - After an initial greeting line (e.g., "Hi {{UserName}},\\n\\nThis is the rest...").
-    - Between different points or sections of your message to improve readability and create natural breaks.
-- Emojis: Incorporate emojis appropriately and sparingly to enhance engagement, convey emotion, and improve visual appeal. Ensure emojis are relevant to the message content and the '{{{messageType}}}' (e.g., 🚀 for launches, 🔒 for security, 🗓️ for reminders, ℹ️ for information).
-- Conciseness: Keep messages concise, clear, and actionable, tailoring the tone and style to the specified '{{{messageType}}}'.
+WHATSAPP SPACING RULES (EXTREMELY IMPORTANT):
+- ALWAYS use double line breaks (\\n\\n) between paragraphs - NEVER use single line breaks
+- After greeting lines (e.g., "Hey there!"), ALWAYS add a double line break (\\n\\n)
+- Between different sections or points, ALWAYS add a double line break (\\n\\n)
+- Before a call-to-action, ALWAYS add a double line break (\\n\\n)
+- NEVER put content too close together - proper spacing is CRITICAL
 
-Ensure "Suggestion 1", "Suggestion 2", and "Suggestion 3" are distinct from each other in terms of phrasing, emphasis, or structure, while conveying the same core message based on the user's input.
+MESSAGE STRUCTURE REQUIREMENTS:
+- Start with an attention-grabbing headline (in *bold*)
+- Include a greeting with the recipient's name placeholder
+- Present the main offer with proper formatting
+- Use bullet points or numbered lists when appropriate
+- Include at least one price point with ~strikethrough~ for original price
+- End with a compelling call-to-action
+- Include a discount code in \`\`\`monospace\`\`\`
 
-Based on all the above, provide three polished, WhatsApp-formatted message variations for "Suggestion 1", "Suggestion 2", and "Suggestion 3".`,
+EMOJI USAGE:
+- Use 4-8 different emojis per message
+- Place emojis at the start of important points
+- Use emojis that match the product/service theme
+- Don't cluster too many emojis together
+
+For example, if asked for a "cheeky jewelry campaign", write an ACTUALLY CHEEKY message about jewelry with ALL formatting types, proper spacing, and appropriate emojis.
+
+WRITE THREE COMPLETELY DIFFERENT MESSAGES THAT USE ALL FORMATTING TYPES, PROPER SPACING, AND MATCH THE REQUESTED STYLE AND TONE.`,
 });
 
 const suggestFormFieldsFlow = ai.defineFlow(

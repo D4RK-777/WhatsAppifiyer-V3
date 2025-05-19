@@ -26,6 +26,7 @@ import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsO
 import { Button } from "@/components/ui/button";
 import { CustomButton } from "@/components/ui/custom-button";
 import { WhatsAppifyButton } from "@/components/ui/whatsappify-button";
+import { TutorialButtonWithHandler } from "@/components/tutorial/WhatsAppTutorial";
 import { RegenerateButton } from "@/components/ui/regenerate-button";
 // Tutorial components removed
 import { Copy, ThumbsUp, ThumbsDown } from "lucide-react"; 
@@ -364,68 +365,69 @@ function FormFlowFields() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <Card className="shadow-xl rounded-xl bg-card p-6">
+        <FormField
+          control={form.control}
+          name="messageType"
+          render={({ field }) => (
+            <FormItem className="flex flex-col items-center mb-2" id="tour-target-message-type">
+              <FormLabel className="text-lg font-semibold text-foreground text-center">Select the message type you want to send</FormLabel>
+              <FormControl>
+                <div className="flex flex-wrap gap-2 pt-1 justify-center">
+                  <TutorialButtonWithHandler />
+                  {messageTypesArray.map((type) => (
+                    <CustomButton
+                      key={type}
+                      type="button"
+                      onClick={() => field.onChange(type)}
+                      active={field.value === type}
+                      className="capitalize flex-grow sm:flex-grow-0"
+                    >
+                      {type}
+                    </CustomButton>
+                  ))}
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <Card className="rounded-xl bg-card p-6">
           <CardContent className="space-y-6 p-0">
-
             
             <FormField
               control={form.control}
               name="yourTextOrIdea"
               render={({ field }) => (
-                <FormItem id="tour-target-input-area">
-                  <FormControl>
-                    <Textarea
-                      placeholder={currentYourTextOrIdea && currentYourTextOrIdea.length > 0 ? "" : animatedPlaceholder}
-                      className="bg-[#ECE5DD] text-zinc-800 placeholder:text-zinc-600 resize-none rounded-md text-base focus-visible:ring-0 transition-shadow duration-200 ease-in-out"
-                      rows={8}
-                      {...field}
-                      onFocus={() => setIsTextareaFocused(true)}
-                      onBlur={() => setIsTextareaFocused(false)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="messageType"
-              render={({ field }) => (
-                <FormItem className="flex flex-col items-center" id="tour-target-message-type">
-                  <FormLabel className="text-lg font-semibold text-foreground text-center">Select the message type you want to send</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-wrap gap-2 pt-1 justify-center">
-                      {messageTypesArray.map((type) => (
-                        <CustomButton
-                          key={type}
-                          type="button"
-                          onClick={() => field.onChange(type)}
-                          active={field.value === type}
-                          className="capitalize flex-grow sm:flex-grow-0"
-                        >
-                          {type}
-                        </CustomButton>
-                      ))}
+                <FormItem id="tour-target-input-area" className="relative">
+                  <div className="relative">
+                    <FormControl>
+                      <Textarea
+                        placeholder={currentYourTextOrIdea && currentYourTextOrIdea.length > 0 ? "" : animatedPlaceholder}
+                        className="bg-[#ECE5DD] text-zinc-800 placeholder:text-zinc-600 resize-none rounded-md text-base focus-visible:ring-0 transition-shadow duration-200 ease-in-out"
+                        rows={8}
+                        {...field}
+                        onFocus={() => setIsTextareaFocused(true)}
+                        onBlur={() => setIsTextareaFocused(false)}
+                      />
+                    </FormControl>
+                    <div className="absolute bottom-4 right-4" id="tour-target-transform-button-container">
+                      <WhatsAppifyButton
+                        id="tour-target-transform-button"
+                        type="button"
+                        onClick={handleGetSuggestions}
+                        isLoading={isLoadingSuggestions}
+                        disabled={isLoadingSuggestions || regeneratingField !== null}
+                        className="px-6 py-2 h-10 rounded-full shadow-md"
+                      >
+                        WhatsAppify
+                      </WhatsAppifyButton>
                     </div>
-                  </FormControl>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            
-            <div className="flex justify-center pt-4 pb-2" id="tour-target-transform-button-container">
-              <WhatsAppifyButton
-                id="tour-target-transform-button"
-                type="button"
-                onClick={handleGetSuggestions}
-                isLoading={isLoadingSuggestions}
-                disabled={isLoadingSuggestions || regeneratingField !== null}
-                className="w-full max-w-md mx-auto"
-              >
-                WhatsAppify Into Something Spectacular
-              </WhatsAppifyButton>
-            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-2 gap-y-6 pt-4" id="tour-target-variations-area">
               {(['field1', 'field2', 'field3'] as VariationFieldName[]).map((fieldName, index) => (

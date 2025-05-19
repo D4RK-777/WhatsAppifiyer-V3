@@ -72,7 +72,7 @@ export const TextRevealCard = ({
       onTouchMove={touchMoveHandler}
       ref={cardRef}
       className={cn(
-        "bg-background w-full rounded-lg p-8 relative overflow-hidden shadow-xl", // Added shadow-xl
+        "bg-background w-full rounded-lg p-8 relative overflow-hidden", 
         className
       )}
     >
@@ -98,7 +98,6 @@ export const TextRevealCard = ({
         >
           <p
             style={{
-              textShadow: "1px 1px 5px hsl(var(--primary) / 0.3)",
             }}
             className="text-base sm:text-xl md:text-2xl py-6 text-primary whitespace-pre-line"
           >

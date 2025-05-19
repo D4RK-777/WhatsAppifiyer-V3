@@ -72,6 +72,38 @@ interface WhatsAppTutorialProps {
  * WhatsApp Tutorial Component
  * Enhanced tutorial experience for the WhatsAppify application
  */
+// Export a component that includes both the tutorial and button for use in message type selection
+export const TutorialButtonWithHandler = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  const handleOpen = () => setIsOpen(true);
+  const handleClose = () => setIsOpen(false);
+  const handleComplete = () => {
+    setIsOpen(false);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(TUTORIAL_STORAGE_KEY, 'completed');
+    }
+  };
+
+  return (
+    <>
+      <Tutorial
+        steps={tutorialSteps}
+        isOpen={isOpen}
+        onClose={handleClose}
+        onComplete={handleComplete}
+        storageKey={TUTORIAL_STORAGE_KEY}
+      />
+      <TutorialButton 
+        onClick={handleOpen}
+        isActive={isOpen}
+        ariaLabel="Open WhatsApp formatting tutorial"
+        className="!rounded-full capitalize flex-grow-0"
+      />
+    </>
+  );
+};
+
 const WhatsAppTutorial: React.FC<WhatsAppTutorialProps> = ({ isOpen: externalIsOpen, onClose }) => {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   
@@ -138,11 +170,7 @@ const WhatsAppTutorial: React.FC<WhatsAppTutorialProps> = ({ isOpen: externalIsO
         onComplete={handleComplete}
         storageKey={TUTORIAL_STORAGE_KEY}
       />
-      <TutorialButton 
-        onClick={handleOpen}
-        isActive={isOpen}
-        ariaLabel="Open WhatsApp formatting tutorial"
-      />
+      {/* TutorialButton is now handled by TutorialButtonWithHandler component */}
     </>
   );
 };
