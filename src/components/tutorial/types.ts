@@ -3,7 +3,7 @@ export interface TutorialStep {
   title: string; // Step title
   content: React.ReactNode; // Step content (can include JSX)
   position?: 'top' | 'right' | 'bottom' | 'left' | 'center'; // Default: 'bottom'
-  offset?: number; // Pixel offset from target (default: 10)
+  offset?: number | { x: number, y: number }; // Pixel offset from target (default: 10)
   disableBeacon?: boolean; // For the initial step
   icon?: React.ElementType; // Optional icon to display
 }

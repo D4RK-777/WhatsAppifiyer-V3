@@ -1,9 +1,8 @@
-
 "use client";
 
 import React, { FC, useState } from 'react';
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { CustomButton } from "@/components/ui/custom-button";
 
 export type MessageType = "marketing" | "authentication" | "utility" | "service";
 type FilterCategory = "all" | MessageType;
@@ -21,6 +20,12 @@ export interface TemplateItemProps {
   onClick: (template: TemplateItemProps) => void;
 }
 
+interface TypeStyle {
+  cardBackgroundClass: string;
+  borderClass: string;
+  textHeaderClass: string;
+}
+
 const whatsappColors = {
   mainActiveGreen: '#128C7E',
   hoverMainActiveGreen: '#0F7A6E',
@@ -34,16 +39,15 @@ const whatsappColors = {
   darkHeaderTextDark: '#9ADBC4',
   lightGreenPreviewBg: '#DCF8C6',
   previewBoxText: '#111B21',
-  categoryLabelBlackBg: '#000000', 
+  categoryLabelBlackBg: '#000000',
   categoryLabelWhiteText: '#FFFFFF',
+  redError: '#FF3B30',
+  yellowWarning: '#FFCC00',
+  blueInfo: '#007AFF',
+  tealGeneral: '#5AC8FA',
+  purpleBranding: '#AF52DE',
+  orangeAccent: '#FF9500'
 };
-
-interface TypeStyle {
-  cardBackgroundClass: string;
-  borderClass: string;
-  textHeaderClass: string;
-  // categoryLabelClasses: string; // No longer needed as it's fixed
-}
 
 const getTypeSpecificStyles = (type: MessageType): TypeStyle => {
   const cardBg = `bg-[${whatsappColors.cardBgLight}] dark:bg-[${whatsappColors.cardBgDark}]`;
@@ -75,7 +79,6 @@ const getTypeSpecificStyles = (type: MessageType): TypeStyle => {
     cardBackgroundClass: cardBg,
     borderClass: borderClassValue,
     textHeaderClass: `text-[${headerTextLight}] dark:text-[${headerTextDark}]`,
-    // categoryLabelClasses will be applied directly in TemplateItem
   };
 };
 
@@ -119,7 +122,6 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
   );
 };
 
-
 interface TemplateRowProps {
   templates: TemplateItemProps[];
   direction?: 'left' | 'right';
@@ -131,7 +133,6 @@ const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', spee
   const duplicatedTemplates = templates.length > 0 && templates.length < 8
     ? [...templates, ...templates, ...templates, ...templates, ...templates, ...templates]
     : (templates.length > 0 ? [...templates, ...templates, ...templates] : []);
-
 
   if (duplicatedTemplates.length === 0) return null;
 
@@ -372,7 +373,6 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
 
   const allFullTemplates = whatsAppTemplates.map(t => ({...t, onClick: onTemplateClick}));
 
-
   const filteredTemplates = activeFilter === "all"
     ? allFullTemplates
     : allFullTemplates.filter(template => template.messageType === activeFilter);
@@ -393,12 +393,10 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
     displayTemplates = displayTemplates.slice(0,24);
   }
 
-
   const itemsPerRow = Math.max(1, Math.ceil(displayTemplates.length / 3));
   const row1Templates = displayTemplates.slice(0, itemsPerRow);
   const row2Templates = displayTemplates.slice(itemsPerRow, itemsPerRow * 2);
   const row3Templates = displayTemplates.slice(itemsPerRow * 2, displayTemplates.length);
-
 
   const filterCategories: { label: string; value: FilterCategory }[] = [
     { label: "All", value: "all"},
@@ -409,52 +407,33 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
   ];
 
   return (
-    <div className="pt-6 border-t border-border mt-6 w-[100vw] max-w-[100vw] overflow-x-hidden ml-[calc(-50vw+50%)] mr-[calc(-50vw+50%)] px-0">
-      <h3 className="text-xl font-semibold text-center mb-4 text-primary">
+    <div className="pt-8 border-t border-border mt-8 w-[100vw] max-w-[100vw] overflow-x-hidden ml-[calc(-50vw+50%)] mr-[calc(-50vw+50%)] px-0" data-component-name="TemplateGallery">
+      <h3 className="text-xl font-semibold text-center mb-6 text-primary" data-component-name="TemplateGallery">
         Explore WhatsApp Templates
       </h3>
-      <div className="flex flex-wrap gap-2 pt-1 justify-center">
+      <div className="flex flex-wrap gap-3 pt-2 pb-6 justify-center" data-component-name="TemplateGallery">
         {filterCategories.map(category => {
           const isActive = activeFilter === category.value;
-          const baseClasses = "inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border bg-background hover:bg-accent hover:text-accent-foreground h-10 capitalize flex-grow sm:flex-grow-0 rounded-full px-4 py-1.5 text-sm";
-          
-          let variantClasses = "";
-          
-          if (isActive) {
-            variantClasses = `bg-[${whatsappColors.mainActiveGreen}] hover:bg-[${whatsappColors.hoverMainActiveGreen}] text-white border-[${whatsappColors.mainActiveGreen}]`;
-          } else {
-            switch(category.value) {
-              case 'marketing':
-                variantClasses = `text-[${whatsappColors.brightGreenMarketing}] border-[${whatsappColors.brightGreenMarketing}] hover:bg-[${whatsappColors.brightGreenMarketing}] hover:text-white`;
-                break;
-              case 'authentication':
-              case 'utility':
-                variantClasses = `text-[${whatsappColors.lightBlueAuthUtility}] border-[${whatsappColors.lightBlueAuthUtility}] hover:bg-[${whatsappColors.lightBlueAuthUtility}] hover:text-white`;
-                break;
-              case 'service':
-                variantClasses = `text-[${whatsappColors.neutralServiceGrey}] dark:text-[${whatsappColors.darkServiceGrey}] border-[${whatsappColors.neutralServiceGrey}] dark:border-[${whatsappColors.darkServiceGrey}] hover:bg-[${whatsappColors.neutralServiceGrey}] hover:text-white`;
-                break;
-              default: // all
-                variantClasses = "text-black border-border hover:bg-accent hover:text-accent-foreground";
-            }
-          }
-          
+
           return (
-            <button
+            <CustomButton
               key={category.value}
               type="button"
               onClick={() => setActiveFilter(category.value)}
-              className={`${baseClasses} ${variantClasses}`}
-              data-component-name="FilterButton"
+              active={isActive}
+              className="capitalize flex-grow sm:flex-grow-0" 
+              data-component-name="FilterButton" 
             >
               {category.label.toLowerCase()}
-            </button>
+            </CustomButton>
           );
         })}
       </div>
-      {row1Templates.length > 0 && <TemplateRow templates={row1Templates} direction="left" speed="60s" onTemplateClick={onTemplateClick} />}
-      {row2Templates.length > 0 && <TemplateRow templates={row2Templates} direction="right" speed="75s" onTemplateClick={onTemplateClick} />}
-      {row3Templates.length > 0 && <TemplateRow templates={row3Templates} direction="left" speed="65s" onTemplateClick={onTemplateClick} />}
+      <div className="mt-4">
+        {row1Templates.length > 0 && <TemplateRow templates={row1Templates} direction="left" speed="60s" onTemplateClick={onTemplateClick} />}
+        {row2Templates.length > 0 && <TemplateRow templates={row2Templates} direction="right" speed="75s" onTemplateClick={onTemplateClick} />}
+        {row3Templates.length > 0 && <TemplateRow templates={row3Templates} direction="left" speed="65s" onTemplateClick={onTemplateClick} />}
+      </div>
       {filteredTemplates.length === 0 && activeFilter !== "all" && (
         <p className="text-center text-muted-foreground mt-4">No templates found for "{activeFilter}" category.</p>
       )}
@@ -463,5 +442,3 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
 };
 
 export default TemplateGallery;
-
-    
