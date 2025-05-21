@@ -450,19 +450,22 @@ const WhatsAppMessageBubble: React.FC<WhatsAppMessageBubbleProps> = ({
     return result;
   };
   
-  const formattedNodes = parseTextToReact(messageText || '');
+  // First ensure all double newlines are preserved as paragraph breaks
+  const formattedText = (messageText || '').replace(/\n\s*\n/g, '\n\n');
+  const formattedNodes = parseTextToReact(formattedText);
 
   return (
     <div className="w-full flex mb-2">
       <div
         className={cn(
-          "max-w-[80%] p-2 rounded-lg shadow", 
+          "max-w-[80%] p-2 rounded-lg shadow whitespace-pre-wrap", 
           isSender ? "bg-[#E9FDC9] dark:bg-[#55752F] ml-auto rounded-br-none" : "bg-card dark:bg-neutral-700 mr-auto rounded-bl-none"
         )}
       >
         <div className={cn(
-            "text-xs text-black dark:text-white leading-relaxed break-words space-y-2"
+            "text-xs text-black dark:text-white leading-relaxed break-words"
           )}
+          style={{ whiteSpace: 'pre-wrap' }}
         >
           {formattedNodes}
         </div>

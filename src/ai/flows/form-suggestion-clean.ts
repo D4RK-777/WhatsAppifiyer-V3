@@ -115,29 +115,64 @@ async function generateMessage(
   const prompt = `
     Write a WhatsApp marketing message with this context:
     - Intent: ${analysis.trueIntent}
-    - Tone: ${analysis.trueIntent}
+    - Tone: ${analysis.appropriateTone}
     - Key Points: ${analysis.keyElements.join(", ")}
     - Audience: ${analysis.targetAudienceAnalysis}
     - Angle: ${creativeSuggestion.angle}
     - Context: "${originalInput.context}"
 
-    IMPORTANT: Use actual newlines (press Enter) for line breaks between paragraphs.
-    Example formatting:
-    *First line*\n\nSecond paragraph\n\n*Call to action!*
-
-    Use *bold* for emphasis and important elements.
-    Include emojis where appropriate.
-    Keep paragraphs short and scannable.
+    CRITICAL INSTRUCTIONS - READ CAREFULLY:
     
-    ONLY respond with the message content, no explanations.`;
+    SPACING IS CRUCIAL - Your message MUST include all spacing exactly as shown below.
+    The preview will NOT add any spacing - YOU must include ALL spacing in your response.
+    
+    FORMATTING RULES:
+    
+    1. PARAGRAPHS:
+       - ALWAYS put TWO newlines after EVERY paragraph (press ENTER twice)
+       - Example: "This is a paragraph.\n\nThis is another paragraph."
+    
+    2. HEADINGS:
+       - Put TWO newlines before and after any heading
+       - Format: *Heading Text*\n\n
+    
+    3. EMOJI LINES:
+       - Put TWO newlines before and after any line that's just emojis
+       - Example: "...end of paragraph.\n\n✨\n\nStart of next..."
+    
+    4. LISTS:
+       - Put TWO newlines before the list starts
+       - Use • for list items (with one newline between items)
+       - Put TWO newlines after the list ends
+    
+    5. TEXT FORMATTING:
+       - *bold* for emphasis
+       - _italics_ for subtle emphasis
+       - ~strikethrough~ when needed
+    
+    EXAMPLE OUTPUT - COPY THIS FORMATTING EXACTLY:
+    
+    *Welcome Message*\n\n
+    Hi [Name], we're excited to have you!\n\n
+    ✨\n\n
+    Here's what you can expect from us:\n\n
+    • Exclusive offers\n
+    • Helpful tips\n
+    • 24/7 support\n\n
+    *Get Started Now*\n\n
+    [Click here to begin]\n\n
+    ---\n\n
+    YOUR TURN: Write the message below with EXACTLY the same spacing and formatting as shown above.\n\n`;
 
   try {
     const response = await ai.generate({
       model: 'googleai/gemini-2.0-flash',
       prompt: { text: prompt },
       config: {
-        temperature: 0.7,
-        maxOutputTokens: 300,
+        temperature: 0.3,  // Lower temperature for more consistent output
+        topP: 0.9,
+        topK: 40,
+        maxOutputTokens: 500,  // Increased to ensure complete messages
       },
     });
 
