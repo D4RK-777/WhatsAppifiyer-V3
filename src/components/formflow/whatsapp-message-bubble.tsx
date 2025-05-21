@@ -22,62 +22,436 @@ const WhatsAppMessageBubble: React.FC<WhatsAppMessageBubbleProps> = ({
   const parseTextToReact = (inputText: string): React.ReactNode[] => {
     if (!inputText) return [];
 
-    // Unescape \\n into \n for consistent newline handling
+    // Unescape \n into \n for consistent newline handling
     let text = inputText.replace(/\\n/g, '\n');
+    
+    // Process the text in a more linear way to better handle WhatsApp formatting
+    // This approach processes the text line by line for better handling of lists and block elements
+    // while still supporting inline formatting
 
-    // 1. ```codeblock``` (multiline, non-greedy)
-    const codeMatch = text.match(/^(.*?)```([\s\S]*?)```(.*)$/s);
-    if (codeMatch) {
-      return [
-        ...(codeMatch[1] ? parseTextToReact(codeMatch[1]) : []),
-        <pre key={generateKey('codeblock')} className="bg-neutral-200 dark:bg-neutral-700 p-2 my-1 rounded-md text-xs font-mono whitespace-pre-wrap break-all">
-          <code>{codeMatch[2]}</code>
-        </pre>,
-        ...(codeMatch[3] ? parseTextToReact(codeMatch[3]) : [])
-      ];
+    // Split the text into lines for processing
+    const lines = text.split('\n');
+    const result: React.ReactNode[] = [];
+    
+    let currentListType: null | 'bullet' | 'number' = null;
+    let listItems: string[] = [];
+    
+    // Process each line
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i];
+      
+      // Check for empty lines (paragraph breaks)
+      if (line.trim() === '') {
+        if (currentListType) {
+          // End the current list if there is one
+          if (currentListType === 'bullet') {
+            result.push(
+              <ul key={generateKey('bulletedlist')} className="list-disc pl-5 my-3 space-y-1.5">
+                {listItems.map((item, idx) => (
+                  <li key={`item-${idx}`}>{processInlineFormatting(item)}</li>
+                ))}
+              </ul>
+            );
+          } else {
+            result.push(
+              <ol key={generateKey('numberedlist')} className="list-decimal pl-5 my-3 space-y-1.5">
+                {listItems.map((item, idx) => (
+                  <li key={`item-${idx}`}>{processInlineFormatting(item)}</li>
+                ))}
+              </ol>
+            );
+          }
+          currentListType = null;
+          listItems = [];
+        }
+        
+        // Use a taller div for double line breaks (paragraph spacing)
+        result.push(<div key={generateKey('break')} className="h-4"></div>);
+        continue;
+      }
+      
+      // Check for list items
+      const bulletMatch = line.match(/^[\*\-]\s+(.+)$/);
+      const numberMatch = line.match(/^(\d+)\.\s+(.+)$/);
+      
+      if (bulletMatch) {
+        // Bullet list item
+        if (currentListType && currentListType !== 'bullet') {
+          // End the current numbered list
+          result.push(
+            <ol key={generateKey('numberedlist')} className="list-decimal pl-5 my-3 space-y-1.5">
+              {listItems.map((item, idx) => (
+                <li key={`item-${idx}`}>{processInlineFormatting(item)}</li>
+              ))}
+            </ol>
+          );
+          listItems = [];
+        }
+        
+        currentListType = 'bullet';
+        listItems.push(bulletMatch[1]);
+      } else if (numberMatch) {
+        // Numbered list item
+        if (currentListType && currentListType !== 'number') {
+          // End the current bullet list
+          result.push(
+            <ul key={generateKey('bulletedlist')} className="list-disc pl-5 my-3 space-y-1.5">
+              {listItems.map((item, idx) => (
+                <li key={`item-${idx}`}>{processInlineFormatting(item)}</li>
+              ))}
+            </ul>
+          );
+          listItems = [];
+        }
+        
+        currentListType = 'number';
+        listItems.push(numberMatch[2]);
+      } else if (line.startsWith('> ')) {
+        // Blockquote
+        if (currentListType) {
+          // End the current list if there is one
+          if (currentListType === 'bullet') {
+            result.push(
+              <ul key={generateKey('bulletedlist')} className="list-disc pl-5 my-3 space-y-1.5">
+                {listItems.map((item, idx) => (
+                  <li key={`item-${idx}`}>{processInlineFormatting(item)}</li>
+                ))}
+              </ul>
+            );
+          } else {
+            result.push(
+              <ol key={generateKey('numberedlist')} className="list-decimal pl-5 my-3 space-y-1.5">
+                {listItems.map((item, idx) => (
+                  <li key={`item-${idx}`}>{processInlineFormatting(item)}</li>
+                ))}
+              </ol>
+            );
+          }
+          currentListType = null;
+          listItems = [];
+        }
+        
+        const blockquoteContent = line.substring(2);
+        result.push(
+          <blockquote key={generateKey('blockquote')} className="border-l-4 border-neutral-400 dark:border-neutral-500 pl-3 py-2 my-3 italic text-neutral-700 dark:text-neutral-300">
+            {processInlineFormatting(blockquoteContent)}
+          </blockquote>
+        );
+      } else if (line.startsWith('```') && line.endsWith('```') && line.length > 6) {
+        // Inline code block (single line)
+        if (currentListType) {
+          // End the current list if there is one
+          if (currentListType === 'bullet') {
+            result.push(
+              <ul key={generateKey('bulletedlist')} className="list-disc pl-5 my-3 space-y-1.5">
+                {listItems.map((item, idx) => (
+                  <li key={`item-${idx}`}>{processInlineFormatting(item)}</li>
+                ))}
+              </ul>
+            );
+          } else {
+            result.push(
+              <ol key={generateKey('numberedlist')} className="list-decimal pl-5 my-3 space-y-1.5">
+                {listItems.map((item, idx) => (
+                  <li key={`item-${idx}`}>{processInlineFormatting(item)}</li>
+                ))}
+              </ol>
+            );
+          }
+          currentListType = null;
+          listItems = [];
+        }
+        
+        const codeContent = line.substring(3, line.length - 3);
+        result.push(
+          <pre key={generateKey('codeblock')} className="bg-neutral-200 dark:bg-neutral-700 p-3 my-3 rounded-md text-xs font-mono whitespace-pre-wrap break-all">
+            <code>{codeContent}</code>
+          </pre>
+        );
+      } else {
+        // Regular line with possible inline formatting
+        if (currentListType) {
+          // End the current list if there is one
+          if (currentListType === 'bullet') {
+            result.push(
+              <ul key={generateKey('bulletedlist')} className="list-disc pl-5 my-3 space-y-1.5">
+                {listItems.map((item, idx) => (
+                  <li key={`item-${idx}`}>{processInlineFormatting(item)}</li>
+                ))}
+              </ul>
+            );
+          } else {
+            result.push(
+              <ol key={generateKey('numberedlist')} className="list-decimal pl-5 my-3 space-y-1.5">
+                {listItems.map((item, idx) => (
+                  <li key={`item-${idx}`}>{processInlineFormatting(item)}</li>
+                ))}
+              </ol>
+            );
+          }
+          currentListType = null;
+          listItems = [];
+        }
+        
+        result.push(
+          <div key={generateKey('line')} className="inline">
+            {processInlineFormatting(line)}
+          </div>
+        );
+      }
+      
+      // Handle line breaks more intelligently
+      if (i < lines.length - 1) {
+        // If next line is empty, we'll add a paragraph break later
+        // Otherwise add a regular line break
+        if (lines[i + 1].trim() !== '') {
+          result.push(<br key={generateKey('linebreak')} />);
+        }
+      }
     }
     
-    // 2. *bold* (non-greedy, content must exist)
-    // Ensure we don't match if it's part of a larger word like_this* or *this_
-    // Regex: (anything)(*non-whitespace-or-*-char some-content non-whitespace-or-*-char*)(anything)
-    const boldMatch = text.match(/^(.*?)(\*(?!\s)((?:[^*]|\*(?=\s))+?)(?<!\s)\*)(.*)$/s);
-    if (boldMatch) {
-      return [
-        ...(boldMatch[1] ? parseTextToReact(boldMatch[1]) : []),
-        <strong key={generateKey('bold')}>{parseTextToReact(boldMatch[3])}</strong>,
-        ...(boldMatch[4] ? parseTextToReact(boldMatch[4]) : [])
-      ];
-    }
-
-    // 3. _italic_ (non-greedy, content must exist)
-    // Regex: (anything)(_non-whitespace-or-_-char some-content non-whitespace-or-_-char_)(anything)
-    const italicMatch = text.match(/^(.*?)(\_(?!\s)((?:[^_]|\_(?=\s))+?)(?<!\s)\_)(.*)$/s);
-    if (italicMatch) {
-      return [
-        ...(italicMatch[1] ? parseTextToReact(italicMatch[1]) : []),
-        <em key={generateKey('italic')}>{parseTextToReact(italicMatch[3])}</em>,
-        ...(italicMatch[4] ? parseTextToReact(italicMatch[4]) : [])
-      ];
+    // Handle any remaining list
+    if (currentListType) {
+      if (currentListType === 'bullet') {
+        result.push(
+          <ul key={generateKey('bulletedlist')} className="list-disc pl-5 my-3 space-y-1.5">
+            {listItems.map((item, idx) => (
+              <li key={`item-${idx}`}>{processInlineFormatting(item)}</li>
+            ))}
+          </ul>
+        );
+      } else {
+        result.push(
+          <ol key={generateKey('numberedlist')} className="list-decimal pl-5 my-3 space-y-1.5">
+            {listItems.map((item, idx) => (
+              <li key={`item-${idx}`}>{processInlineFormatting(item)}</li>
+            ))}
+          </ol>
+        );
+      }
     }
     
-    // 4. ~strikethrough~ (non-greedy, content must exist)
-    // Regex: (anything)(~non-whitespace-or-~-char some-content non-whitespace-or-~-char~)(anything)
-    const strikeMatch = text.match(/^(.*?)(\~(?!\s)((?:[^~]|\~(?=\s))+?)(?<!\s)\~)(.*)$/s);
-    if (strikeMatch) {
-      return [
-        ...(strikeMatch[1] ? parseTextToReact(strikeMatch[1]) : []),
-        <del key={generateKey('strike')}>{parseTextToReact(strikeMatch[3])}</del>,
-        ...(strikeMatch[4] ? parseTextToReact(strikeMatch[4]) : [])
-      ];
+    return result;
+  };
+  
+  // Helper function to process inline formatting (bold, italic, strikethrough, inline code)
+  const processInlineFormatting = (text: string): React.ReactNode[] => {
+    if (!text) return [];
+    
+    const segments: Array<{type: string, content: string | React.ReactNode[]}> = [{ type: 'text', content: text }];
+    const result: React.ReactNode[] = [];
+    
+    // Process each formatting type in sequence
+    // This approach handles formatting more reliably than recursive regex matching
+    
+    // Process monospace (```code```)
+    for (let i = 0; i < segments.length; i++) {
+      const segment = segments[i];
+      if (segment.type !== 'text') continue;
+      
+      const text = segment.content as string;
+      const parts = [];
+      let lastIndex = 0;
+      
+      // Find all monospace sections
+      const monospaceRegex = /```([^`]+?)```/g;
+      let match;
+      
+      while ((match = monospaceRegex.exec(text)) !== null) {
+        // Add text before the match
+        if (match.index > lastIndex) {
+          parts.push({ type: 'text', content: text.substring(lastIndex, match.index) });
+        }
+        
+        // Add the monospace content
+        parts.push({ type: 'monospace', content: match[1] });
+        
+        lastIndex = match.index + match[0].length;
+      }
+      
+      // Add any remaining text
+      if (lastIndex < text.length) {
+        parts.push({ type: 'text', content: text.substring(lastIndex) });
+      }
+      
+      // Replace the current segment with the processed parts
+      segments.splice(i, 1, ...parts);
+      i += parts.length - 1;
     }
-
-    // 5. Newlines and plain text
-    // Replace literal \n with <br /> tags for display
-    return text.split(/(\n)/g).map((part, index) => {
-      if (part === '\n') return <br key={generateKey(`br-${index}`)} />;
-      if (part) return <span key={generateKey(`text-${index}`)}>{part}</span>; 
-      return null;
-    }).filter(Boolean);
+    
+    // Process inline code (`code`)
+    for (let i = 0; i < segments.length; i++) {
+      const segment = segments[i];
+      if (segment.type !== 'text') continue;
+      
+      const text = segment.content as string;
+      const parts = [];
+      let lastIndex = 0;
+      
+      // Find all inline code sections
+      const inlineCodeRegex = /`([^`]+?)`/g;
+      let match;
+      
+      while ((match = inlineCodeRegex.exec(text)) !== null) {
+        // Add text before the match
+        if (match.index > lastIndex) {
+          parts.push({ type: 'text', content: text.substring(lastIndex, match.index) });
+        }
+        
+        // Add the inline code content
+        parts.push({ type: 'inlinecode', content: match[1] });
+        
+        lastIndex = match.index + match[0].length;
+      }
+      
+      // Add any remaining text
+      if (lastIndex < text.length) {
+        parts.push({ type: 'text', content: text.substring(lastIndex) });
+      }
+      
+      // Replace the current segment with the processed parts
+      segments.splice(i, 1, ...parts);
+      i += parts.length - 1;
+    }
+    
+    // Process bold (*bold*)
+    for (let i = 0; i < segments.length; i++) {
+      const segment = segments[i];
+      if (segment.type !== 'text') continue;
+      
+      const text = segment.content as string;
+      const parts = [];
+      let lastIndex = 0;
+      
+      // Find all bold sections - WhatsApp requires no spaces between * and text
+      const boldRegex = /\*(\S(?:[^*]*\S)?)\*/g;
+      let match;
+      
+      while ((match = boldRegex.exec(text)) !== null) {
+        // Add text before the match
+        if (match.index > lastIndex) {
+          parts.push({ type: 'text', content: text.substring(lastIndex, match.index) });
+        }
+        
+        // Add the bold content
+        parts.push({ type: 'bold', content: match[1] });
+        
+        lastIndex = match.index + match[0].length;
+      }
+      
+      // Add any remaining text
+      if (lastIndex < text.length) {
+        parts.push({ type: 'text', content: text.substring(lastIndex) });
+      }
+      
+      // Replace the current segment with the processed parts
+      segments.splice(i, 1, ...parts);
+      i += parts.length - 1;
+    }
+    
+    // Process italic (_italic_)
+    for (let i = 0; i < segments.length; i++) {
+      const segment = segments[i];
+      if (segment.type !== 'text') continue;
+      
+      const text = segment.content as string;
+      const parts = [];
+      let lastIndex = 0;
+      
+      // Find all italic sections - WhatsApp requires no spaces between _ and text
+      const italicRegex = /_(\S(?:[^_]*\S)?)_/g;
+      let match;
+      
+      while ((match = italicRegex.exec(text)) !== null) {
+        // Add text before the match
+        if (match.index > lastIndex) {
+          parts.push({ type: 'text', content: text.substring(lastIndex, match.index) });
+        }
+        
+        // Add the italic content
+        parts.push({ type: 'italic', content: match[1] });
+        
+        lastIndex = match.index + match[0].length;
+      }
+      
+      // Add any remaining text
+      if (lastIndex < text.length) {
+        parts.push({ type: 'text', content: text.substring(lastIndex) });
+      }
+      
+      // Replace the current segment with the processed parts
+      segments.splice(i, 1, ...parts);
+      i += parts.length - 1;
+    }
+    
+    // Process strikethrough (~strike~)
+    for (let i = 0; i < segments.length; i++) {
+      const segment = segments[i];
+      if (segment.type !== 'text') continue;
+      
+      const text = segment.content as string;
+      const parts = [];
+      let lastIndex = 0;
+      
+      // Find all strikethrough sections - WhatsApp requires no spaces between ~ and text
+      const strikeRegex = /~(\S(?:[^~]*\S)?)~/g;
+      let match;
+      
+      while ((match = strikeRegex.exec(text)) !== null) {
+        // Add text before the match
+        if (match.index > lastIndex) {
+          parts.push({ type: 'text', content: text.substring(lastIndex, match.index) });
+        }
+        
+        // Add the strikethrough content
+        parts.push({ type: 'strike', content: match[1] });
+        
+        lastIndex = match.index + match[0].length;
+      }
+      
+      // Add any remaining text
+      if (lastIndex < text.length) {
+        parts.push({ type: 'text', content: text.substring(lastIndex) });
+      }
+      
+      // Replace the current segment with the processed parts
+      segments.splice(i, 1, ...parts);
+      i += parts.length - 1;
+    }
+    
+    // Convert segments to React nodes
+    for (const segment of segments) {
+      switch (segment.type) {
+        case 'text':
+          result.push(<span key={generateKey('text')}>{segment.content as string}</span>);
+          break;
+        case 'bold':
+          result.push(<strong key={generateKey('bold')}>{segment.content as string}</strong>);
+          break;
+        case 'italic':
+          result.push(<em key={generateKey('italic')}>{segment.content as string}</em>);
+          break;
+        case 'strike':
+          result.push(<del key={generateKey('strike')}>{segment.content as string}</del>);
+          break;
+        case 'inlinecode':
+          result.push(
+            <code key={generateKey('inlinecode')} className="bg-neutral-200 dark:bg-neutral-700 px-1 py-0.5 rounded text-xs font-mono">
+              {segment.content as string}
+            </code>
+          );
+          break;
+        case 'monospace':
+          result.push(
+            <pre key={generateKey('monospace')} className="bg-neutral-200 dark:bg-neutral-700 p-2 my-2 rounded-md text-xs font-mono whitespace-pre-wrap break-all inline-block w-full">
+              <code>{segment.content as string}</code>
+            </pre>
+          );
+          break;
+      }
+    }
+    
+    return result;
   };
   
   const formattedNodes = parseTextToReact(messageText || '');
@@ -86,18 +460,18 @@ const WhatsAppMessageBubble: React.FC<WhatsAppMessageBubbleProps> = ({
     <div className="w-full flex mb-2">
       <div
         className={cn(
-          "max-w-[80%] p-2 rounded-lg shadow", // Increased max-width from 75% to 80%
+          "max-w-[80%] p-2 rounded-lg shadow", 
           isSender ? "bg-[#E9FDC9] dark:bg-[#55752F] ml-auto rounded-br-none" : "bg-card dark:bg-neutral-700 mr-auto rounded-bl-none"
         )}
       >
         <div className={cn(
-            "text-xs text-black dark:text-white leading-relaxed break-words whitespace-pre-line" // Changed text-sm to text-xs
+            "text-xs text-black dark:text-white leading-relaxed break-words space-y-2"
           )}
         >
           {formattedNodes}
         </div>
         <div className={cn(
-          "text-xs mt-1", // Timestamp text size also text-xs
+          "text-xs mt-1",
           isSender ? "text-right text-neutral-500 dark:text-neutral-400" : "text-left text-neutral-500 dark:text-neutral-400"
         )}>
           {timestamp}

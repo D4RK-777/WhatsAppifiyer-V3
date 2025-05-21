@@ -94,12 +94,14 @@ export const TutorialButtonWithHandler = () => {
         onComplete={handleComplete}
         storageKey={TUTORIAL_STORAGE_KEY}
       />
-      <TutorialButton 
-        onClick={handleOpen}
-        isActive={isOpen}
-        ariaLabel="Open WhatsApp formatting tutorial"
-        className="!rounded-full capitalize flex-grow-0"
-      />
+      <div className="fixed top-4 right-4 z-50">
+        <TutorialButton 
+          onClick={handleOpen}
+          isActive={isOpen}
+          ariaLabel="Open WhatsApp formatting tutorial"
+          className="!rounded-full capitalize flex items-center shadow-md"
+        />
+      </div>
     </>
   );
 };

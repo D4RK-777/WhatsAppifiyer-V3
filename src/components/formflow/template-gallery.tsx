@@ -130,19 +130,25 @@ interface TemplateRowProps {
 }
 
 const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', speed = '30s', onTemplateClick }) => {
+  // Reduce the number of duplicated templates to improve performance
   const duplicatedTemplates = templates.length > 0 && templates.length < 8
-    ? [...templates, ...templates, ...templates, ...templates, ...templates, ...templates]
-    : (templates.length > 0 ? [...templates, ...templates, ...templates] : []);
+    ? [...templates, ...templates] // Reduced from 6x to 2x duplication
+    : (templates.length > 0 ? [...templates] : []);
 
   if (duplicatedTemplates.length === 0) return null;
 
+  // Use will-change to optimize the animation rendering
   const animationClass = direction === 'left' ? 'animate-scroll-left' : 'animate-scroll-right';
 
   return (
-    <div className="overflow-hidden w-[100vw] my-3 -mx-0 relative left-0">
+    <div className="overflow-hidden w-full my-3 relative">
       <div
-        className={`flex ${animationClass} min-w-max w-[200vw]`}
-        style={{ animationDuration: speed }}
+        className={`flex ${animationClass} min-w-max w-full`}
+        style={{ 
+          animationDuration: speed,
+          willChange: 'transform',
+          transform: 'translateZ(0)' // Force GPU acceleration
+        }}
       >
         {duplicatedTemplates.map((template, index) => (
           <TemplateItem key={`${template.id}-${index}`} {...template} onClick={onTemplateClick} />
@@ -393,10 +399,10 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
     displayTemplates = displayTemplates.slice(0,24);
   }
 
-  const itemsPerRow = Math.max(1, Math.ceil(displayTemplates.length / 3));
+  // Distribute templates across two rows instead of three
+  const itemsPerRow = Math.max(1, Math.ceil(displayTemplates.length / 2));
   const row1Templates = displayTemplates.slice(0, itemsPerRow);
-  const row2Templates = displayTemplates.slice(itemsPerRow, itemsPerRow * 2);
-  const row3Templates = displayTemplates.slice(itemsPerRow * 2, displayTemplates.length);
+  const row2Templates = displayTemplates.slice(itemsPerRow, displayTemplates.length);
 
   const filterCategories: { label: string; value: FilterCategory }[] = [
     { label: "All", value: "all"},
@@ -429,10 +435,9 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
           );
         })}
       </div>
-      <div className="mt-4">
+      <div className="mt-4" data-component-name="TemplateGallery">
         {row1Templates.length > 0 && <TemplateRow templates={row1Templates} direction="left" speed="60s" onTemplateClick={onTemplateClick} />}
         {row2Templates.length > 0 && <TemplateRow templates={row2Templates} direction="right" speed="75s" onTemplateClick={onTemplateClick} />}
-        {row3Templates.length > 0 && <TemplateRow templates={row3Templates} direction="left" speed="65s" onTemplateClick={onTemplateClick} />}
       </div>
       {filteredTemplates.length === 0 && activeFilter !== "all" && (
         <p className="text-center text-muted-foreground mt-4">No templates found for "{activeFilter}" category.</p>

@@ -84,19 +84,19 @@ export default {
   				}
   			},
         'scroll-left': {
-          '0%': { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(-50%)' },
+          '0%': { transform: 'translateX(0) translateZ(0)' },
+          '100%': { transform: 'translateX(-50%) translateZ(0)' },
         },
         'scroll-right': {
-          '0%': { transform: 'translateX(-50%)' },
-          '100%': { transform: 'translateX(0)' },
+          '0%': { transform: 'translateX(-50%) translateZ(0)' },
+          '100%': { transform: 'translateX(0) translateZ(0)' },
         },
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
-        'scroll-left': 'scroll-left linear infinite',
-        'scroll-right': 'scroll-right linear infinite',
+        'scroll-left': 'scroll-left 60s linear infinite',
+        'scroll-right': 'scroll-right 60s linear infinite',
   		}
   	}
   },

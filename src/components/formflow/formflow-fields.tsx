@@ -98,9 +98,9 @@ function FormFlowFields() {
   const currentYourTextOrIdea = form.watch("yourTextOrIdea");
 
   useEffect(() => {
-    const typingSpeed = 20; // Increased from 40ms to 20ms for faster typing
-    const deletingSpeed = 10; // Increased from 20ms to 10ms for faster deleting
-    const pauseDuration = 500; // Reduced from 1000ms to 500ms for shorter pause
+    const typingSpeed = 5; // Dramatically reduced from 20ms to 5ms for much faster typing
+    const deletingSpeed = 3; // Dramatically reduced from 10ms to 3ms for much faster deleting
+    const pauseDuration = 200; // Dramatically reduced from 500ms to 200ms for much shorter pause
     let effectIsActive = true; 
 
     const cleanupTypewriter = () => {
@@ -400,6 +400,9 @@ function FormFlowFields() {
               name="yourTextOrIdea"
               render={({ field }) => (
                 <FormItem id="tour-target-input-area" className="relative">
+                  <div className="mb-2 text-xs text-gray-700 whatsapp-instruction-text">
+                    Paste your boring SMS or plain text below to transform it. If you need an idea simply tell the AI what you want and let the ideas flow. Use the template gallery for more inspiration. <span className="font-medium">*AI can make mistakes, please check your work before copying.</span>
+                  </div>
                   <div className="relative">
                     <FormControl>
                       <Textarea
@@ -462,21 +465,23 @@ function FormFlowFields() {
                         <button
                           type="button"
                           onClick={(e) => {
-                            e.stopPropagation(); 
+                            e.stopPropagation();
                             handleCopy(fieldName);
                           }}
                           disabled={!field.value}
                           className={cn(
-                            'whatsapp-button w-full',
-                            'relative inline-flex items-center justify-center',
+                            'copy-variation-button relative inline-flex items-center justify-center',
                             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#075E54] focus-visible:ring-offset-2',
-                            hoveredVariation === fieldName && 'ring-2 ring-primary ring-offset-1 ring-offset-background text-foreground',
+                            'ring-2 ring-primary ring-offset-1 ring-offset-background text-foreground',
+                            'hover:bg-accent/50 transition-all w-full rounded-full overflow-hidden',
+                            hoveredVariation === fieldName && 'ring-2 ring-primary',
                             !field.value && 'opacity-60 cursor-not-allowed'
                           )}
+                          data-copy-variation-id={`copy-variation-${index + 1}`}
                         >
-                          <div className="flex items-center justify-center gap-2">
-                            <Copy className="h-4 w-4" />
-                            <span className="font-semibold">Copy Variation {index + 1}</span>
+                          <div className="copy-variation-content flex items-center justify-center gap-2">
+                            <Copy className="copy-variation-icon h-4 w-4" />
+                            <span className="copy-variation-text font-semibold">Copy Variation {index + 1}</span>
                           </div>
                         </button>
                         <div className="flex justify-center space-x-2">

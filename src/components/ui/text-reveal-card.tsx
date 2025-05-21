@@ -118,7 +118,6 @@ export const TextRevealCard = ({
           <p className="text-base sm:text-xl md:text-2xl py-3 font-normal text-muted-foreground/70 whitespace-pre-line">
             {text}
           </p>
-          {isClient && <Stars />} {/* Conditionally render Stars only on client */}
         </div>
       </div>
     </div>
@@ -150,54 +149,5 @@ export const TextRevealCardDescription = ({
     <p className={twMerge("text-muted-foreground text-sm", className)}>
       {children}
     </p>
-  );
-};
-
-// Stars component modified to only render and calculate on client
-const Stars = () => {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null; 
-  }
-
-  // All random calls happen only on the client after mount
-  const random = () => Math.random();
-  const randomMove = () => Math.random() * 4 - 2;
-  const randomOpacity = () => Math.random() * 0.5 + 0.2; // Adjusted opacity range
-
-  return (
-    <div className="absolute inset-0">
-      {[...Array(60)].map((_, i) => (
-        <motion.span
-          key={`star-${i}`}
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{
-            top: `calc(${random() * 100}% + ${randomMove()}px)`,
-            left: `calc(${random() * 100}% + ${randomMove()}px)`,
-            opacity: randomOpacity(),
-            scale: [1, 1.2, 0],
-          }}
-          transition={{
-            duration: random() * 10 + 20,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-          style={{
-            position: "absolute",
-            width: `1.5px`,
-            height: `1.5px`,
-            backgroundColor: "hsl(var(--foreground))",
-            borderRadius: "50%",
-            zIndex: 1,
-          }}
-          className="inline-block"
-        />
-      ))}
-    </div>
   );
 };
