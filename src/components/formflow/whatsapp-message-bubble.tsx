@@ -65,8 +65,8 @@ const WhatsAppMessageBubble: React.FC<WhatsAppMessageBubbleProps> = ({
           listItems = [];
         }
         
-        // Use a taller div for double line breaks (paragraph spacing)
-        result.push(<div key={generateKey('break')} className="h-4"></div>);
+        // Add consistent paragraph spacing
+        result.push(<div key={generateKey('break')} className="h-3"></div>);
         continue;
       }
       
@@ -200,13 +200,9 @@ const WhatsAppMessageBubble: React.FC<WhatsAppMessageBubbleProps> = ({
         );
       }
       
-      // Handle line breaks more intelligently
-      if (i < lines.length - 1) {
-        // If next line is empty, we'll add a paragraph break later
-        // Otherwise add a regular line break
-        if (lines[i + 1].trim() !== '') {
-          result.push(<br key={generateKey('linebreak')} />);
-        }
+      // Only add line breaks if the current line is not empty and the next line is not empty
+      if (i < lines.length - 1 && line.trim() !== '' && lines[i + 1].trim() !== '') {
+        result.push(<br key={generateKey('linebreak')} />);
       }
     }
     

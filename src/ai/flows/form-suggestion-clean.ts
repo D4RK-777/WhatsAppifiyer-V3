@@ -113,30 +113,23 @@ async function generateMessage(
   creativeSuggestion: { angle: string; rationale: string }
 ): Promise<string> {
   const prompt = `
-    Generate a WhatsApp message using this analysis:
+    Write a WhatsApp marketing message with this context:
+    - Intent: ${analysis.trueIntent}
+    - Tone: ${analysis.trueIntent}
+    - Key Points: ${analysis.keyElements.join(", ")}
+    - Audience: ${analysis.targetAudienceAnalysis}
+    - Angle: ${creativeSuggestion.angle}
+    - Context: "${originalInput.context}"
 
-    Intent: ${analysis.trueIntent}
-    Tone: ${analysis.appropriateTone}
-    Key Elements: ${analysis.keyElements.join(", ")}
-    Audience: ${analysis.targetAudienceAnalysis}
-    Nuances: ${analysis.contextualNuances}
+    IMPORTANT: Use actual newlines (press Enter) for line breaks between paragraphs.
+    Example formatting:
+    *First line*\n\nSecond paragraph\n\n*Call to action!*
 
-    Creative Angle: ${creativeSuggestion.angle}
-    Angle Rationale: ${creativeSuggestion.rationale}
-
-    Original Context: "${originalInput.context}"
-    Message Type: ${originalInput.messageType}
-
-    Format Rules:
-    - Use *bold* for important points
-    - Use _italic_ for emphasis
-    - Use ~strikethrough~ if needed
-    - Use emojis wisely
-    - Keep paragraphs short
-    - Use double line breaks between paragraphs
-
-    Respond ONLY with the message content.
-  `;
+    Use *bold* for emphasis and important elements.
+    Include emojis where appropriate.
+    Keep paragraphs short and scannable.
+    
+    ONLY respond with the message content, no explanations.`;
 
   try {
     const response = await ai.generate({
