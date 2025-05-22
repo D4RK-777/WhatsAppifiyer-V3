@@ -26,9 +26,7 @@ import { generateMultiProviderSuggestions } from "@/ai/flows/form-suggestion-mul
 import { Button } from "@/components/ui/button";
 import { CustomButton } from "@/components/ui/custom-button";
 import { WhatsAppifyButton } from "@/components/ui/whatsappify-button";
-import { TutorialButtonWithHandler } from "@/components/tutorial/WhatsAppTutorial";
 import { RegenerateButton } from "@/components/ui/regenerate-button";
-// Tutorial components removed
 import { Copy, ThumbsUp, ThumbsDown } from "lucide-react"; 
 import PhonePreview from "./phone-preview";
 
@@ -368,7 +366,6 @@ function FormFlowFields() {
               <FormLabel className="text-lg font-semibold text-foreground text-center">Select the message type you want to send</FormLabel>
               <FormControl>
                 <div className="flex flex-wrap gap-2 pt-1 justify-center">
-                  <TutorialButtonWithHandler />
                   {messageTypesArray.map((type) => (
                     <CustomButton
                       key={type}
@@ -439,7 +436,7 @@ function FormFlowFields() {
                       onMouseEnter={() => setHoveredVariation(fieldName)}
                       onMouseLeave={() => setHoveredVariation(null)}
                     >
-                      <FormLabel className="font-semibold text-foreground mb-1">WhatsApp Variation {index + 1}</FormLabel>
+                      <FormLabel className="font-semibold text-foreground mb-1 text-[20px]">WhatsApp Variation {index + 1}</FormLabel>
                       <div className="w-full p-0.5 rounded-[44px] transition-all cursor-default">
                         <FormControl>
                           <PhonePreview messageText={field.value} currentPhoneWidth={320} zoomLevel={1} />

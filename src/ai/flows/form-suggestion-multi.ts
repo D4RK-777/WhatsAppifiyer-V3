@@ -95,13 +95,14 @@ async function callTogetherAI(input: MultiInput, model: string): Promise<string>
       const data = await response.json();
       // Clean up the response by removing <think> tags and their content
       return (data.content || 'Error generating message').replace(/<think>[\s\S]*?<\/think>/g, '').trim();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error calling Together AI:', error);
-      throw new Error(`Error calling Together AI: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Error calling Together AI: ${errorMessage}`)
     }
   } catch (error: any) {
     console.error('Error in callTogetherAI function:', error);
-    throw new Error(`Error in callTogetherAI function: ${error.message || 'Unknown error'}`);
+    throw new Error(`Error in callTogetherAI function: ${error.message || 'Unknown error'}`)
   }
 }
 

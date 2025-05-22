@@ -26,7 +26,7 @@ const WhatsAppifyButton = forwardRef<HTMLButtonElement, WhatsAppifyButtonProps>(
           // Base styling
           "group relative overflow-hidden",
           "inline-flex items-center justify-center gap-2",
-          "px-4 py-2 h-auto rounded-full",
+          "px-4 py-2 h-auto rounded-full text-[14px]",
           "bg-[#075E54] text-white", // Dark green background with white text
           "hover:-translate-y-0.5 hover:shadow-md",
           "transition-all duration-250",

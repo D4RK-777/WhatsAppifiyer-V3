@@ -1,0 +1,121 @@
+Session (Free-Form) Messages
+These are the messages you send within the 24-hour customer service window after a user’s last message. You can send plain text or attach media without prior template approval:
+
+Text: Up to 4 096 characters per message 
+tyntec
+Infobip
+
+URLs: Count toward the total character limit.
+
+Usage: Ideal for live support, follow-up questions, rich media messaging.
+
+Business-Initiated (Template) Messages
+Outside the 24-hour window, you must use pre-approved templates. Templates have stricter component-level limits:
+
+Body: Up to 1 024 characters 
+tyntec
+
+Header (Text): Up to 60 characters 
+Infobip
+
+Footer: Up to 60 characters 
+Infobip
+
+Template Name: Up to 512 characters (lowercase, alphanumeric, underscores) 
+Infobip
+
+Buttons (up to 10 total, mix of types):
+
+Quick Reply: Label ≤ 25 chars 
+Infobip
+
+Call-to-Action: Label ≤ 25 chars; Number ≤ 20 chars 
+Infobip
+
+URL: Label ≤ 25 chars; URL ≤ 2 000 chars 
+Infobip
+
+Media in Templates:
+
+Image: ≤ 16 MB (.jpg/.jpeg/.png)
+
+Video: ≤ 16 MB (.mp4)
+
+Document (e.g. PDF): ≤ 16 MB 
+Infobip
+
+Impact of Media Attachments on Limits
+Attachments do not reduce your text allowance, but each type has its own caps:
+
+Images:
+
+Supported: JPEG/PNG
+
+Max size: 5 MB
+
+Caption: Up to 3 000 characters 
+Infobip
+
+Videos:
+
+Supported: MP4 (H.264/AAC)
+
+Max size: 16 MB
+
+Caption: Up to 3 000 characters 
+Infobip
+
+Documents (PDFs):
+
+Max size: 100 MB
+
+Filename: Up to 240 characters (no separate caption) 
+Infobip
+
+Catalog Messages (Free-Form & Template)
+
+Free-Form “Share Catalog” Messages:
+
+Body: Up to 1 024 characters
+
+Footer: Up to 60 characters 
+360Dialog
+
+Catalog Template Messages:
+
+Follow the same template limits (Body 1 024; Header/Footer 60; buttons per template limits above).
+
+Carousel Templates (Multi-Card Templates)
+Carousel templates let you bundle up to 10 media-rich cards under one message bubble:
+
+Bubble (Intro Text): Up to 1 024 characters 
+help.1msg.io
+
+Cards (2–10 cards):
+
+Header (Image/Video): Must be same format across cards; ≤ 16 MB each 
+Infobip
+
+Card Body Text: Up to 160 characters per card 
+help.1msg.io
+
+Buttons (max 2 per card):
+
+Quick Reply: ≤ 25 characters
+
+URL: Label ≤ 25; URL ≤ 2 000 characters
+
+Phone Number: Label ≤ 25 
+help.1msg.io
+
+Summary
+
+Session messages: 4 096 char free-form + full media support.
+
+Templates: 1 024 char body + per-component caps (headers, footers, buttons).
+
+Media captions & attachments have separate allowances and don’t eat into your text budget.
+
+Carousels & catalogs are built atop these rules, with additional per-card/text limits.
+
+This ensures you stay within WhatsApp’s policies while leveraging rich content for marketing, authentication, utility, and service scenarios.

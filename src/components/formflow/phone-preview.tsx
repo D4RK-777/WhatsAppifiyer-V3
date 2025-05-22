@@ -61,7 +61,7 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
   return (
     <div className="flex justify-center items-start py-2">
       <div
-        style={phoneStyle}
+        style={{ ...phoneStyle, width: '280px', height: '568px' }}
         className="aspect-[9/19.5] bg-zinc-800 p-2 rounded-[40px] shadow-2xl overflow-hidden"
       >
         <div className="h-full w-full bg-background rounded-[32px] flex flex-col overflow-hidden">
@@ -84,37 +84,73 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
             className="px-3 py-2 flex items-center space-x-3 text-primary-foreground shrink-0"
             style={{ backgroundColor: '#075E54' }}
           >
-            <div className="p-1 bg-black/20 rounded-full"> {/* Adjusted padding and background for avatar container */}
-              <User size={18} className="text-white" /> {/* Adjusted icon size and made color explicit white */}
+            <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center overflow-hidden">
+              <img 
+                src="/images/chat-inc-logo-white.png" 
+                alt="Chat Inc. Logo"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="flex-grow">
-              <div className="font-semibold text-xs text-white">{contactName}</div> {/* Adjusted text size and made color explicit white */}
-              <div className="text-xs text-white/80">Business Account</div> {/* Made color explicit white/80 */}
+              <div className="font-semibold text-[12px] leading-[14px] text-white">{contactName}</div>
+              <div className="text-[10px] text-white/80">Business Account</div>
             </div>
             <div className="flex items-center space-x-3">
-              <Video size={16} className="text-white/90 hover:text-white" /> {/* Swapped position */}
-              <Phone size={16} className="text-white/90 hover:text-white" /> {/* Swapped position */}
-              <MoreVertical size={16} className="text-white/90 hover:text-white" /> {/* Adjusted icon size and color */}
+              <Video size={16} className="text-white/90 hover:text-white" />
+              <Phone size={16} className="text-white/90 hover:text-white" />
+              <MoreVertical size={16} className="text-white/90 hover:text-white" />
             </div>
           </div>
 
           {/* Chat Area */}
-          <div className="flex-grow overflow-y-auto p-3" style={{ backgroundImage: 'url(/whatsapp-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+          <div className="flex-grow overflow-y-auto p-3 scrollbar-hide" style={{ 
+            backgroundImage: 'url(/whatsapp-bg.jpg)', 
+            backgroundSize: 'cover', 
+            backgroundPosition: 'center',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          }}>
             {messageText && messageText.trim() !== "" ? (
-              <div className="flex justify-end mb-4">
-                <div className="max-w-[80%] bg-[#DCF8C6] rounded-lg p-2 shadow-sm">
-                  <div 
-                    className="text-xs text-zinc-800 whitespace-pre-wrap break-words"
-                    dangerouslySetInnerHTML={{ 
-                      __html: formatWhatsAppMessage(messageText) 
-                    }}
-                  />
-                  <div className="flex justify-end items-center mt-1 space-x-1">
-                    <span className="text-[10px] text-zinc-500">10:00 AM</span>
-                    <svg width="16" height="11" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M11.5 1L4.16667 8.33333L1.5 5.66667" stroke="#53BDEB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M14.5 1L7.16667 8.33333L6.5 7.66667" stroke="#53BDEB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+              <div className="space-y-2">
+                {/* Received Message (Business) */}
+                <div className="flex justify-start">
+                  <div className="relative max-w-[90%] bg-white rounded-lg rounded-tl-none p-2 shadow-sm">
+                    {/* Message Tail */}
+                    <div className="absolute left-0 top-0 w-3 h-3 overflow-hidden -translate-x-[1px]">
+                      <div className="absolute w-3 h-3 bg-white origin-bottom-left rotate-45 -translate-y-1 -translate-x-1"></div>
+                    </div>
+                    <div 
+                      className="text-[12px] leading-[14px] text-zinc-800 whitespace-pre-wrap break-words"
+                      dangerouslySetInnerHTML={{ 
+                        __html: formatWhatsAppMessage(messageText) 
+                      }}
+                    />
+                    <div className="flex justify-end items-center mt-1 space-x-1">
+                      <span className="text-[11px] text-zinc-500">10:00 AM</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Sent Message (User) */}
+                <div className="flex justify-end">
+                  <div className="relative max-w-[90%] bg-[#DCF8C6] rounded-lg rounded-tr-none p-2 shadow-sm">
+                    {/* Message Tail */}
+                    <div className="absolute right-0 bottom-0 w-3 h-3 overflow-hidden translate-x-[1px]">
+                      <div className="absolute w-3 h-3 bg-[#DCF8C6] origin-bottom-right -rotate-45 -translate-y-1 translate-x-1"></div>
+                    </div>
+                    <div 
+                      className="text-[12px] leading-[14px] text-zinc-800 whitespace-pre-wrap break-words"
+                      dangerouslySetInnerHTML={{ 
+                        __html: formatWhatsAppMessage(messageText) 
+                      }}
+                    />
+                    <div className="flex justify-end items-center mt-1 space-x-1">
+                      <span className="text-[11px] text-zinc-500">10:01 AM</span>
+                      <svg width="16" height="11" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.5 1L4.16667 8.33333L1.5 5.66667" stroke="#53BDEB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M14.5 1L7.16667 8.33333L6.5 7.66667" stroke="#53BDEB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -130,7 +166,7 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
           <div className="bg-secondary p-2 border-t border-border shrink-0">
             <div className="bg-background rounded-full px-3 py-1.5 flex items-center space-x-2">
               <Smile size={20} className="text-muted-foreground" />
-              <span className="text-muted-foreground text-sm flex-grow">Type a message...</span>
+              <span className="text-muted-foreground text-[12px] leading-[14px] flex-grow">Type a message...</span>
               <Paperclip size={20} className="text-muted-foreground -rotate-45" />
               <Mic size={20} className="text-muted-foreground" />
             </div>
