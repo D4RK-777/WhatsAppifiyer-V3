@@ -70,8 +70,8 @@ const WhatsAppMessageBubble: React.FC<WhatsAppMessageBubbleProps> = ({
         continue;
       }
       
-      // Check for list items
-      const bulletMatch = line.match(/^[\*\-]\s+(.+)$/);
+      // Check for list items (asterisk, hyphen, or bullet character)
+      const bulletMatch = line.match(/^[\*\-•]\s+(.+)$/);
       const numberMatch = line.match(/^(\d+)\.\s+(.+)$/);
       
       if (bulletMatch) {
@@ -319,8 +319,8 @@ const WhatsAppMessageBubble: React.FC<WhatsAppMessageBubbleProps> = ({
       const parts = [];
       let lastIndex = 0;
       
-      // Find all bold sections - WhatsApp requires no spaces between * and text
-      const boldRegex = /\*(\S(?:[^*]*\S)?)\*/g;
+      // Find all bold sections - WhatsApp uses single asterisks for bold text
+      const boldRegex = /\*([^*]+?)\*/g;
       let match;
       
       while ((match = boldRegex.exec(text)) !== null) {
@@ -354,8 +354,8 @@ const WhatsAppMessageBubble: React.FC<WhatsAppMessageBubbleProps> = ({
       const parts = [];
       let lastIndex = 0;
       
-      // Find all italic sections - WhatsApp requires no spaces between _ and text
-      const italicRegex = /_(\S(?:[^_]*\S)?)_/g;
+      // Find all italic sections - WhatsApp uses single underscores for italic text
+      const italicRegex = /_([^_]+?)_/g;
       let match;
       
       while ((match = italicRegex.exec(text)) !== null) {
@@ -389,8 +389,8 @@ const WhatsAppMessageBubble: React.FC<WhatsAppMessageBubbleProps> = ({
       const parts = [];
       let lastIndex = 0;
       
-      // Find all strikethrough sections - WhatsApp requires no spaces between ~ and text
-      const strikeRegex = /~(\S(?:[^~]*\S)?)~/g;
+      // Find all strikethrough sections - WhatsApp uses single tildes for strikethrough text
+      const strikeRegex = /~([^~]+?)~/g;
       let match;
       
       while ((match = strikeRegex.exec(text)) !== null) {

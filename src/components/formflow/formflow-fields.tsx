@@ -22,7 +22,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import TemplateGallery, { type TemplateItemProps } from "./template-gallery";
-import { suggestFormFields, type SuggestFormFieldsInput, type SuggestFormFieldsOutput } from "@/ai/flows/form-suggestion";
+import { generateMultiProviderSuggestions } from "@/ai/flows/form-suggestion-multi";
 import { Button } from "@/components/ui/button";
 import { CustomButton } from "@/components/ui/custom-button";
 import { WhatsAppifyButton } from "@/components/ui/whatsappify-button";
@@ -70,6 +70,8 @@ const placeholderTips = [
   "The AI will transform your input into 3 WhatsApp variations.",
   "Remember to choose a message type for best results!"
 ];
+
+
 
 function FormFlowFields() {
   const { toast } = useToast();
@@ -183,61 +185,46 @@ function FormFlowFields() {
     });
   };
 
-  const handleGetSuggestions = async () => {
-    const { yourTextOrIdea, messageType, field1, field2, field3 } = form.getValues();
+  const handleSubmitSuggestions = async (values: FormValues) => {
+    const { yourTextOrIdea, messageType, field1, field2, field3 } = values;
     
-    let hasError = false;
-    if (!yourTextOrIdea || !yourTextOrIdea.trim()) {
-      form.setError("yourTextOrIdea", { type: "manual", message: "Please provide your text or an idea." });
-      hasError = true;
-    } else {
-      form.clearErrors("yourTextOrIdea");
+    if (!yourTextOrIdea || !messageType) {
+      toast({
+        title: "Missing information",
+        description: "Please provide both text/idea and message type.",
+        variant: "destructive",
+      });
+      return;
     }
-
-    if (!messageType) {
-      form.setError("messageType", { type: "manual", message: "Please select a message type." });
-      hasError = true;
-    } else {
-      form.clearErrors("messageType");
-    }
-
-    if (hasError) return;
 
     setIsLoadingSuggestions(true);
+    
     try {
-      const response = await fetch('/api/suggestions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          context: yourTextOrIdea || "",
-          messageType,
-          field1: field1 || "",
-          field2: field2 || "",
-          field3: field3 || "",
-        }),
-      });
+      const input = {
+        context: yourTextOrIdea,
+        messageType: messageType,
+        field1: field1,
+        field2: field2,
+        field3: field3,
+      };
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // Use the new multi-provider approach
+      const result = await generateMultiProviderSuggestions(input);
 
-      const suggestions = await response.json();
-      
-      form.setValue("field1", suggestions.suggestion1, { shouldValidate: true });
-      form.setValue("field2", suggestions.suggestion2, { shouldValidate: true });
-      form.setValue("field3", suggestions.suggestion3, { shouldValidate: true });
-      
+      // Update the form with the suggestions
+      form.setValue("field1", result.suggestion1);
+      form.setValue("field2", result.suggestion2);
+      form.setValue("field3", result.suggestion3);
+
       toast({
-        title: "WhatsApp Variations Loaded!",
-        description: "AI-powered WhatsApp message variations populated.",
+        title: "Suggestions generated",
+        description: "Check out your WhatsApp message variations!",
       });
     } catch (error) {
-      console.error("Error getting suggestions:", error);
+      console.error("Error generating suggestions:", error);
       toast({
         title: "Error",
-        description: "Failed to get AI suggestions. Please try again.",
+        description: "Failed to generate suggestions. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -320,32 +307,40 @@ function FormFlowFields() {
 
     setRegeneratingField(fieldName);
     try {
-      const response = await fetch('/api/suggestions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          context: yourTextOrIdea,
-          messageType,
-          // Not passing field1, field2, field3 to get entirely new suggestions
-        }),
+      // Prepare input for the multi-provider approach
+      const input = {
+        context: yourTextOrIdea,
+        messageType,
+        // Not passing specific field values to get entirely new suggestions
+        field1: "",
+        field2: "",
+        field3: ""
+      };
+
+      // Use the new multi-provider approach
+      const result = await generateMultiProviderSuggestions(input);
+      
+      // Map fieldName to the corresponding suggestion
+      const suggestionMap: Record<VariationFieldName, keyof typeof result> = {
+        field1: 'suggestion1',
+        field2: 'suggestion2',
+        field3: 'suggestion3'
+      };
+      
+      // Update only the specific field that needs regeneration
+      form.setValue(fieldName, result[suggestionMap[fieldName]], { shouldValidate: true });
+      
+      // Show success message with model name based on field
+      const modelNames = {
+        field1: 'Llama 3',
+        field2: 'DeepSeek',
+        field3: 'Gemini'
+      };
+      
+      toast({ 
+        title: `Variation ${fieldName.charAt(fieldName.length - 1)} Regenerated!`, 
+        description: `New suggestion from ${modelNames[fieldName]} has been populated.` 
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const newSuggestions = await response.json();
-
-      if (fieldName === 'field1') {
-        form.setValue("field1", newSuggestions.suggestion1, { shouldValidate: true });
-      } else if (fieldName === 'field2') {
-        form.setValue("field2", newSuggestions.suggestion2, { shouldValidate: true });
-      } else if (fieldName === 'field3') {
-        form.setValue("field3", newSuggestions.suggestion3, { shouldValidate: true });
-      }
-      toast({ title: `Variation ${fieldName.charAt(fieldName.length - 1)} Regenerated!`, description: "A new suggestion has been populated." });
     } catch (error) {
       console.error(`Error regenerating ${fieldName}:`, error);
       toast({ title: "Regeneration Error", description: `Failed to regenerate Variation ${fieldName.charAt(fieldName.length - 1)}. Please try again.`, variant: "destructive" });
@@ -418,7 +413,7 @@ function FormFlowFields() {
                       <WhatsAppifyButton
                         id="tour-target-transform-button"
                         type="button"
-                        onClick={handleGetSuggestions}
+                        onClick={form.handleSubmit(handleSubmitSuggestions)}
                         isLoading={isLoadingSuggestions}
                         disabled={isLoadingSuggestions || regeneratingField !== null}
                         className="px-6 py-2 h-10 rounded-full shadow-md"

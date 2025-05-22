@@ -31,7 +31,7 @@ export async function generateSimpleMessage(input: SimpleInput): Promise<SimpleO
     3. Use *bold* for emphasis
     4. Use _italics_ for subtle emphasis
     5. Use ~strikethrough~ when needed
-    6. Use `code` for inline code
+    6. Use \`code\` for inline code
     
     Example:
     *Hello!* 👋
@@ -39,8 +39,8 @@ export async function generateSimpleMessage(input: SimpleInput): Promise<SimpleO
     Here's a simple message with _good_ formatting.
     
     *Key Points:*
-    • First point
-    • Second point
+    - First point
+    - Second point
     
     Let me know if you have any questions!`;
 

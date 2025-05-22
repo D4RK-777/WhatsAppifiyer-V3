@@ -3,7 +3,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Wifi, BatteryFull, User, Phone, Video, MoreVertical, Smile, Paperclip, Mic, MessageCircle } from 'lucide-react';
-import WhatsAppMessageBubble from './whatsapp-message-bubble';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -13,6 +12,28 @@ interface PhonePreviewProps {
   currentPhoneWidth?: number;
   zoomLevel?: number;
 }
+
+// Function to format WhatsApp message text with proper HTML
+const formatWhatsAppMessage = (text: string): string => {
+  if (!text) return '';
+  
+  // Convert WhatsApp markdown to HTML
+  let html = text
+    // Convert *bold* to <strong>bold</strong> (WhatsApp uses single asterisks for bold)
+    .replace(/\*([^*]+?)\*/g, '<strong>$1</strong>')
+    // Convert _italic_ to <em>italic</em> (WhatsApp uses single underscores for italic)
+    .replace(/_([^_]+?)_/g, '<em>$1</em>')
+    // Convert ~strikethrough~ to <s>strikethrough</s>
+    .replace(/~([^~]+?)~/g, '<s>$1</s>')
+    // Convert `code` to <code>code</code> (inline code)
+    .replace(/`([^`]+?)`/g, '<code style="background-color: #f0f0f0; padding: 1px 3px; border-radius: 3px; font-family: monospace;">$1</code>')
+    // Convert URLs to clickable links
+    .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" style="color: #0366d6; text-decoration: underline;">$1</a>')
+    // Convert line breaks to <br> for proper spacing
+    .replace(/\n/g, '<br>');
+  
+  return html;
+};
 
 const PhonePreview: React.FC<PhonePreviewProps> = ({
   messageText,
@@ -80,7 +101,23 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
           {/* Chat Area */}
           <div className="flex-grow overflow-y-auto p-3" style={{ backgroundImage: 'url(/whatsapp-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
             {messageText && messageText.trim() !== "" ? (
-              <WhatsAppMessageBubble messageText={messageText} isSender={true} timestamp="10:00 AM" />
+              <div className="flex justify-end mb-4">
+                <div className="max-w-[80%] bg-[#DCF8C6] rounded-lg p-2 shadow-sm">
+                  <div 
+                    className="text-xs text-zinc-800 whitespace-pre-wrap break-words"
+                    dangerouslySetInnerHTML={{ 
+                      __html: formatWhatsAppMessage(messageText) 
+                    }}
+                  />
+                  <div className="flex justify-end items-center mt-1 space-x-1">
+                    <span className="text-[10px] text-zinc-500">10:00 AM</span>
+                    <svg width="16" height="11" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M11.5 1L4.16667 8.33333L1.5 5.66667" stroke="#53BDEB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M14.5 1L7.16667 8.33333L6.5 7.66667" stroke="#53BDEB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground text-xs p-4">
                 <MessageCircle size={32} className="mb-2 opacity-50" />

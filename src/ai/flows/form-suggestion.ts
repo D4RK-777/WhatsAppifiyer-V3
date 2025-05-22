@@ -395,7 +395,7 @@ Key Points to Highlight: {{{creativeCopy.keyHighlights}}}
 - Italic (_text_): Use for subtle emphasis, product names, foreign words
 - Strikethrough (~text~): Use for price reductions, corrections, outdated info
 - Monospace (\`\`\`text\`\`\`): Use for codes, technical information, pre-formatted text
-- Bulleted Lists (* item): Use for features, benefits, options (unordered items)
+- Bulleted Lists (- item): Use for features, benefits, options (unordered items)
 - Numbered Lists (1. item): Use for steps, instructions, ranked items (ordered items)
 - Block Quotes (> text): Use for testimonials, important notices, quoted content
 - Inline Code (\`text\`): Use for highlighting UI elements or specific terms
@@ -520,7 +520,7 @@ WhatsApp supports these formatting options:
 - _Italic_ (use underscores): For emphasis, quotes, product names
 - ~Strikethrough~ (use tildes): For discounts, price reductions, changes to information
 - \`\`\`Monospace\`\`\` (use triple backticks): For codes, quotes, or to set text apart
-- Bulleted lists: For features, benefits, steps (use - or • symbols)
+- Bulleted lists: For features, benefits, steps (use - symbol)
 - Numbered lists: For sequential steps, ranked items (use 1., 2., etc.)
 - Emojis: For visual appeal and emotional connection
 - Line breaks: For readability and visual separation

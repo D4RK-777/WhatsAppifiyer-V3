@@ -14,40 +14,53 @@ export default function TestMessageFormatting() {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
   
-  // Format text for WhatsApp preview with actual HTML/CSS styling
+  // Format text for WhatsApp preview with proper HTML rendering
   const formatForPreview = (text: string) => {
     if (!text) return '';
     
-    // Convert markdown to HTML with WhatsApp styling
+    // First, convert WhatsApp markdown to HTML
     let html = text
-      // Handle bold with single asterisk
-      .replace(/\*([^*]+?)\*(?![*])/g, '<strong>$1</strong>')
-      // Handle italic with single underscore
-      .replace(/_([^_]+?)_(?![_])/g, '<em>$1</em>')
-      // Handle strikethrough
-      .replace(/~([^~]+?)~/g, '<span style="text-decoration: line-through">$1</span>')
-      // Handle monospace blocks
-      .replace(/```([\s\S]*?)```/g, '<code>$1</code>')
+      // Convert *bold* to <strong>bold</strong> (WhatsApp uses single asterisks for bold)
+      .replace(/\*([^*]+?)\*/g, '<strong>$1</strong>')
+      // Convert _italic_ to <em>italic</em> (WhatsApp uses single underscores for italic)
+      .replace(/_([^_]+?)_/g, '<em>$1</em>')
+      // Convert ~strikethrough~ to <s>strikethrough</s>
+      .replace(/~([^~]+?)~/g, '<s>$1</s>')
+      // Convert ```code``` to <pre><code>code</code></pre> (multiline code blocks)
+      .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+      // Convert `code` to <code>code</code> (inline code)
+      .replace(/`([^`]+?)`/g, '<code>$1</code>')
+      // Convert URLs to clickable links
+      .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-blue-500 hover:underline">$1</a>')
       // Convert line breaks to <br> for proper spacing
-      .replace(/\n/g, '<br>');
+      .replace(/\n/g, '<br>')
+      // Convert bullet points (*, -, •) to proper HTML list items
+      .replace(/^[\*\-•]\s+(.+)$/gm, '<li>$1</li>');
       
-    return html;
+    // Wrap lists in <ul> tags if they exist
+    if (html.includes('<li>')) {
+      html = html.replace(/(<li>.*?<\/li>)+/g, '<ul class="list-disc pl-5 my-2">$&</ul>');
+    }
+      
+    return <div dangerouslySetInnerHTML={{ __html: html }} />;
   };
   
   // Format text for raw output (keeps markdown for copying)
   const formatForRawOutput = (text: string) => {
     if (!text) return '';
-    // Clean up common markdown issues
-    return text
-      // Fix double asterisks (convert ****bold**** to **bold**)
-      .replace(/\*\*\*\*(.*?)\*\*\*\*/g, '**$1**')
-      // Ensure single asterisks for bold
-      .replace(/([^\\])\*\*/g, '$1*')
-      // Ensure single underscores for italics
-      .replace(/([^_])__/g, '$1_')
-      // Normalize whitespace
-      .replace(/\s+/g, ' ')
-      .trim();
+    
+    // Ensure proper WhatsApp formatting syntax
+    let formattedText = text
+      // Fix any double asterisks to single (WhatsApp uses single * for bold)
+      .replace(/\*\*([^*]+?)\*\*/g, '*$1*')
+      // Fix any bullet points to use proper WhatsApp syntax (hyphen with space)
+      .replace(/^[•\*]\s+(.+)$/gm, '- $1')
+      // Ensure numbered lists have proper spacing
+      .replace(/^(\d+)\.(?!\s)(.+)$/gm, '$1. $2')
+      // Fix any double underscores to single (WhatsApp uses single _ for italic)
+      .replace(/__([^_]+?)__/g, '_$1_');
+      
+    return formattedText;
   };
   
   const MODEL_NAMES = {
@@ -180,23 +193,33 @@ export default function TestMessageFormatting() {
             messages: [
               {
                 role: 'system',
-                content: `You are a WhatsApp formatting expert. Format the following marketing message with perfect WhatsApp styling.
-
-RULES:
-1. ONLY return the final formatted message - NO explanations, thinking, or notes
-2. Use WhatsApp formatting: *bold*, _italic_, ~strikethrough~, \`\`\`monospace\`\`\`
-3. Add relevant emojis to enhance the message
-4. Use line breaks and spacing to make it readable
-5. Keep the core message but make it more engaging
-6. Use ONLY these formatting styles (NEVER use markdown):
-   - *bold text* (single asterisks only, NEVER use **)
-   - _italic text_ (single underscores only, NEVER use __)
-   - ~strikethrough text~
-   - \`\`\`monospace text\`\`\`
-7. NEVER include any text outside the formatted message
-8. Keep the message concise and to the point
-9. NEVER use double asterisks (**) - always use single (*)
-10. NEVER use double underscores (__) - always use single (_)`
+                content: `You are a WhatsApp formatting expert. Format the following marketing message with perfect WhatsApp styling.\n\n` +
+                `RULES:\n` +
+                `1. ONLY return the final formatted message - NO explanations, thinking, or notes\n` +
+                `2. Use WhatsApp formatting EXACTLY as shown:\n` +
+                `   - *bold text* (single asterisks)\n` +
+                `   - _italic text_ (single underscores)\n` +
+                `   - ~strikethrough text~\n` +
+                `   - \`code\` for inline code\n` +
+                `   - \`\`\`\n` +
+                `     multiple\n` +
+                `     lines\n` +
+                `     of code\n` +
+                `     \`\`\`\n` +
+                `3. Add relevant emojis to enhance the message (but don\'t overdo it)\n` +
+                `4. Use line breaks (press Enter) to create natural paragraphs\n` +
+                `5. Keep the core message but make it more engaging\n` +
+                `6. NEVER use markdown syntax (**, __, etc.) - only use WhatsApp formatting\n` +
+                `7. NEVER include any text outside the formatted message\n` +
+                `8. Keep the message concise and to the point\n` +
+                `9. Example of correct formatting:\n` +
+                `   *Hello!* _How are you?_\n` +
+                `   Check out this ~sale~ *special offer*!\n` +
+                `   Use code: \`SUMMER25\`\n` +
+                `   \`\`\`\n` +
+                `   Multi-line\n` +
+                `   code block\n` +
+                `   \`\`\``
               },
               {
                 role: 'user',
@@ -454,25 +477,53 @@ RULES:
                   {/* Sender's message */}
                   <div className="flex justify-end">
                     <div className="bg-[#d9fdd3] p-3 rounded-lg max-w-[85%] shadow-sm">
-                      <div 
-                        className="text-gray-800 break-words"
-                        style={{ 
-                          fontFamily: 'Segoe UI, system-ui, -apple-system, sans-serif',
-                          lineHeight: '1.4',
-                          fontSize: '14px'
-                        }}
-                        dangerouslySetInnerHTML={{ __html: formatForPreview(output) }}
-                      />
+                      <div className="text-gray-800 break-words text-left" style={{ fontFamily: 'Segoe UI, system-ui, -apple-system, sans-serif' }}>
+                        {formatForPreview(output)}
+                        <style jsx>{`
+                          strong, b {
+                            font-weight: 600;
+                          }
+                          em, i {
+                            font-style: italic;
+                          }
+                          s, del {
+                            text-decoration: line-through;
+                          }
+                          code {
+                            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+                            background: rgba(0,0,0,0.05);
+                            padding: 0.2em 0.4em;
+                            border-radius: 3px;
+                            font-size: 0.9em;
+                          }
+                          pre {
+                            background: rgba(0,0,0,0.05);
+                            padding: 0.5em;
+                            border-radius: 4px;
+                            overflow-x: auto;
+                            margin: 0.5em 0;
+                            font-size: 0.9em;
+                            line-height: 1.5;
+                          }
+                          a {
+                            color: #007bff;
+                            text-decoration: none;
+                          }
+                          a:hover {
+                            text-decoration: underline;
+                          }
+                        `}</style>
+                      </div>
                     </div>
                   </div>
                   
                   {/* Timestamp */}
                   <div className="flex justify-end pr-2">
-                    <span className="text-[11px] text-gray-500 opacity-80">
+                    <span className="text-[10px] text-gray-500">
                       {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                     <span className="ml-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 15" className="text-gray-500 opacity-70">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 15" className="text-gray-500">
                         <path fill="currentColor" d="M9.6 2.4H8V1.6a.4.4 0 0 0-.8 0v.8h-2V1.6a.4.4 0 0 0-.8 0v.8H2.4a.8.8 0 0 0-.8.8v9.6a.8.8 0 0 0 .8.8h7.2a.8.8 0 0 0 .8-.8V3.2a.8.8 0 0 0-.8-.8Z"/>
                         <path fill="currentColor" d="M6.4 8.8H5.6V8a.4.4 0 0 0-.8 0v.8H4a.4.4 0 0 0 0 .8h.8v.8a.4.4 0 0 0 .8 0v-.8H6a.4.4 0 0 0 0-.8h-.6Z"/>
                       </svg>
