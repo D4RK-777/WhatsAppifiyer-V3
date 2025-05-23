@@ -118,7 +118,7 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
               <div className="space-y-2">
                 {/* Received Message (Business) */}
                 <div className="relative">
-                  <div className="relative w-full max-w-[90%] bg-white rounded-tr-lg rounded-br-lg rounded-bl-lg overflow-hidden shadow-sm">
+                  <div className="relative w-full max-w-[90%] bg-white rounded-tl-lg rounded-tr-lg rounded-br-lg overflow-hidden shadow-sm">
                     
                     {/* Media Preview */}
                     {mediaType === 'image' && (

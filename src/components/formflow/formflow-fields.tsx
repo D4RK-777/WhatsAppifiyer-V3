@@ -403,81 +403,49 @@ function FormFlowFields() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-4xl mx-auto">
-        <div className="w-full">
-          <div className="mb-4">
-            <AnimatedDropdownMenu
-              onSelectMessageType={(type) => {
-                form.setValue('messageType', type, { shouldValidate: true });
-              }}
-              onSelectMediaType={(type) => {
-                form.setValue('mediaType', type, { shouldValidate: true });
-              }}
-              onSelectTone={(tone) => {
-                form.setValue('tone', tone, { shouldValidate: true });
-              }}
-              initialValues={{
-                messageType: form.watch('messageType') || '',
-                mediaType: form.watch('mediaType') || '',
-                tone: form.watch('tone') || ''
-              }}
-            />
-            <div className="flex flex-wrap gap-2 mt-2">
-              {form.formState.errors.messageType && (
-                <p className="text-xs text-red-600">{form.formState.errors.messageType.message}</p>
-              )}
-              {form.formState.errors.mediaType && (
-                <p className="text-xs text-red-600">{form.formState.errors.mediaType.message}</p>
-              )}
-              {form.formState.errors.tone && (
-                <p className="text-xs text-red-600">{form.formState.errors.tone.message}</p>
-              )}
-            </div>
-          </div>
-          
-          {/* Hidden form fields to maintain form state */}
-          <FormField
-            control={form.control}
-            name="messageType"
-            render={({ field }) => (
-              <FormItem className="hidden">
-                <FormControl>
-                  <input type="hidden" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="mediaType"
-            render={({ field }) => (
-              <FormItem className="hidden">
-                <FormControl>
-                  <input type="hidden" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="tone"
-            render={({ field }) => (
-              <FormItem className="hidden">
-                <FormControl>
-                  <input type="hidden" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        </div>
         <Card className="rounded-xl bg-card p-6">
           <CardContent className="space-y-6 p-0">
-            
+            {/* Hidden form fields to maintain form state */}
+            <FormField
+              control={form.control}
+              name="messageType"
+              render={({ field }) => (
+                <FormItem className="hidden">
+                  <FormControl>
+                    <input type="hidden" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="mediaType"
+              render={({ field }) => (
+                <FormItem className="hidden">
+                  <FormControl>
+                    <input type="hidden" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="tone"
+              render={({ field }) => (
+                <FormItem className="hidden">
+                  <FormControl>
+                    <input type="hidden" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="yourTextOrIdea"
               render={({ field }) => (
                 <FormItem id="tour-target-input-area" className="relative">
-                  <div className="mb-2 text-xs text-gray-700 whatsapp-instruction-text">
+                  <div className="mb-2 px-4 text-sm text-gray-700 whatsapp-instruction-text" style={{ fontSize: '14px' }}>
                     Paste your boring SMS or plain text below to transform it. If you need an idea simply tell the AI what you want and let the ideas flow. Use the template gallery for more inspiration. <span className="font-medium">*AI can make mistakes, please check your work before copying.</span>
                   </div>
                   <div className="relative">
@@ -491,7 +459,29 @@ function FormFlowFields() {
                         onBlur={() => setIsTextareaFocused(false)}
                       />
                     </FormControl>
-                    <div className="absolute bottom-4 right-4" id="tour-target-transform-button-container">
+                  </div>
+                  
+                  <div className="flex items-center justify-between mt-2 pl-1">
+                    <div className="flex-1">
+                      <AnimatedDropdownMenu
+                        onSelectMessageType={(type) => {
+                          form.setValue('messageType', type, { shouldValidate: true });
+                        }}
+                        onSelectMediaType={(type) => {
+                          form.setValue('mediaType', type, { shouldValidate: true });
+                        }}
+                        onSelectTone={(tone) => {
+                          form.setValue('tone', tone, { shouldValidate: true });
+                        }}
+                        initialValues={{
+                          messageType: form.watch('messageType') || '',
+                          mediaType: form.watch('mediaType') || '',
+                          tone: form.watch('tone') || ''
+                        }}
+                        className="flex-1"
+                      />
+                    </div>
+                    <div className="ml-1" id="tour-target-transform-button-container">
                       <WhatsAppifyButton
                         id="tour-target-transform-button"
                         type="button"
@@ -504,11 +494,26 @@ function FormFlowFields() {
                       </WhatsAppifyButton>
                     </div>
                   </div>
+                  
+                  {/* Error messages */}
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {form.formState.errors.messageType && (
+                      <p className="text-xs text-red-600">{form.formState.errors.messageType.message}</p>
+                    )}
+                    {form.formState.errors.mediaType && (
+                      <p className="text-xs text-red-600">{form.formState.errors.mediaType.message}</p>
+                    )}
+                    {form.formState.errors.tone && (
+                      <p className="text-xs text-red-600">{form.formState.errors.tone.message}</p>
+                    )}
+                  </div>
+                  
                   <FormMessage />
                 </FormItem>
               )}
             />
             
+            {/* Variations Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-2 gap-y-6 pt-4" id="tour-target-variations-area">
               {(['field1', 'field2', 'field3'] as VariationFieldName[]).map((fieldName, index) => (
                 <FormField

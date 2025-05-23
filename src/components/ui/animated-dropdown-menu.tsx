@@ -57,7 +57,7 @@ export function AnimatedDropdownMenu({
 
   return (
     <div className={cn("w-full max-w-4xl mx-auto", className)}>
-      <div className="flex flex-col md:flex-row justify-center items-center gap-4 w-full px-4">
+      <div className="flex flex-col md:flex-row justify-center items-center gap-4 w-full">
         <div className="w-full md:w-auto">
           <div className="relative group w-full">
             <button
