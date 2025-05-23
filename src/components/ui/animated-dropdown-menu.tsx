@@ -8,14 +8,14 @@ import { cn } from '@/lib/utils';
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 interface AnimatedDropdownMenuProps {
-  onSelectMessageType?: (type: MessageType) => void;
-  onSelectMediaType?: (type: MediaType) => void;
-  onSelectTone?: (tone: ToneType) => void;
+  onSelectMessageType?: (type: MessageType | "") => void;
+  onSelectMediaType?: (type: MediaType | "") => void;
+  onSelectTone?: (tone: ToneType | "") => void;
   className?: string;
-  initialValues: {
-    messageType: MessageType;
-    mediaType: MediaType;
-    tone: ToneType;
+  initialValues?: {
+    messageType?: MessageType | "";
+    mediaType?: MediaType | "";
+    tone?: ToneType | "";
   };
 }
 
@@ -24,29 +24,33 @@ export function AnimatedDropdownMenu({
   onSelectMediaType,
   onSelectTone,
   className,
-  initialValues,
+  initialValues = {
+    messageType: "" as MessageType,
+    mediaType: "" as MediaType,
+    tone: "" as ToneType
+  },
 }: AnimatedDropdownMenuProps) {
-  const [selectedMessageType, setSelectedMessageType] = useState<MessageType>(initialValues.messageType);
-  const [selectedMediaType, setSelectedMediaType] = useState<MediaType>(initialValues.mediaType);
-  const [selectedTone, setSelectedTone] = useState<ToneType>(initialValues.tone);
+  const [selectedMessageType, setSelectedMessageType] = useState<MessageType | "">(initialValues?.messageType || "");
+  const [selectedMediaType, setSelectedMediaType] = useState<MediaType | "">(initialValues?.mediaType || "");
+  const [selectedTone, setSelectedTone] = useState<ToneType | "">(initialValues?.tone || "");
 
   // Update internal state when initialValues change
   useEffect(() => {
-    setSelectedMessageType(initialValues.messageType);
-    setSelectedMediaType(initialValues.mediaType);
-    setSelectedTone(initialValues.tone);
+    setSelectedMessageType(initialValues?.messageType || "");
+    setSelectedMediaType(initialValues?.mediaType || "");
+    setSelectedTone(initialValues?.tone || "");
   }, [initialValues]);
-  const handleMessageTypeSelect = (type: MessageType) => {
+  const handleMessageTypeSelect = (type: MessageType | "") => {
     setSelectedMessageType(type);
-    if (onSelectMessageType) onSelectMessageType(type);
+    if (onSelectMessageType && type) onSelectMessageType(type);
   };
 
-  const handleMediaTypeSelect = (type: MediaType) => {
+  const handleMediaTypeSelect = (type: MediaType | "") => {
     setSelectedMediaType(type);
-    if (onSelectMediaType) onSelectMediaType(type);
+    if (onSelectMediaType && type) onSelectMediaType(type);
   };
 
-  const handleToneSelect = (tone: ToneType) => {
+  const handleToneSelect = (tone: ToneType | "") => {
     setSelectedTone(tone);
     if (onSelectTone) onSelectTone(tone);
   };
@@ -60,7 +64,7 @@ export function AnimatedDropdownMenu({
               type="button"
               className="flex items-center justify-between w-full max-w-[220px] mx-auto px-4 py-2 text-sm font-medium text-left text-white bg-gradient-to-r from-[#625DF5] to-[#1BB3FF] border-0 rounded-full shadow-md hover:shadow-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-200"
             >
-              <span className="truncate">{selectedMessageType === "" ? "Select Message Type" : selectedMessageType}</span>
+              <span className="truncate">{!selectedMessageType ? "Select Message Type" : selectedMessageType}</span>
               <svg className="w-5 h-5 ml-2 -mr-1 text-white" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
@@ -89,7 +93,7 @@ export function AnimatedDropdownMenu({
               type="button"
               className="flex items-center justify-between w-full max-w-[220px] mx-auto px-4 py-2 text-sm font-medium text-left text-white bg-gradient-to-r from-[#625DF5] to-[#1BB3FF] border-0 rounded-full shadow-md hover:shadow-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-200"
             >
-              <span className="truncate">{selectedMediaType === "" ? "Select Media Type" : selectedMediaType}</span>
+              <span className="truncate">{!selectedMediaType ? "Select Media Type" : selectedMediaType}</span>
               <svg className="w-5 h-5 ml-2 -mr-1 text-white" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
@@ -119,7 +123,7 @@ export function AnimatedDropdownMenu({
             type="button"
             className="flex items-center justify-between flex-1 min-w-0 max-w-[220px] px-4 py-2 text-sm font-medium text-left text-white bg-gradient-to-r from-[#625DF5] to-[#1BB3FF] border-0 rounded-full shadow-md hover:shadow-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-200"
           >
-            <span className="break-words">{selectedTone === "" ? "Select Tone" : selectedTone}</span>
+            <span className="break-words">{!selectedTone ? "Select Tone" : capitalize(selectedTone)}</span>
             <svg className="w-5 h-5 ml-2 -mr-1 text-white" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>

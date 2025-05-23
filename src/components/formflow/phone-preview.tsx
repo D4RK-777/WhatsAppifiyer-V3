@@ -11,7 +11,7 @@ interface PhonePreviewProps {
   contactName?: string;
   currentPhoneWidth?: number;
   zoomLevel?: number;
-  mediaType?: 'standard' | 'image' | 'video' | 'pdf' | 'carousel' | 'catalog';
+  mediaType?: 'standard' | 'image' | 'video' | 'pdf' | 'carousel' | 'catalog' | '';
 }
 
 // Function to format WhatsApp message text with proper HTML
@@ -41,8 +41,10 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
   contactName = "Chat Inc.",
   currentPhoneWidth = 280,
   zoomLevel = 1.0,
-  mediaType = 'standard',
+  mediaType: mediaTypeProp = 'standard',
 }) => {
+  // Convert empty string to 'standard' to match the expected type
+  const mediaType = mediaTypeProp || 'standard';
   const [currentTime, setCurrentTime] = useState<string | null>(null);
 
   useEffect(() => {
@@ -115,11 +117,8 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
             {messageText && messageText.trim() !== "" ? (
               <div className="space-y-2">
                 {/* Received Message (Business) */}
-                <div className="relative pl-3">
-                  <div className="absolute left-4 top-0 w-6 h-4 overflow-visible">
-                    <div className="w-0 h-0 border-t-[12px] border-t-white border-r-[16px] border-r-transparent transform rotate-90 origin-top-left"></div>
-                  </div>
-                  <div className="relative w-full max-w-[90%] bg-white rounded-lg rounded-tl-none overflow-hidden shadow-sm">
+                <div className="relative">
+                  <div className="relative w-full max-w-[90%] bg-white rounded-tr-lg rounded-br-lg rounded-bl-lg overflow-hidden shadow-sm">
                     
                     {/* Media Preview */}
                     {mediaType === 'image' && (

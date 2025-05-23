@@ -43,38 +43,24 @@ import {
 } from "@/lib/constants";
 
 const formSchema = z.object({
-  yourTextOrIdea: z
-    .string()
-    .min(1, "This field cannot be empty if you want AI suggestions.")
-    .max(4096, "Input must be 4096 characters or less to match WhatsApp's limit.")
-    .describe("User's text to convert or an idea for message generation."),
-  messageType: z.enum([...messageTypesArray] as const, {
-    required_error: "Please select a message type.",
-  }),
-  mediaType: z.enum([...mediaTypesArray] as const, {
-    required_error: "Please select a media type.",
-  }),
-  tone: z.enum([...toneTypesArray] as const, {
-    required_error: "Please select a tone of voice.",
-  }),
-  field1: z
-    .string()
-    .max(4096, "Suggestion 1 (Variation) must be 4096 characters or less to match WhatsApp's limit.")
-    .optional()
-    .describe("AI-generated Variation 1 of the WhatsApp message."),
-  field2: z
-    .string()
-    .max(4096, "Suggestion 2 (Variation) must be 4096 characters or less to match WhatsApp's limit.")
-    .optional()
-    .describe("AI-generated Variation 2 of the WhatsApp message."),
-  field3: z
-    .string()
-    .max(4096, "Suggestion 3 (Variation) must be 4096 characters or less to match WhatsApp's limit.")
-    .optional()
-    .describe("AI-generated Variation 3 of the WhatsApp message."),
+  yourTextOrIdea: z.string().min(1, "Please enter your text or idea"),
+  messageType: z.union([z.enum(messageTypesArray), z.literal("")]).default(""),
+  mediaType: z.union([z.enum(mediaTypesArray), z.literal("")]).default(""),
+  tone: z.union([z.enum(toneTypesArray), z.literal("")]).default(""),
+  field1: z.string().optional(),
+  field2: z.string().optional(),
+  field3: z.string().optional()
 });
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = {
+  yourTextOrIdea: string;
+  messageType: MessageType | "";
+  mediaType: MediaType | "";
+  tone: ToneType | "";
+  field1?: string;
+  field2?: string;
+  field3?: string;
+};
 type VariationFieldName = 'field1' | 'field2' | 'field3';
 
 const placeholderTips = [
@@ -104,12 +90,12 @@ function FormFlowFields() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       yourTextOrIdea: "",
-      messageType: "marketing",
-      mediaType: "standard",
-      tone: "friendly",
-      field1: "",
-      field2: "",
-      field3: "",
+      messageType: "",
+      mediaType: "",
+      tone: "",
+      field1: undefined,
+      field2: undefined,
+      field3: undefined,
     },
   });
 
@@ -430,9 +416,9 @@ function FormFlowFields() {
                 form.setValue('tone', tone, { shouldValidate: true });
               }}
               initialValues={{
-                messageType: form.watch('messageType') || 'marketing',
-                mediaType: form.watch('mediaType') || 'standard',
-                tone: form.watch('tone') || 'friendly'
+                messageType: form.watch('messageType') || '',
+                mediaType: form.watch('mediaType') || '',
+                tone: form.watch('tone') || ''
               }}
             />
             <div className="flex flex-wrap gap-2 mt-2">
