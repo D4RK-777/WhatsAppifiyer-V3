@@ -403,7 +403,7 @@ function FormFlowFields() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-4xl mx-auto">
-        <Card className="rounded-xl bg-card p-6">
+        <Card className="rounded-xl bg-card pt-2 pb-6 px-6">
           <CardContent className="space-y-6 p-0">
             {/* Hidden form fields to maintain form state */}
             <FormField
@@ -445,10 +445,10 @@ function FormFlowFields() {
               name="yourTextOrIdea"
               render={({ field }) => (
                 <FormItem id="tour-target-input-area" className="relative">
-                  <div className="mb-2 px-4 text-sm text-gray-700 whatsapp-instruction-text" style={{ fontSize: '14px' }}>
-                    Paste your boring SMS or plain text below to transform it. If you need an idea simply tell the AI what you want and let the ideas flow. Use the template gallery for more inspiration. <span className="font-medium">*AI can make mistakes, please check your work before copying.</span>
-                  </div>
                   <div className="bg-white rounded-lg shadow-md p-4">
+                    <div className="mb-3 px-2 text-sm text-gray-700 whatsapp-instruction-text" style={{ fontSize: '14px' }}>
+                      Paste your boring SMS or plain text below to transform it. If you need an idea simply tell the AI what you want and let the ideas flow. Use the template gallery for more inspiration. <span className="font-medium">*AI can make mistakes, please check your work before copying.</span>
+                    </div>
                     <div className="relative">
                       <FormControl>
                         <Textarea

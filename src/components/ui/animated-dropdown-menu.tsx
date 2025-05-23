@@ -62,14 +62,14 @@ export function AnimatedDropdownMenu({
           <div className="relative group w-full">
             <button
               type="button"
-              className="flex items-center justify-between w-full max-w-[220px] mx-auto px-4 py-2 text-sm font-medium text-left text-green-600 bg-white border border-gray-200 rounded-[4px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-all duration-200"
+              className="flex items-center justify-between w-[180px] px-4 py-2 text-sm font-medium text-left text-green-600 bg-white border border-gray-200 rounded-[4px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-all duration-200"
             >
               <span className="truncate">{!selectedMessageType ? "Select Message Type" : selectedMessageType}</span>
               <svg className="w-5 h-5 ml-2 -mr-1 text-green-600" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
             </button>
-            <div className="absolute z-10 mt-1 w-full max-w-[220px] left-1/2 -translate-x-1/2 origin-top rounded-[4px] bg-white border border-gray-200 shadow-lg ring-1 ring-black ring-opacity-10 opacity-0 invisible transition-all duration-200 transform -translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0">
+            <div className="absolute z-10 mt-1 w-full max-w-[220px] left-0 origin-top rounded-[4px] bg-white border border-gray-200 shadow-lg ring-1 ring-black ring-opacity-10 opacity-0 invisible transition-all duration-200 transform -translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0">
               <div className="py-1">
                 <ul className="space-y-1">
                   {messageTypesArray.map((type) => (
@@ -91,14 +91,14 @@ export function AnimatedDropdownMenu({
           <div className="relative group w-full">
             <button
               type="button"
-              className="flex items-center justify-between w-full max-w-[220px] mx-auto px-4 py-2 text-sm font-medium text-left text-green-600 bg-white border border-gray-200 rounded-[4px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-all duration-200"
+              className="flex items-center justify-between w-[180px] px-4 py-2 text-sm font-medium text-left text-green-600 bg-white border border-gray-200 rounded-[4px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-all duration-200"
             >
               <span className="truncate">{!selectedMediaType ? "Select Media Type" : selectedMediaType}</span>
               <svg className="w-5 h-5 ml-2 -mr-1 text-green-600" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
             </button>
-            <div className="absolute z-10 mt-1 w-full max-w-[220px] left-1/2 -translate-x-1/2 origin-top rounded-[4px] bg-white border border-gray-200 shadow-lg ring-1 ring-black ring-opacity-10 opacity-0 invisible transition-all duration-200 transform -translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0">
+            <div className="absolute z-10 mt-1 w-full max-w-[220px] left-0 origin-top rounded-[4px] bg-white border border-gray-200 shadow-lg ring-1 ring-black ring-opacity-10 opacity-0 invisible transition-all duration-200 transform -translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0">
               <div className="py-1">
               <ul>
                 {mediaTypesArray.map((type) => (
@@ -121,14 +121,14 @@ export function AnimatedDropdownMenu({
           <div className="relative group flex-1 min-w-0">
           <button
             type="button"
-            className="flex items-center justify-between flex-1 min-w-0 max-w-[220px] px-4 py-2 text-sm font-medium text-left text-green-600 bg-white border border-gray-200 rounded-[4px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-all duration-200"
+            className="flex items-center justify-between w-[140px] px-4 py-2 text-sm font-medium text-left text-green-600 bg-white border border-gray-200 rounded-[4px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-all duration-200"
           >
             <span className="break-words">{!selectedTone ? "Select Tone" : capitalize(selectedTone)}</span>
             <svg className="w-5 h-5 ml-2 -mr-1 text-green-600" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>
           </button>
-          <div className="absolute z-10 mt-1 flex-1 min-w-0 max-w-[220px] origin-top-right rounded-[4px] bg-white border border-gray-200 shadow-lg ring-1 ring-black ring-opacity-10 focus:outline-none opacity-0 invisible transition-all duration-200 transform -translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0">
+          <div className="absolute z-10 mt-1 w-full max-w-[220px] left-0 origin-top rounded-[4px] bg-white border border-gray-200 shadow-lg ring-1 ring-black ring-opacity-10 opacity-0 invisible transition-all duration-200 transform -translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0">
             <div className="py-1 rounded-xl overflow-hidden">
               <ul>
                 {toneTypesArray.map((tone) => (
