@@ -448,50 +448,52 @@ function FormFlowFields() {
                   <div className="mb-2 px-4 text-sm text-gray-700 whatsapp-instruction-text" style={{ fontSize: '14px' }}>
                     Paste your boring SMS or plain text below to transform it. If you need an idea simply tell the AI what you want and let the ideas flow. Use the template gallery for more inspiration. <span className="font-medium">*AI can make mistakes, please check your work before copying.</span>
                   </div>
-                  <div className="relative">
-                    <FormControl>
-                      <Textarea
-                        placeholder={currentYourTextOrIdea && currentYourTextOrIdea.length > 0 ? "" : animatedPlaceholder}
-                        className="bg-[#ECE5DD] text-zinc-800 placeholder:text-zinc-600 resize-none rounded-md text-base focus-visible:ring-0 transition-shadow duration-200 ease-in-out"
-                        rows={8}
-                        {...field}
-                        onFocus={() => setIsTextareaFocused(true)}
-                        onBlur={() => setIsTextareaFocused(false)}
-                      />
-                    </FormControl>
-                  </div>
-                  
-                  <div className="flex items-center justify-between mt-2 pl-1">
-                    <div className="flex-1">
-                      <AnimatedDropdownMenu
-                        onSelectMessageType={(type) => {
-                          form.setValue('messageType', type, { shouldValidate: true });
-                        }}
-                        onSelectMediaType={(type) => {
-                          form.setValue('mediaType', type, { shouldValidate: true });
-                        }}
-                        onSelectTone={(tone) => {
-                          form.setValue('tone', tone, { shouldValidate: true });
-                        }}
-                        initialValues={{
-                          messageType: form.watch('messageType') || '',
-                          mediaType: form.watch('mediaType') || '',
-                          tone: form.watch('tone') || ''
-                        }}
-                        className="flex-1"
-                      />
+                  <div className="bg-white rounded-lg shadow-md p-4">
+                    <div className="relative">
+                      <FormControl>
+                        <Textarea
+                          placeholder={currentYourTextOrIdea && currentYourTextOrIdea.length > 0 ? "" : animatedPlaceholder}
+                          className="bg-[#ECE5DD] text-zinc-800 placeholder:text-zinc-600 resize-none rounded-t-md rounded-b-none text-base focus-visible:ring-0 transition-all duration-200 ease-in-out shadow-none"
+                          rows={8}
+                          {...field}
+                          onFocus={() => setIsTextareaFocused(true)}
+                          onBlur={() => setIsTextareaFocused(false)}
+                        />
+                      </FormControl>
                     </div>
-                    <div className="ml-1" id="tour-target-transform-button-container">
-                      <WhatsAppifyButton
-                        id="tour-target-transform-button"
-                        type="button"
-                        onClick={form.handleSubmit(handleSubmitSuggestions)}
-                        isLoading={isLoadingSuggestions}
-                        disabled={isLoadingSuggestions || regeneratingField !== null}
-                        className="px-6 py-2 h-10 rounded-full shadow-md"
-                      >
-                        WhatsAppify
-                      </WhatsAppifyButton>
+                    
+                    <div className="flex items-center justify-between px-4 bg-[#ECE5DD] py-3 rounded-b-lg">
+                      <div className="flex-1">
+                        <AnimatedDropdownMenu
+                          onSelectMessageType={(type) => {
+                            form.setValue('messageType', type, { shouldValidate: true });
+                          }}
+                          onSelectMediaType={(type) => {
+                            form.setValue('mediaType', type, { shouldValidate: true });
+                          }}
+                          onSelectTone={(tone) => {
+                            form.setValue('tone', tone, { shouldValidate: true });
+                          }}
+                          initialValues={{
+                            messageType: form.watch('messageType') || '',
+                            mediaType: form.watch('mediaType') || '',
+                            tone: form.watch('tone') || ''
+                          }}
+                          className="flex-1"
+                        />
+                      </div>
+                      <div id="tour-target-transform-button-container">
+                        <WhatsAppifyButton
+                          id="tour-target-transform-button"
+                          type="button"
+                          onClick={form.handleSubmit(handleSubmitSuggestions)}
+                          isLoading={isLoadingSuggestions}
+                          disabled={isLoadingSuggestions || regeneratingField !== null}
+                          className="px-6 py-2 h-10 rounded-full shadow-md"
+                        >
+                          WhatsAppify
+                        </WhatsAppifyButton>
+                      </div>
                     </div>
                   </div>
                   
