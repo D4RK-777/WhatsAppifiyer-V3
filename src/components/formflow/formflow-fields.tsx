@@ -301,6 +301,14 @@ function FormFlowFields() {
     toast({ title: `Disliked Variation ${fieldName.charAt(fieldName.length - 1)}`, description: "Feedback submitted (placeholder)." });
   };
 
+  const handleCopyToClipboard = (text: string, variationNumber: number) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: `Variation ${variationNumber} Copied!`,
+      description: "The text has been copied to your clipboard.",
+    });
+  };
+
   const handleRegenerate = async (fieldName: VariationFieldName) => {
     const { yourTextOrIdea, messageType, mediaType, tone } = form.getValues();
 
@@ -445,7 +453,7 @@ function FormFlowFields() {
               name="yourTextOrIdea"
               render={({ field }) => (
                 <FormItem id="tour-target-input-area" className="relative">
-                  <div className="bg-white rounded-lg shadow-md p-4">
+                  <div className="bg-[#ECE5DD] rounded-lg shadow-md px-4 pt-4" data-component-name="Controller">
                     <div className="mb-3 px-2 text-sm text-gray-700 whatsapp-instruction-text" style={{ fontSize: '14px' }}>
                       Paste your boring SMS or plain text below to transform it. If you need an idea simply tell the AI what you want and let the ideas flow. Use the template gallery for more inspiration. <span className="font-medium">*AI can make mistakes, please check your work before copying.</span>
                     </div>
@@ -453,7 +461,7 @@ function FormFlowFields() {
                       <FormControl>
                         <Textarea
                           placeholder={currentYourTextOrIdea && currentYourTextOrIdea.length > 0 ? "" : animatedPlaceholder}
-                          className="bg-[#ECE5DD] text-zinc-800 placeholder:text-zinc-600 resize-none rounded-t-md rounded-b-none text-base focus-visible:ring-0 transition-all duration-200 ease-in-out shadow-none"
+                          className="flex min-h-[80px] w-full rounded-md px-3 py-2 ring-offset-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus:ring-0 focus:ring-offset-0 bg-white text-zinc-800 placeholder:text-zinc-600 resize-none rounded-t-md rounded-b-none text-base focus-visible:ring-0 transition-all duration-200 ease-in-out shadow-none border-none"
                           rows={8}
                           {...field}
                           onFocus={() => setIsTextareaFocused(true)}
@@ -462,7 +470,7 @@ function FormFlowFields() {
                       </FormControl>
                     </div>
                     
-                    <div className="flex items-center justify-between px-4 bg-[#ECE5DD] py-3 rounded-b-lg">
+                    <div className="flex items-center justify-between px-4 bg-[#ECE5DD] py-3 rounded-b-lg h-[60px]" data-component-name="Controller">
                       <div className="flex-1">
                         <AnimatedDropdownMenu
                           onSelectMessageType={(type) => {
@@ -482,14 +490,14 @@ function FormFlowFields() {
                           className="flex-1"
                         />
                       </div>
-                      <div id="tour-target-transform-button-container">
+                      <div id="tour-target-transform-button-container" data-component-name="Controller" className="m-0">
                         <WhatsAppifyButton
                           id="tour-target-transform-button"
                           type="button"
+                          className="px-[22px] py-[11.8px] m-0 h-[37.6px]"
                           onClick={form.handleSubmit(handleSubmitSuggestions)}
                           isLoading={isLoadingSuggestions}
                           disabled={isLoadingSuggestions || regeneratingField !== null}
-                          className="px-6 py-2 h-10 rounded-full shadow-md"
                         >
                           WhatsAppify
                         </WhatsAppifyButton>
@@ -529,7 +537,7 @@ function FormFlowFields() {
                       onMouseLeave={() => setHoveredVariation(null)}
                     >
                       <FormLabel className="font-semibold text-foreground mb-1 text-[20px]">WhatsApp Variation {index + 1}</FormLabel>
-                      <div className="w-full p-0.5 rounded-[44px] transition-all cursor-default">
+                      <div className="w-full p-0.5 rounded-[44px] transition-all cursor-default overflow-hidden">
                         <FormControl>
                           <PhonePreview 
                             messageText={field.value} 
@@ -546,39 +554,35 @@ function FormFlowFields() {
                           isLoading={regeneratingField === fieldName}
                           disabled={isLoadingSuggestions || regeneratingField !== null}
                           variationNumber={index + 1}
-                          className={cn(
-                            "w-full mt-2",
-                            regeneratingField === fieldName && "opacity-100"
-                          )}
                         />
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCopy(fieldName);
-                          }}
-                          disabled={!field.value}
-                          className={cn(
-                            'copy-variation-button relative inline-flex items-center justify-center',
-                            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#075E54] focus-visible:ring-offset-2',
-                            'ring-2 ring-primary ring-offset-1 ring-offset-background text-foreground',
-                            'hover:bg-accent/50 transition-all w-full rounded-full overflow-hidden',
-                            hoveredVariation === fieldName && 'ring-2 ring-primary',
-                            !field.value && 'opacity-60 cursor-not-allowed'
-                          )}
-                          data-copy-variation-id={`copy-variation-${index + 1}`}
-                        >
-                          <div className="copy-variation-content flex items-center justify-center gap-2">
-                            <Copy className="copy-variation-icon h-4 w-4" />
-                            <span className="copy-variation-text font-semibold">Copy Variation {index + 1}</span>
-                          </div>
-                        </button>
-                        <div className="flex justify-center space-x-2">
-                          <Button variant="outline" size="icon" onClick={() => handleLike(fieldName)} aria-label={`Like Variation ${index + 1}`} className="shadow-sm">
-                            <ThumbsUp className="h-4 w-4" />
+                        <div className="flex justify-center space-x-2 mt-2">
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            onClick={() => field.value && handleCopyToClipboard(field.value, index + 1)}
+                            aria-label={`Copy Variation ${index + 1}`}
+                            className="h-8 w-8"
+                            disabled={!field.value}
+                          >
+                            <Copy className="h-3.5 w-3.5" />
                           </Button>
-                          <Button variant="outline" size="icon" onClick={() => handleDislike(fieldName)} aria-label={`Dislike Variation ${index + 1}`} className="shadow-sm">
-                            <ThumbsDown className="h-4 w-4" />
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            onClick={() => handleLike(fieldName)}
+                            aria-label={`Like Variation ${index + 1}`}
+                            className="h-8 w-8"
+                          >
+                            <ThumbsUp className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            onClick={() => handleDislike(fieldName)}
+                            aria-label={`Dislike Variation ${index + 1}`}
+                            className="h-8 w-8"
+                          >
+                            <ThumbsDown className="h-3.5 w-3.5" />
                           </Button>
                         </div>
                       </div>
@@ -599,10 +603,3 @@ function FormFlowFields() {
 }
 
 export default FormFlowFields;
-    
-
-    
-
-
-
-

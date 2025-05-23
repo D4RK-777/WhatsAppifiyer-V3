@@ -1,6 +1,9 @@
 "use client";
 
 import React, { FC, useState } from 'react';
+import { Copy, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 import { cn } from "@/lib/utils";
 import { CustomButton } from "@/components/ui/custom-button";
 
@@ -72,6 +75,19 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
   const previewText = templateContent.field1 || "";
   const styles = getTypeSpecificStyles(messageType);
 
+  const { toast } = useToast();
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (previewText) {
+      navigator.clipboard.writeText(previewText);
+      toast({
+        title: "Template copied!",
+        description: "The template has been copied to your clipboard.",
+      });
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -88,20 +104,58 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
       data-ai-hint={dataAiHint.split(' ').slice(0, 2).join(' ')}
     >
       <div className="w-full flex justify-start">
-        <span className="text-[0.6rem] font-bold uppercase tracking-wider mb-0.5 px-2 py-0.5 rounded-md bg-black text-white whitespace-nowrap">
+        <span className="text-[0.6rem] font-bold uppercase tracking-wider mb-0.5 px-2 py-0.5 rounded-md bg-black/10 text-black dark:text-white whitespace-nowrap">
           {messageType}
         </span>
       </div>
-      <p className={cn("text-xs font-semibold mb-1 w-full text-left pl-0.5", styles.textHeaderClass)}>
+      <p className={cn("text-xs font-semibold my-2 w-full text-left pl-0.5 py-2", styles.textHeaderClass)}>
         {title}
       </p>
-      <div
-        className={cn(
-          "w-full flex-1 p-2 rounded-md overflow-hidden text-xs whitespace-pre-line min-h-[6rem] bg-white text-[#111B21] border border-gray-200"
-        )}
-        style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' } as React.CSSProperties}
-      >
-        {previewText || "No preview available"}
+      <div className="flex-1 flex flex-col">
+        <div
+          className={cn(
+            "w-full flex-1 p-2 rounded-md overflow-hidden text-xs whitespace-pre-line min-h-[6rem] bg-white text-[#111B21] border border-gray-200"
+          )}
+          style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' } as React.CSSProperties}
+        >
+          {previewText || "No preview available"}
+        </div>
+        <div className="flex justify-end mt-2 space-x-1">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={handleCopy} 
+            aria-label="Copy template" 
+            className="h-7 w-7"
+          >
+            <Copy className="h-3.5 w-3.5" />
+          </Button>
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={(e) => {
+              e.stopPropagation();
+              // Handle like
+            }} 
+            aria-label="Like template" 
+            className="h-7 w-7"
+          >
+            <ThumbsUp className="h-3.5 w-3.5" />
+          </Button>
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={(e) => {
+              e.stopPropagation();
+              // Handle dislike
+            }} 
+            aria-label="Dislike template" 
+            className="h-7 w-7"
+          >
+            <ThumbsDown className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+
       </div>
     </div>
   );

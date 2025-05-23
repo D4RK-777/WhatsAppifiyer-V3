@@ -63,10 +63,10 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
   };
 
   return (
-    <div className="flex justify-center items-start py-2 overflow-hidden">
+    <div className="relative flex justify-center items-start overflow-hidden" style={{ height: 'calc(100% + 1px)' }}>
       <div
-        style={{ ...phoneStyle, width: '280px', height: '568px' }}
-        className="aspect-[9/19.5] bg-zinc-800 p-2 rounded-[40px] shadow-2xl overflow-hidden max-w-full"
+        style={{ ...phoneStyle }}
+        className="aspect-[9/19.5] bg-zinc-800 p-2 rounded-[40px] shadow-2xl overflow-hidden max-w-full mt-[-1px]"
       >
         <div className="h-full w-full bg-background rounded-[32px] flex flex-col overflow-hidden">
           {/* Status Bar */}
@@ -212,4 +212,3 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
 };
 
 export default PhonePreview;
-

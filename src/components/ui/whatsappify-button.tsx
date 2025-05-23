@@ -3,11 +3,19 @@
 import { ButtonHTMLAttributes, forwardRef } from "react"
 import { cn } from "@/lib/utils"
 import { Loader2, Sparkles } from "lucide-react"
+import { GradientButton } from "./gradient-button"
 
 interface WhatsAppifyButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean
   loadingText?: string
 }
+
+// Custom styles for WhatsApp green gradient rise button
+const whatsAppGradientStyles = {
+  base: "bg-gradient-to-r from-[#25D366] via-[#25D366] to-[#128C7E] bg-[length:200%_auto] rounded-full",
+  hover: "hover:bg-[position:right_center] hover:translate-y-[-0.25em] hover:shadow-[0_10px_9px_-3px_rgba(37,211,102,0.38)]",
+  active: "active:translate-y-0 active:shadow-none",
+};
 
 const WhatsAppifyButton = forwardRef<HTMLButtonElement, WhatsAppifyButtonProps>(
   ({ 
@@ -19,32 +27,17 @@ const WhatsAppifyButton = forwardRef<HTMLButtonElement, WhatsAppifyButtonProps>(
     ...props 
   }, ref) => {
     return (
-      <button
+      <GradientButton
         ref={ref}
         disabled={isLoading || disabled}
+        variant="gradient4"
         className={cn(
-          // Base styling
-          "relative overflow-hidden",
-          "inline-flex items-center justify-center gap-2",
-          "px-6 py-3 h-auto rounded-lg text-sm font-bold",
-          "transition-all duration-300",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-          "disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none",
-          
-          // Gradient Raise style
-          "bg-gradient-to-r from-[#25D366] to-[#F15F79]",
-          "bg-size-200-auto",
-          "text-white",
-          "hover:bg-right-center hover:shadow-xl hover:-translate-y-1",
-          "active:translate-y-0 active:shadow-lg",
-          "disabled:hover:translate-y-0",
-          
+          // Override the default gradient4 colors with WhatsApp green
+          whatsAppGradientStyles.base,
+          whatsAppGradientStyles.hover,
+          whatsAppGradientStyles.active,
           className
         )}
-        style={{
-          backgroundSize: '200% auto',
-          boxShadow: '0 4px 15px 0 rgba(111, 6, 25, 0.25)'
-        }}
         {...props}
       >
         {/* Content */}
@@ -56,7 +49,7 @@ const WhatsAppifyButton = forwardRef<HTMLButtonElement, WhatsAppifyButtonProps>(
           )}
           {isLoading ? loadingText : children}
         </div>
-      </button>
+      </GradientButton>
     )
   }
 )
