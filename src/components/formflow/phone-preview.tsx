@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Wifi, BatteryFull, User, Phone, Video, MoreVertical, Smile, Paperclip, Mic, MessageCircle } from 'lucide-react';
+import { Wifi, BatteryFull, User, Phone, Video, MoreVertical, Smile, Paperclip, Mic, MessageCircle, Image as ImageIcon, FileText, List } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -11,6 +11,7 @@ interface PhonePreviewProps {
   contactName?: string;
   currentPhoneWidth?: number;
   zoomLevel?: number;
+  mediaType?: 'standard' | 'image' | 'video' | 'pdf' | 'carousel' | 'catalog';
 }
 
 // Function to format WhatsApp message text with proper HTML
@@ -40,6 +41,7 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
   contactName = "Chat Inc.",
   currentPhoneWidth = 280,
   zoomLevel = 1.0,
+  mediaType = 'standard',
 }) => {
   const [currentTime, setCurrentTime] = useState<string | null>(null);
 
@@ -59,10 +61,10 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
   };
 
   return (
-    <div className="flex justify-center items-start py-2">
+    <div className="flex justify-center items-start py-2 overflow-hidden">
       <div
         style={{ ...phoneStyle, width: '280px', height: '568px' }}
-        className="aspect-[9/19.5] bg-zinc-800 p-2 rounded-[40px] shadow-2xl overflow-hidden"
+        className="aspect-[9/19.5] bg-zinc-800 p-2 rounded-[40px] shadow-2xl overflow-hidden max-w-full"
       >
         <div className="h-full w-full bg-background rounded-[32px] flex flex-col overflow-hidden">
           {/* Status Bar */}
@@ -113,43 +115,76 @@ const PhonePreview: React.FC<PhonePreviewProps> = ({
             {messageText && messageText.trim() !== "" ? (
               <div className="space-y-2">
                 {/* Received Message (Business) */}
-                <div className="flex justify-start">
-                  <div className="relative max-w-[90%] bg-white rounded-lg rounded-tl-none p-2 shadow-sm">
-                    {/* Message Tail */}
-                    <div className="absolute left-0 top-0 w-3 h-3 overflow-hidden -translate-x-[1px]">
-                      <div className="absolute w-3 h-3 bg-white origin-bottom-left rotate-45 -translate-y-1 -translate-x-1"></div>
-                    </div>
-                    <div 
-                      className="text-[12px] leading-[14px] text-zinc-800 whitespace-pre-wrap break-words"
-                      dangerouslySetInnerHTML={{ 
-                        __html: formatWhatsAppMessage(messageText) 
-                      }}
-                    />
-                    <div className="flex justify-end items-center mt-1 space-x-1">
-                      <span className="text-[11px] text-zinc-500">10:00 AM</span>
-                    </div>
+                <div className="relative pl-3">
+                  <div className="absolute left-4 top-0 w-6 h-4 overflow-visible">
+                    <div className="w-0 h-0 border-t-[12px] border-t-white border-r-[16px] border-r-transparent transform rotate-90 origin-top-left"></div>
                   </div>
-                </div>
-                
-                {/* Sent Message (User) */}
-                <div className="flex justify-end">
-                  <div className="relative max-w-[90%] bg-[#DCF8C6] rounded-lg rounded-tr-none p-2 shadow-sm">
-                    {/* Message Tail */}
-                    <div className="absolute right-0 bottom-0 w-3 h-3 overflow-hidden translate-x-[1px]">
-                      <div className="absolute w-3 h-3 bg-[#DCF8C6] origin-bottom-right -rotate-45 -translate-y-1 translate-x-1"></div>
-                    </div>
-                    <div 
-                      className="text-[12px] leading-[14px] text-zinc-800 whitespace-pre-wrap break-words"
-                      dangerouslySetInnerHTML={{ 
-                        __html: formatWhatsAppMessage(messageText) 
-                      }}
-                    />
-                    <div className="flex justify-end items-center mt-1 space-x-1">
-                      <span className="text-[11px] text-zinc-500">10:01 AM</span>
-                      <svg width="16" height="11" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M11.5 1L4.16667 8.33333L1.5 5.66667" stroke="#53BDEB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M14.5 1L7.16667 8.33333L6.5 7.66667" stroke="#53BDEB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
+                  <div className="relative w-full max-w-[90%] bg-white rounded-lg rounded-tl-none overflow-hidden shadow-sm">
+                    
+                    {/* Media Preview */}
+                    {mediaType === 'image' && (
+                      <div className="w-[calc(100%-4px)] h-32 bg-gray-100 flex items-center justify-center mx-0.5 my-0.5 rounded-md">
+                        <ImageIcon size={32} className="text-gray-400" />
+                      </div>
+                    )}
+                    {mediaType === 'video' && (
+                      <div className="w-[calc(100%-4px)] h-32 bg-black flex items-center justify-center relative mx-0.5 my-0.5 rounded-md">
+                        <Video size={32} className="text-white/80" />
+                        <div className="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded">
+                          1:23
+                        </div>
+                      </div>
+                    )}
+                    {mediaType === 'pdf' && (
+                      <div className="p-3 border-b border-gray-100 flex items-center space-x-2">
+                        <FileText size={20} className="text-red-500" />
+                        <div className="text-xs">document.pdf</div>
+                        <div className="text-[10px] text-gray-500 ml-auto">2.4 MB</div>
+                      </div>
+                    )}
+                    {mediaType === 'carousel' && (
+                      <div className="p-2 bg-gray-50 border-b border-gray-100">
+                        <div className="flex space-x-2 overflow-x-auto pb-2">
+                          {[1, 2, 3].map((item) => (
+                            <div key={item} className="flex-shrink-0 w-24 h-16 bg-gray-200 rounded flex items-center justify-center">
+                              <ImageIcon size={20} className="text-gray-400" />
+                            </div>
+                          ))}
+                        </div>
+                        <div className="text-[10px] text-center text-gray-500 mt-1">Swipe to view more</div>
+                      </div>
+                    )}
+                    {mediaType === 'catalog' && (
+                      <div className="p-2 bg-gray-50 border-b border-gray-100">
+                        <div className="flex items-center space-x-2">
+                          <List size={16} className="text-gray-500" />
+                          <span className="text-xs font-medium">Product Catalog</span>
+                        </div>
+                        <div className="mt-2 grid grid-cols-2 gap-2">
+                          {[1, 2].map((item) => (
+                            <div key={item} className="text-center">
+                              <div className="w-full aspect-square bg-gray-200 rounded mb-1 flex items-center justify-center">
+                                <ImageIcon size={16} className="text-gray-400" />
+                              </div>
+                              <div className="text-[10px] font-medium truncate">Product {item}</div>
+                              <div className="text-[10px] text-green-600">$19.99</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Message Text */}
+                    <div className="p-2">
+                      <div 
+                        className="text-[12px] leading-[14px] text-zinc-800 whitespace-pre-wrap break-words"
+                        dangerouslySetInnerHTML={{ 
+                          __html: formatWhatsAppMessage(messageText) 
+                        }}
+                      />
+                      <div className="flex justify-end items-center mt-1 space-x-1">
+                        <span className="text-[11px] text-zinc-500">10:00 AM</span>
+                      </div>
                     </div>
                   </div>
                 </div>

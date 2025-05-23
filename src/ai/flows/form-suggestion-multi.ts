@@ -4,6 +4,8 @@ import { z } from 'zod';
 const MultiInputSchema = z.object({
   context: z.string().describe('The user input to generate WhatsApp messages from'),
   messageType: z.enum(["marketing", "authentication", "utility", "service"]),
+  mediaType: z.enum(["standard", "image", "video", "pdf", "carousel", "catalog"]),
+  tone: z.enum(["professional", "friendly", "empathetic", "cheeky", "sincere", "urgent"]),
   field1: z.string().optional(),
   field2: z.string().optional(),
   field3: z.string().optional(),
@@ -26,35 +28,96 @@ const MODEL_NAMES = {
   'google-gemini': 'gemini-1.5-flash'
 };
 
+// Media type specific instructions
+const MEDIA_TYPE_INSTRUCTIONS = {
+  standard: 'This is a standard text message. Maximum length is 4096 characters, but keep it concise for better readability.',
+  image: 'This message includes an image. Write a caption (max 4096 characters) that complements the visual content. Describe the image or provide context.',
+  video: 'This message includes a video. Write an engaging description (max 4096 characters) that explains the video content and encourages viewing.',
+  pdf: 'This message includes a PDF document. Briefly describe the document contents (max 4096 characters) and what the recipient should expect.',
+  carousel: 'This is a carousel message with 2-10 cards. Write a brief introduction followed by short, engaging text for each card (max 1024 chars per card).',
+  catalog: 'This is a product catalog message. Write a brief introduction followed by product highlights. Include product names, key features, and prices. Maximum total length is 4096 characters.'
+};
+
+// Helper function for tone instructions
+function getToneInstructions(tone: string): string {
+  const toneMap: Record<string, string> = {
+    professional: 'Use formal language, complete sentences, and proper grammar. Avoid slang and casual expressions.',
+    friendly: 'Use warm, approachable language. Contractions are okay. Keep it conversational but professional.',
+    empathetic: 'Show understanding and care. Use supportive language and acknowledge the recipient\'s perspective.',
+    cheeky: 'Use playful, slightly humorous language. Can include puns or light-hearted comments.',
+    sincere: 'Be genuine and heartfelt. Use direct, honest language without being overly formal.',
+    urgent: 'Be direct and action-oriented. Use clear calls-to-action and highlight time sensitivity.'
+  };
+  return toneMap[tone] || 'Use clear, professional language appropriate for business communication.';
+}
+
 // Prompts for different scenarios
-const EXISTING_TEXT_PROMPT = `
-Please use WhatsApp formatting, syntax and markdown and emojis. Please ensure you use a variety of formatting for B2C messages. Ensure you space and use lines and paragraphs, headings etc. appropriately. Use WhatsApp formatting, syntax and markdown and emojis. 
+const EXISTING_TEXT_PROMPT = (input: MultiInput) => {
+  const mediaInstruction = MEDIA_TYPE_INSTRUCTIONS[input.mediaType] || '';
+  const toneInstruction = getToneInstructions(input.tone);
+  
+  return [
+    'You are creating a WhatsApp Business message with these specifications:',
+    `MESSAGE PURPOSE: ${input.messageType.toUpperCase()}`,
+    `MEDIA TYPE: ${input.mediaType.toUpperCase()}`,
+    `TONE: ${input.tone.toUpperCase()}`,
+    '',
+    mediaInstruction,
+    '',
+    'FORMATTING GUIDELINES:',
+    '- Use WhatsApp formatting (*bold*, _italic_, ~strikethrough~, ```code```)',
+    '- Include relevant emojis (1-3 per message)',
+    '- Use line breaks for better readability',
+    '- Keep paragraphs short (1-3 sentences)',
+    '- For lists, use • or - for bullet points',
+    '',
+    `TONE INSTRUCTIONS:\n- ${toneInstruction}`,
+    '',
+    `MESSAGE CONTEXT:\n"${input.context}"`,
+    '',
+    'Generate a professional, engaging message that follows these guidelines. Focus on clear communication and appropriate formatting for the specified media type.',
+    '',
+    'ONLY return the final formatted message - NO explanations, thinking, or notes.'
+  ].join('\n');
+};
 
-Ensure you use a variety of formatting for B2C messages. Space and use line breaks appropriately to look true to life. 
+const NEW_IDEA_PROMPT = (input: MultiInput) => {
+  const mediaInstruction = MEDIA_TYPE_INSTRUCTIONS[input.mediaType] || '';
+  const toneInstruction = getToneInstructions(input.tone);
+  
+  return [
+    'Create a new WhatsApp Business message with these specifications:',
+    `MESSAGE PURPOSE: ${input.messageType.toUpperCase()}`,
+    `MEDIA TYPE: ${input.mediaType.toUpperCase()}`,
+    `TONE: ${input.tone.toUpperCase()}`,
+    '',
+    mediaInstruction,
+    '',
+    'FORMATTING GUIDELINES:',
+    '- Use WhatsApp formatting (*bold*, _italic_, ~strikethrough~, ```code```)',
+    '- Include relevant emojis (1-3 per message)',
+    '- Use line breaks for better readability',
+    '- Keep paragraphs short (1-3 sentences)',
+    '- For lists, use • or - for bullet points',
+    '',
+    `TONE INSTRUCTIONS:\n- ${toneInstruction}`,
+    '',
+    'Generate a professional, engaging message that follows these guidelines. Focus on clear communication and appropriate formatting for the specified media type.',
+    '',
+    'ONLY return the final formatted message - NO explanations, thinking, or notes.'
+  ].join('\n');
+};
 
-Keep the message similar to what it is now with slight variation to make it more appealing. Always in English.
 
-ONLY return the final formatted message - NO explanations, thinking, or notes.
-`;
-
-const NEW_IDEA_PROMPT = `
-Please use WhatsApp formatting, syntax and markdown and emojis. Please ensure you use a variety of formatting for B2C messages. Ensure you space and use lines and paragraphs, headings etc. appropriately. Use WhatsApp formatting, syntax and markdown and emojis. 
-
-Ensure you use a variety of formatting for B2C messages. Space and use line breaks appropriately to look true to life. 
-
-Keep the message similar to what it is now with slight variation to make it more appealing. Always in English.
-
-ONLY return the final formatted message - NO explanations, thinking, or notes.
-`;
 
 // Helper function to determine which prompt to use
 function getPrompt(input: MultiInput): string {
-  // If any field has content, we're improving existing text
-  if (input.field1?.trim() || input.field2?.trim() || input.field3?.trim()) {
-    return EXISTING_TEXT_PROMPT;
+  // If the input contains a complete message, use the existing text prompt
+  if (input.context && input.context.trim().length > 20) {
+    return EXISTING_TEXT_PROMPT(input);
   }
-  // Otherwise, we're creating from a new idea
-  return NEW_IDEA_PROMPT;
+  // Otherwise, use the new idea prompt
+  return NEW_IDEA_PROMPT(input);
 }
 
 // Function to call Together AI API

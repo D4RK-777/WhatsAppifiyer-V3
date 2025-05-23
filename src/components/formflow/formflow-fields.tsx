@@ -6,6 +6,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 import {
   Card,
@@ -20,7 +21,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import TemplateGallery, { type TemplateItemProps } from "./template-gallery";
 import { generateMultiProviderSuggestions } from "@/ai/flows/form-suggestion-multi";
 import { Button } from "@/components/ui/button";
@@ -29,31 +29,47 @@ import { WhatsAppifyButton } from "@/components/ui/whatsappify-button";
 import { RegenerateButton } from "@/components/ui/regenerate-button";
 import { Copy, ThumbsUp, ThumbsDown } from "lucide-react"; 
 import PhonePreview from "./phone-preview";
+import { AnimatedDropdownMenu } from "@/components/ui/animated-dropdown-menu";
 
-const messageTypesArray = ["marketing", "authentication", "utility", "service"] as const;
+import { 
+  messageTypesArray, 
+  mediaTypesArray, 
+  toneTypesArray,
+  mediaTypeDescriptions,
+  toneTypeDescriptions,
+  type MessageType,
+  type MediaType,
+  type ToneType
+} from "@/lib/constants";
 
 const formSchema = z.object({
   yourTextOrIdea: z
     .string()
     .min(1, "This field cannot be empty if you want AI suggestions.")
-    .max(1000, "Input must be 1000 characters or less.")
+    .max(4096, "Input must be 4096 characters or less to match WhatsApp's limit.")
     .describe("User's text to convert or an idea for message generation."),
-  messageType: z.enum(messageTypesArray, {
+  messageType: z.enum([...messageTypesArray] as const, {
     required_error: "Please select a message type.",
+  }),
+  mediaType: z.enum([...mediaTypesArray] as const, {
+    required_error: "Please select a media type.",
+  }),
+  tone: z.enum([...toneTypesArray] as const, {
+    required_error: "Please select a tone of voice.",
   }),
   field1: z
     .string()
-    .max(1500, "Suggestion 1 (Variation) must be 1500 characters or less.")
+    .max(4096, "Suggestion 1 (Variation) must be 4096 characters or less to match WhatsApp's limit.")
     .optional()
     .describe("AI-generated Variation 1 of the WhatsApp message."),
   field2: z
     .string()
-    .max(1500, "Suggestion 2 (Variation) must be 1500 characters or less.")
+    .max(4096, "Suggestion 2 (Variation) must be 4096 characters or less to match WhatsApp's limit.")
     .optional()
     .describe("AI-generated Variation 2 of the WhatsApp message."),
   field3: z
     .string()
-    .max(1500, "Suggestion 3 (Variation) must be 1500 characters or less.")
+    .max(4096, "Suggestion 3 (Variation) must be 4096 characters or less to match WhatsApp's limit.")
     .optional()
     .describe("AI-generated Variation 3 of the WhatsApp message."),
 });
@@ -88,7 +104,9 @@ function FormFlowFields() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       yourTextOrIdea: "",
-      messageType: undefined,
+      messageType: "marketing",
+      mediaType: "standard",
+      tone: "friendly",
       field1: "",
       field2: "",
       field3: "",
@@ -184,39 +202,51 @@ function FormFlowFields() {
   };
 
   const handleSubmitSuggestions = async (values: FormValues) => {
-    const { yourTextOrIdea, messageType, field1, field2, field3 } = values;
+    const { yourTextOrIdea, messageType, mediaType, tone, field1, field2, field3 } = values;
     
-    if (!yourTextOrIdea || !messageType) {
+    if (!yourTextOrIdea || !messageType || !mediaType || !tone) {
       toast({
         title: "Missing information",
-        description: "Please provide both text/idea and message type.",
+        description: "Please fill in all required fields.",
         variant: "destructive",
       });
       return;
     }
+    
+    // Prepare input for the multi-provider approach
+    const input: {
+      context: string;
+      messageType: MessageType;
+      mediaType: MediaType;
+      tone: ToneType;
+      field1: string;
+      field2: string;
+      field3: string;
+    } = {
+      context: yourTextOrIdea,
+      messageType: messageType as MessageType,
+      mediaType: mediaType as MediaType,
+      tone: tone as ToneType,
+      field1: field1 || "",
+      field2: field2 || "",
+      field3: field3 || ""
+    };
 
     setIsLoadingSuggestions(true);
     
     try {
-      const input = {
-        context: yourTextOrIdea,
-        messageType: messageType,
-        field1: field1,
-        field2: field2,
-        field3: field3,
-      };
-
       // Use the new multi-provider approach
       const result = await generateMultiProviderSuggestions(input);
-
-      // Update the form with the suggestions
-      form.setValue("field1", result.suggestion1);
-      form.setValue("field2", result.suggestion2);
-      form.setValue("field3", result.suggestion3);
-
+      
+      // Update form with the new suggestions
+      form.setValue("field1", result.suggestion1, { shouldValidate: true });
+      form.setValue("field2", result.suggestion2, { shouldValidate: true });
+      form.setValue("field3", result.suggestion3, { shouldValidate: true });
+      
+      // Show success message
       toast({
-        title: "Suggestions generated",
-        description: "Check out your WhatsApp message variations!",
+        title: "Suggestions Generated!",
+        description: "Three new variations have been created for your message.",
       });
     } catch (error) {
       console.error("Error generating suggestions:", error);
@@ -286,7 +316,7 @@ function FormFlowFields() {
   };
 
   const handleRegenerate = async (fieldName: VariationFieldName) => {
-    const { yourTextOrIdea, messageType } = form.getValues();
+    const { yourTextOrIdea, messageType, mediaType, tone } = form.getValues();
 
     if (!yourTextOrIdea || !yourTextOrIdea.trim()) {
       form.setError("yourTextOrIdea", { type: "manual", message: "Please provide your text or an idea first." });
@@ -295,6 +325,7 @@ function FormFlowFields() {
     } else {
       form.clearErrors("yourTextOrIdea");
     }
+    
     if (!messageType) {
       form.setError("messageType", { type: "manual", message: "Please select a message type first." });
       toast({ title: "Message Type Missing", description: "Please select a message type before regenerating.", variant: "destructive" });
@@ -302,13 +333,32 @@ function FormFlowFields() {
     } else {
       form.clearErrors("messageType");
     }
+    
+    if (!mediaType) {
+      form.setError("mediaType", { type: "manual", message: "Please select a media type first." });
+      toast({ title: "Media Type Missing", description: "Please select a media type before regenerating.", variant: "destructive" });
+      return;
+    } else {
+      form.clearErrors("mediaType");
+    }
+    
+    if (!tone) {
+      form.setError("tone", { type: "manual", message: "Please select a tone first." });
+      toast({ title: "Tone Missing", description: "Please select a tone before regenerating.", variant: "destructive" });
+      return;
+    } else {
+      form.clearErrors("tone");
+    }
 
     setRegeneratingField(fieldName);
+    
     try {
       // Prepare input for the multi-provider approach
       const input = {
         context: yourTextOrIdea,
         messageType,
+        mediaType,
+        tone,
         // Not passing specific field values to get entirely new suggestions
         field1: "",
         field2: "",
@@ -316,7 +366,12 @@ function FormFlowFields() {
       };
 
       // Use the new multi-provider approach
-      const result = await generateMultiProviderSuggestions(input);
+      const result = await generateMultiProviderSuggestions({
+        ...input,
+        field1: "",
+        field2: "",
+        field3: ""
+      });
       
       // Map fieldName to the corresponding suggestion
       const suggestionMap: Record<VariationFieldName, keyof typeof result> = {
@@ -326,10 +381,10 @@ function FormFlowFields() {
       };
       
       // Update only the specific field that needs regeneration
-      form.setValue(fieldName, result[suggestionMap[fieldName]], { shouldValidate: true });
+      form.setValue(fieldName, result[suggestionMap[fieldName]] || "", { shouldValidate: true });
       
       // Show success message with model name based on field
-      const modelNames = {
+      const modelNames: Record<VariationFieldName, string> = {
         field1: 'Llama 3',
         field2: 'DeepSeek',
         field3: 'Gemini'
@@ -341,7 +396,11 @@ function FormFlowFields() {
       });
     } catch (error) {
       console.error(`Error regenerating ${fieldName}:`, error);
-      toast({ title: "Regeneration Error", description: `Failed to regenerate Variation ${fieldName.charAt(fieldName.length - 1)}. Please try again.`, variant: "destructive" });
+      toast({ 
+        title: "Regeneration Error", 
+        description: `Failed to regenerate Variation ${fieldName.charAt(fieldName.length - 1)}. Please try again.`, 
+        variant: "destructive" 
+      });
     } finally {
       setRegeneratingField(null);
     }
@@ -357,33 +416,73 @@ function FormFlowFields() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="messageType"
-          render={({ field }) => (
-            <FormItem className="flex flex-col items-center mb-2" id="tour-target-message-type">
-              <FormLabel className="text-lg font-semibold text-foreground text-center">Select the message type you want to send</FormLabel>
-              <FormControl>
-                <div className="flex flex-wrap gap-2 pt-1 justify-center">
-                  {messageTypesArray.map((type) => (
-                    <CustomButton
-                      key={type}
-                      type="button"
-                      onClick={() => field.onChange(type)}
-                      active={field.value === type}
-                      className="capitalize flex-grow sm:flex-grow-0"
-                    >
-                      {type}
-                    </CustomButton>
-                  ))}
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-4xl mx-auto">
+        <div className="w-full">
+          <div className="mb-4">
+            <AnimatedDropdownMenu
+              onSelectMessageType={(type) => {
+                form.setValue('messageType', type, { shouldValidate: true });
+              }}
+              onSelectMediaType={(type) => {
+                form.setValue('mediaType', type, { shouldValidate: true });
+              }}
+              onSelectTone={(tone) => {
+                form.setValue('tone', tone, { shouldValidate: true });
+              }}
+              initialValues={{
+                messageType: form.watch('messageType') || 'marketing',
+                mediaType: form.watch('mediaType') || 'standard',
+                tone: form.watch('tone') || 'friendly'
+              }}
+            />
+            <div className="flex flex-wrap gap-2 mt-2">
+              {form.formState.errors.messageType && (
+                <p className="text-xs text-red-600">{form.formState.errors.messageType.message}</p>
+              )}
+              {form.formState.errors.mediaType && (
+                <p className="text-xs text-red-600">{form.formState.errors.mediaType.message}</p>
+              )}
+              {form.formState.errors.tone && (
+                <p className="text-xs text-red-600">{form.formState.errors.tone.message}</p>
+              )}
+            </div>
+          </div>
+          
+          {/* Hidden form fields to maintain form state */}
+          <FormField
+            control={form.control}
+            name="messageType"
+            render={({ field }) => (
+              <FormItem className="hidden">
+                <FormControl>
+                  <input type="hidden" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="mediaType"
+            render={({ field }) => (
+              <FormItem className="hidden">
+                <FormControl>
+                  <input type="hidden" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="tone"
+            render={({ field }) => (
+              <FormItem className="hidden">
+                <FormControl>
+                  <input type="hidden" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
         <Card className="rounded-xl bg-card p-6">
           <CardContent className="space-y-6 p-0">
             
@@ -439,21 +538,26 @@ function FormFlowFields() {
                       <FormLabel className="font-semibold text-foreground mb-1 text-[20px]">WhatsApp Variation {index + 1}</FormLabel>
                       <div className="w-full p-0.5 rounded-[44px] transition-all cursor-default">
                         <FormControl>
-                          <PhonePreview messageText={field.value} currentPhoneWidth={320} zoomLevel={1} />
+                          <PhonePreview 
+                            messageText={field.value} 
+                            currentPhoneWidth={320} 
+                            zoomLevel={1}
+                            mediaType={form.watch('mediaType')}
+                          />
                         </FormControl>
                       </div>
                       <div className="w-full max-w-[320px] mx-auto mt-2 flex flex-col space-y-2">
-                         <RegenerateButton
-                            type="button"
-                            onClick={() => handleRegenerate(fieldName)}
-                            isLoading={regeneratingField === fieldName}
-                            disabled={isLoadingSuggestions || regeneratingField !== null}
-                            variationNumber={index + 1}
-                            className={cn(
-                              "w-full mt-2",
-                              regeneratingField === fieldName && "opacity-100"
-                            )}
-                          />
+                        <RegenerateButton
+                          type="button"
+                          onClick={() => handleRegenerate(fieldName)}
+                          isLoading={regeneratingField === fieldName}
+                          disabled={isLoadingSuggestions || regeneratingField !== null}
+                          variationNumber={index + 1}
+                          className={cn(
+                            "w-full mt-2",
+                            regeneratingField === fieldName && "opacity-100"
+                          )}
+                        />
                         <button
                           type="button"
                           onClick={(e) => {

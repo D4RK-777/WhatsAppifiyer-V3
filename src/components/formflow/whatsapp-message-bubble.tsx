@@ -456,25 +456,48 @@ const WhatsAppMessageBubble: React.FC<WhatsAppMessageBubbleProps> = ({
 
   return (
     <div className="w-full flex mb-2">
-      <div
-        className={cn(
-          "max-w-[80%] p-2 rounded-lg shadow whitespace-pre-wrap", 
-          isSender ? "bg-[#E9FDC9] dark:bg-[#55752F] ml-auto rounded-br-none" : "bg-card dark:bg-neutral-700 mr-auto rounded-bl-none"
-        )}
-      >
-        <div className={cn(
-            "text-xs text-black dark:text-white leading-relaxed break-words"
+      <div className={cn(
+        "relative max-w-[80%] p-2 rounded-lg shadow whitespace-pre-wrap", 
+        isSender 
+          ? "bg-[#E9FDC9] dark:bg-[#55752F] ml-auto rounded-br-none" 
+          : "bg-white dark:bg-neutral-700 mr-auto rounded-bl-none"
+      )}>
+        {/* Message content */}
+        <div 
+          className={cn(
+            "text-sm text-black dark:text-white leading-relaxed break-words",
+            isSender ? "pr-4" : "pl-4"
           )}
           style={{ whiteSpace: 'pre-wrap' }}
         >
           {formattedNodes}
         </div>
+        
+        {/* Timestamp */}
         <div className={cn(
-          "text-xs mt-1",
-          isSender ? "text-right text-neutral-500 dark:text-neutral-400" : "text-left text-neutral-500 dark:text-neutral-400"
+          "text-[11px] mt-0.5 flex items-center justify-end gap-1",
+          isSender 
+            ? "text-[#667781] dark:text-neutral-300" 
+            : "text-[#667781] dark:text-neutral-300"
         )}>
           {timestamp}
+          {isSender && (
+            <span className="inline-block text-[#53bdeb] ml-1">
+              ✓✓
+            </span>
+          )}
         </div>
+        
+        {/* Tail */}
+        {isSender ? (
+          <div className="absolute -right-[6px] bottom-0 w-3 h-3 overflow-hidden">
+            <div className="absolute -left-[6px] bottom-0 w-3 h-3 bg-[#E9FDC9] dark:bg-[#55752F] transform -rotate-45 origin-bottom-left"></div>
+          </div>
+        ) : (
+          <div className="absolute -left-[6px] bottom-0 w-3 h-3 overflow-hidden">
+            <div className="absolute -right-[6px] bottom-0 w-3 h-3 bg-white dark:bg-neutral-700 transform rotate-45 origin-bottom-right"></div>
+          </div>
+        )}
       </div>
     </div>
   );
