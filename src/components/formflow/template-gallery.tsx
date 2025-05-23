@@ -51,28 +51,13 @@ const whatsappColors = {
 
 const getTypeSpecificStyles = (type: MessageType): TypeStyle => {
   const cardBg = `bg-[${whatsappColors.cardBgLight}] dark:bg-[${whatsappColors.cardBgDark}]`;
-
-  let headerTextLight = whatsappColors.darkTealHeaderLight;
-  let headerTextDark = whatsappColors.darkHeaderTextDark;
   let borderClassValue = 'border-border';
+  let headerTextLight = whatsappColors.neutralServiceGrey;
+  let headerTextDark = whatsappColors.darkServiceGrey;
 
-  switch (type) {
-    case 'marketing':
-      borderClassValue = `border-[${whatsappColors.brightGreenMarketing}]`;
-      headerTextLight = whatsappColors.brightGreenMarketing;
-      headerTextDark = whatsappColors.brightGreenMarketing;
-      break;
-    case 'authentication':
-    case 'utility':
-      borderClassValue = `border-[${whatsappColors.lightBlueAuthUtility}]`;
-      headerTextLight = whatsappColors.lightBlueAuthUtility;
-      headerTextDark = whatsappColors.lightBlueAuthUtility;
-      break;
-    case 'service':
-      borderClassValue = `border-[${whatsappColors.neutralServiceGrey}] dark:border-[${whatsappColors.darkServiceGrey}]`;
-      headerTextLight = whatsappColors.neutralServiceGrey;
-      headerTextDark = whatsappColors.darkServiceGrey;
-      break;
+  // Remove colored borders and headers for all wtypes
+  if (type === 'service' || type === 'marketing' || type === 'authentication' || type === 'utility') {
+    borderClassValue = 'border-border';
   }
 
   return {
@@ -112,7 +97,7 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
       </p>
       <div
         className={cn(
-          "w-full flex-1 p-2 rounded-md overflow-hidden text-xs whitespace-pre-line min-h-[6rem] bg-[#DCF8C6] text-[#111B21]"
+          "w-full flex-1 p-2 rounded-md overflow-hidden text-xs whitespace-pre-line min-h-[6rem] bg-white text-[#111B21] border border-gray-200"
         )}
         style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' } as React.CSSProperties}
       >
@@ -143,7 +128,7 @@ const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', spee
   return (
     <div className="overflow-hidden w-full my-3 relative">
       <div
-        className={`flex ${animationClass} min-w-max w-full`}
+        className={`flex ${animationClass} min-w-max w-full gap-5`}
         style={{ 
           animationDuration: speed,
           willChange: 'transform',
@@ -435,7 +420,7 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
           );
         })}
       </div>
-      <div className="mt-4" data-component-name="TemplateGallery">
+      <div className="mt-1.5 flex flex-col gap-1.5" data-component-name="TemplateGallery">
         {row1Templates.length > 0 && <TemplateRow templates={row1Templates} direction="left" speed="60s" onTemplateClick={onTemplateClick} />}
         {row2Templates.length > 0 && <TemplateRow templates={row2Templates} direction="right" speed="75s" onTemplateClick={onTemplateClick} />}
       </div>

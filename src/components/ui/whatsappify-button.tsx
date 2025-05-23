@@ -24,58 +24,35 @@ const WhatsAppifyButton = forwardRef<HTMLButtonElement, WhatsAppifyButtonProps>(
         disabled={isLoading || disabled}
         className={cn(
           // Base styling
-          "group relative overflow-hidden",
+          "relative overflow-hidden",
           "inline-flex items-center justify-center gap-2",
-          "px-4 py-2 h-auto rounded-full text-[14px]",
-          "bg-[#075E54] text-white", // Dark green background with white text
-          "hover:-translate-y-0.5 hover:shadow-md",
-          "transition-all duration-250",
-          "focus-visible:outline-none focus-visible:ring-2",
-          "focus-visible:ring-ring focus-visible:ring-offset-2",
+          "px-6 py-3 h-auto rounded-lg text-sm font-bold",
+          "transition-all duration-300",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+          "disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none",
           
-          // State variants
-          "disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none",
+          // Gradient Raise style
+          "bg-gradient-to-r from-[#25D366] to-[#F15F79]",
+          "bg-size-200-auto",
+          "text-white",
+          "hover:bg-right-center hover:shadow-xl hover:-translate-y-1",
+          "active:translate-y-0 active:shadow-lg",
+          "disabled:hover:translate-y-0",
+          
           className
         )}
+        style={{
+          backgroundSize: '200% auto',
+          boxShadow: '0 4px 15px 0 rgba(111, 6, 25, 0.25)'
+        }}
         {...props}
       >
-        {/* Gradient Background */}
-        <div className="absolute inset-0 rounded-full overflow-hidden">
-          <div 
-            className="absolute inset-0"
-            style={{
-              background: 'linear-gradient(90deg, #128C7E, #25D366, #128C7E) 0% 0% / 200% 100%',
-              animation: 'gradientFlow 8s ease infinite',
-              willChange: 'background-position',
-              backfaceVisibility: 'hidden'
-            }}
-          >
-            {/* Shimmer Effect */}
-            <div 
-              className="absolute inset-0"
-              style={{
-                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) 0% 0% / 200% 100%',
-                animation: 'shimmer 3s ease infinite',
-                mixBlendMode: 'overlay'
-              }}
-            />
-          </div>
-        </div>
-
         {/* Content */}
         <div className="relative flex items-center gap-2">
           {isLoading ? (
             <Loader2 className="w-4 h-4 flex-shrink-0 animate-spin" />
           ) : (
-            <div className="relative w-4 h-4 flex-shrink-0">
-              <Sparkles
-                className="w-full h-full text-white transition-all duration-250"
-                style={{
-                  animation: 'sizePulse 5s ease-in-out infinite',
-                  transformOrigin: 'center center'
-                }}
-              />
-            </div>
+            <Sparkles className="w-4 h-4 flex-shrink-0" />
           )}
           {isLoading ? loadingText : children}
         </div>

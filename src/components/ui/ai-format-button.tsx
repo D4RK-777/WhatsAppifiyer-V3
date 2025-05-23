@@ -24,16 +24,20 @@ const AIFormatButton = forwardRef<HTMLButtonElement, AIFormatButtonProps>(
         disabled={isLoading || disabled}
         className={cn(
           // Base styling
-          "group relative overflow-hidden",
+          "relative overflow-hidden",
           "inline-flex items-center justify-center gap-2",
-          "px-4 py-2 h-auto rounded-full",
+          "px-2 py-1 h-auto rounded-md text-xs",
+          "transition-all duration-200",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+          "disabled:opacity-70 disabled:cursor-not-allowed",
+          
+          // Selected button style
           "bg-[#075E54] text-white",
-          "hover:-translate-y-0.5 hover:shadow-md",
-          "transition-all duration-250",
-          "focus-visible:outline-none focus-visible:ring-2",
-          "focus-visible:ring-ring focus-visible:ring-offset-2",
-          // State variants
-          "disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none",
+          "border border-[#075E54]",
+          "hover:bg-[#075E54E6]",
+          "active:bg-[#075E54CC]",
+          "my-1",
+          
           className
         )}
         {...props}
