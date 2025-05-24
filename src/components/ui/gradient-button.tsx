@@ -116,26 +116,22 @@ export interface GradientButtonProps
 
 const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
-    // Add the keyframes to the document head
-    React.useEffect(() => {
-      if (!document.getElementById("gradient-button-keyframes")) {
-        const style = document.createElement("style");
-        style.id = "gradient-button-keyframes";
-        style.innerHTML = glowingKeyframes;
-        document.head.appendChild(style);
-        return () => {
-          document.head.removeChild(style);
-        };
-      }
-    }, []);
-
     const Comp = asChild ? Slot : "button";
     return (
-      <Comp
-        className={cn(gradientButtonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
+      <>
+        <style jsx global>{`
+          @keyframes glowing {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+          }
+        `}</style>
+        <Comp
+          className={cn(gradientButtonVariants({ variant, size, className }))}
+          ref={ref}
+          {...props}
+        />
+      </>
     );
   }
 );
