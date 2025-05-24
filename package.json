@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "visual-editor": "netlify dev",
     "db:migrate": "tsx scripts/run-migration.ts",
-    "db:check": "tsx scripts/check-tables.ts"
+    "db:check": "tsx scripts/check-tables.ts",
+    "db:test": "tsx scripts/check-db.ts"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.8.0",

@@ -1,11 +1,87 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { supabase, saveFeedback } from '@/lib/supabase';
+
+// Helper to handle errors
+function handleError(error: any) {
+  console.error('Supabase error:', error);
+  return NextResponse.json(
+    { 
+      success: false, 
+      error: error.message,
+      details: error.details || null,
+      hint: error.hint || null,
+      code: error.code || null
+    },
+    { status: 500 }
+  );
+}
+
+// Type for the feedback data
+type FeedbackData = {
+  message_id: string;
+  is_positive: boolean;
+  feedback_text?: string;
+  message_content: string;
+  message_metadata?: {
+    message_type?: string;
+    media_type?: string;
+    tone?: string;
+  };
+  formatting_analysis?: Array<{
+    format_type: string;
+    position_start: number;
+    position_end: number;
+    content: string;
+    context_category?: string;
+  }>;
+};
 
 export async function GET() {
   try {
-    const cookieStore = cookies();
+    // Test the connection by fetching the current user
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     
+    // Test database access
+    const { data: tables, error: tablesError } = await supabase
+      .from('message_feedback')
+      .select('*')
+      .limit(5);
+
+    if (sessionError || tablesError) {
+      throw sessionError || tablesError;
+    }
+
+    return NextResponse.json({
+      success: true,
+      session: session ? 'Authenticated' : 'Not authenticated',
+      feedbackCount: tables?.length || 0,
+      environment: {
+        NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ? '✅ Set' : '❌ Not set',
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '✅ Set' : '❌ Not set',
+      },
+    });
+
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const feedbackData: FeedbackData = await request.json();
+    
+    // Basic validation
+    if (!feedbackData.message_id || !feedbackData.message_content) {
+      return NextResponse.json(
+        { success: false, error: 'message_id and message_content are required' },
+        { status: 400 }
+      );
+    }
+
+    // Get the session
+    const cookieStore = cookies();
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -18,42 +94,33 @@ export async function GET() {
       }
     );
 
-    // Test the connection by fetching the current user
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    
-    // Test database access
-    const { data: tables, error: tablesError } = await supabase
-      .from('pg_tables')
-      .select('tablename')
-      .eq('schemaname', 'public')
-      .limit(5);
+    const { data: { session } } = await supabase.auth.getSession();
 
-    if (sessionError || tablesError) {
-      throw sessionError || tablesError;
-    }
+    // Save the feedback directly to bypass RLS for testing
+    const { data, error } = await supabase
+      .from('message_feedback')
+      .insert({
+        message_id: feedbackData.message_id,
+        user_id: session?.user?.id || null, // Will be null for unauthenticated users
+        is_positive: feedbackData.is_positive,
+        feedback_text: feedbackData.feedback_text,
+        message_content: feedbackData.message_content,
+        message_metadata: feedbackData.message_metadata || {},
+        formatting_analysis: feedbackData.formatting_analysis || []
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
 
     return NextResponse.json({
       success: true,
-      session: session ? 'Authenticated' : 'Not authenticated',
-      tables: tables?.map(t => t.tablename) || [],
-      environment: {
-        NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ? '✅ Set' : '❌ Not set',
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '✅ Set' : '❌ Not set',
-      },
+      data,
+      message: 'Feedback saved successfully'
     });
 
   } catch (error) {
-    console.error('Supabase test error:', error);
-    return NextResponse.json(
-      { 
-        success: false, 
-        error: error.message,
-        environment: {
-          NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ? '✅ Set' : '❌ Not set',
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '✅ Set' : '❌ Not set',
-        },
-      },
-      { status: 500 }
-    );
+    console.error('Error in API route:', error);
+    return handleError(error);
   }
 }
