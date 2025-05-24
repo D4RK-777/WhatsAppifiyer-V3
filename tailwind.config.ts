@@ -10,6 +10,10 @@ export default {
   theme: {
   	extend: {
   		colors: {
+  			whatsapp: {
+  				DEFAULT: '#075E54',
+  				light: '#128C7E',
+  			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
