@@ -6,7 +6,13 @@ export async function POST(request: Request) {
     const { prompt } = await request.json();
     
     // Use the Google API key from environment variables
-    const apiKey = process.env.GOOGLE_API_KEY || 'AIzaSyDmdQQTq4xETLS1b8aorJE42Su1JCRqUac';
+    const apiKey = process.env.GOOGLE_AI_API_KEY;
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: 'Google AI API key not configured' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
 
     // Initialize the Google Generative AI with the API key
     const genAI = new GoogleGenerativeAI(apiKey);
