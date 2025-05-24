@@ -118,20 +118,11 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
     return (
-      <>
-        <style jsx global>{`
-          @keyframes glowing {
-            0% { background-position: 0 0; }
-            50% { background-position: 400% 0; }
-            100% { background-position: 0 0; }
-          }
-        `}</style>
-        <Comp
-          className={cn(gradientButtonVariants({ variant, size, className }))}
-          ref={ref}
-          {...props}
-        />
-      </>
+      <Comp
+        className={cn(gradientButtonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
     );
   }
 );
