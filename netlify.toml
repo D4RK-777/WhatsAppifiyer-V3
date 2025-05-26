@@ -9,9 +9,6 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
-  [plugins.inputs]
-    buildCommand = "npm run build"
-    publishDirectory = ".next"
 
 [context.production.environment]
   NODE_ENV = "production"

@@ -29,11 +29,17 @@ export function FeedbackButtons({
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleFeedback = async (isPositive: boolean) => {
-    setFeedback(isPositive ? 'like' : 'dislike');
-    
-    // If it's a like, submit immediately
-    if (isPositive) {
-      await submitFeedback(isPositive);
+    try {
+      setFeedback(isPositive ? 'like' : 'dislike');
+      
+      // If it's a like, submit immediately
+      if (isPositive) {
+        await submitFeedback(isPositive);
+      }
+    } catch (error) {
+      console.error('Error handling feedback:', error);
+      // Reset feedback on error
+      setFeedback(null);
     }
   };
 
@@ -43,10 +49,12 @@ export function FeedbackButtons({
     setIsSubmitting(true);
     
     try {
+      console.log('Submitting feedback...', { messageId, isPositive, hasFeedbackText: !!feedbackText });
+      
       // Simple formatting analysis (can be enhanced)
       const formattingAnalysis = analyzeFormatting(messageContent);
       
-      await saveFeedback({
+      const feedbackData = {
         message_id: messageId,
         is_positive: isPositive,
         feedback_text: isPositive ? undefined : feedbackText,
@@ -57,15 +65,24 @@ export function FeedbackButtons({
           tone: messageMetadata.tone,
         },
         formatting_analysis: formattingAnalysis,
-      });
+      };
+      
+      console.log('Saving feedback data:', feedbackData);
+      
+      const result = await saveFeedback(feedbackData);
+      console.log('Feedback saved successfully:', result);
       
       setIsSubmitted(true);
       onFeedback?.(isPositive);
+      
+      // Reset feedback text after successful submission
+      if (!isPositive) {
+        setFeedbackText('');
+      }
     } catch (error) {
       console.error('Failed to submit feedback:', error);
-      // Reset on error
-      setFeedback(null);
-      setFeedbackText('');
+      // Don't reset feedback state on error to allow retry
+      throw error; // Re-throw to be caught by handleFeedback
     } finally {
       setIsSubmitting(false);
     }

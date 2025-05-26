@@ -61,26 +61,41 @@ export const saveFeedback = async (feedback: {
     context_category?: string;
   }[];
 }) => {
-  const { data, error } = await supabase
-    .from('message_feedback')
-    .insert({
-      message_id: feedback.message_id,
-      is_positive: feedback.is_positive,
-      feedback_text: feedback.feedback_text,
-      message_content: feedback.message_content,
-      message_metadata: feedback.message_metadata || {},
-      formatting_analysis: feedback.formatting_analysis || [],
-      user_id: (await supabase.auth.getUser()).data.user?.id || null
-    })
-    .select()
-    .single();
+  try {
+    // Get user ID if available, otherwise use null for anonymous feedback
+    let userId = null;
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      userId = userData.user?.id || null;
+    } catch (authError) {
+      console.log('No authenticated user, saving as anonymous feedback');
+    }
 
-  if (error) {
-    console.error('Error saving feedback:', error);
+    const { data, error } = await supabase
+      .from('message_feedback')
+      .insert({
+        message_id: feedback.message_id,
+        is_positive: feedback.is_positive,
+        feedback_text: feedback.feedback_text,
+        message_content: feedback.message_content,
+        message_metadata: feedback.message_metadata || {},
+        formatting_analysis: feedback.formatting_analysis || [],
+        user_id: userId
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error saving feedback:', error);
+      throw error;
+    }
+
+    console.log('Feedback saved successfully:', data);
+    return data;
+  } catch (error) {
+    console.error('Failed to save feedback:', error);
     throw error;
   }
-
-  return data;
 };
 
 export const getMessageFeedback = async (messageId: string) => {
