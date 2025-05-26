@@ -1,9 +1,24 @@
 {
-    "IDX.aI.enableInlineCompletion": true,
-    "IDX.aI.enableCodebaseIndexing": true,
-    "terminal.integrated.shellIntegration.environmentReporting": true,
-    "terminal.integrated.suggest.enabled": true,
-    "terminal.integrated.suggest.runOnEnter": "always",
-    "terminal.integrated.tabs.defaultColor": "terminal.ansiGreen",
-    "terminal.explorerKind": "both"
+  "IDX.aI.enableInlineCompletion": true,
+  "IDX.aI.enableCodebaseIndexing": true,
+  "terminal.integrated.shellIntegration.environmentReporting": true,
+  "terminal.integrated.suggest.enabled": true,
+  "terminal.integrated.suggest.runOnEnter": "always",
+  "terminal.integrated.tabs.defaultColor": "terminal.ansiGreen",
+  "terminal.explorerKind": "both",
+  "css.lint.unknownAtRules": "ignore",
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "html"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  "css.validate": false,
+  "scss.validate": false,
+  "less.validate": false,
+  "editor.inlineSuggest.enabled": true
 }

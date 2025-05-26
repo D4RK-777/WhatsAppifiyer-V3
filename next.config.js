@@ -1,19 +1,29 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
-  webpack: (config) => {
-    // Add path aliases to webpack
+  
+  webpack: (config, { isServer }) => {
+    config.resolve.modules = [
+      path.resolve(__dirname, 'src'),
+      'node_modules',
+    ];
+    
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': require('path').resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, 'src'),
+      '@/components': path.resolve(__dirname, 'src/components'),
+      '@/lib': path.resolve(__dirname, 'src/lib'),
+      '@/ai': path.resolve(__dirname, 'src/ai'),
     };
+    
     return config;
   },
-  // Add this to handle module resolution in production
-  experimental: {
-    serverComponentsExternalPackages: ['@genkit-ai/googleai', 'genkit'],
-  },
+  
+  serverExternalPackages: ['@genkit-ai/googleai', 'genkit'],
+  
+  output: 'standalone',
 };
 
 module.exports = nextConfig;
