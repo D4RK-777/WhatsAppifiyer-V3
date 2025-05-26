@@ -229,12 +229,16 @@ export const Compare = ({
         {secondImage ? (
           <motion.img
             className={cn(
-              "absolute top-0 left-0 z-[19]  rounded-2xl w-full h-full select-none",
+              "absolute top-0 left-0 z-[19] rounded-2xl w-full h-full select-none",
               secondImageClassname
             )}
             alt="second image"
             src={secondImage}
             draggable={false}
+            onDragStart={(e: React.DragEvent<HTMLImageElement>) => {
+              e.preventDefault();
+              return false;
+            }}
             {...secondImageProps}
           />
         ) : null}
