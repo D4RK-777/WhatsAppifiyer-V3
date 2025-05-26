@@ -1,22 +1,32 @@
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/types/supabase';
 
-// Debug environment variables
-console.log('Environment variables available:', Object.keys(process.env).filter(key => key.includes('NEXT_PUBLIC_') || key.includes('SUPABASE_')));
-console.log('NEXT_PUBLIC_SUPABASE_URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
-console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+// Get environment variables - using direct access since we know they're in Netlify
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
+// Throw clear error if environment variables are missing
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing required environment variables:');
-  console.error('- NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl || 'NOT SET');
-  console.error('- NEXT_PUBLIC_SUPABASE_ANON_KEY:', supabaseAnonKey ? 'SET' : 'NOT SET');
-  throw new Error('Missing required environment variables: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be set');
+  const errorMessage = [
+    '\n\n========================================',
+    'MISSING SUPABASE CONFIGURATION',
+    '========================================',
+    'Please ensure the following environment variables are set in Netlify:',
+    '- NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL',
+    '- NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY',
+    '\nCurrent environment:',
+    `- NODE_ENV: ${process.env.NODE_ENV}`,
+    `- SUPABASE_URL: ${supabaseUrl ? 'SET' : 'MISSING'}`,
+    `- SUPABASE_ANON_KEY: ${supabaseAnonKey ? 'SET' : 'MISSING'}`,
+    '========================================\n',
+  ].join('\n');
+  
+  console.error(errorMessage);
+  throw new Error('Missing Supabase configuration. Check the logs for details.');
 }
 
-const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+// Initialize Supabase client
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: false,
     autoRefreshToken: false,
@@ -25,8 +35,6 @@ const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
 });
 
 console.log('Supabase client initialized successfully');
-
-export const supabase = supabaseClient;
 
 export const saveFeedback = async (feedback: {
   message_id: string;
