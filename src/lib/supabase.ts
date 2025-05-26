@@ -1,6 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/types/supabase';
 
+type MessageAction = 'like' | 'dislike' | 'copy';
+
+interface MessageActionPayload {
+  message_id: string;
+  action: MessageAction;
+  message_content: string;
+  metadata?: {
+    source_component?: string;
+    context?: string;
+    [key: string]: any;
+  };
+}
+
 // Get environment variables - using direct access with proper error handling
 const getEnvVar = (key: string): string => {
   const value = process.env[`NEXT_PUBLIC_${key}`] || process.env[key];
@@ -111,3 +124,79 @@ export const getMessageFeedback = async (messageId: string) => {
 
   return data;
 };
+
+/**
+ * Logs a user action (like, dislike, copy) for a message
+ */
+export const logMessageAction = async ({
+  message_id,
+  action,
+  message_content,
+  metadata = {}
+}: MessageActionPayload) => {
+  try {
+    // Get user ID if available
+    let userId = null;
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      userId = userData.user?.id || null;
+    } catch (authError) {
+      console.log('No authenticated user, logging action anonymously');
+    }
+
+    const { data, error } = await supabase
+      .from('message_actions') // Make sure this table exists in your Supabase
+      .insert({
+        message_id,
+        action_type: action,
+        message_content,
+        metadata: {
+          ...metadata,
+          user_agent: typeof window !== 'undefined' ? window.navigator.userAgent : null,
+          timestamp: new Date().toISOString(),
+        },
+        user_id: userId
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error logging message action:', error);
+      throw error;
+    }
+
+    console.log('Message action logged successfully:', data);
+    return data;
+  } catch (error) {
+    console.error('Failed to log message action:', error);
+    throw error;
+  }
+};
+
+// Helper functions for specific actions
+export const logLike = (messageId: string, messageContent: string, metadata = {}) => 
+  logMessageAction({
+    message_id: messageId,
+    action: 'like',
+    message_content: messageContent,
+    metadata
+  });
+
+export const logDislike = (messageId: string, messageContent: string, metadata = {}) => 
+  logMessageAction({
+    message_id: messageId,
+    action: 'dislike',
+    message_content: messageContent,
+    metadata
+  });
+
+export const logCopy = (messageId: string, messageContent: string, metadata = {}) => 
+  logMessageAction({
+    message_id: messageId,
+    action: 'copy',
+    message_content: messageContent,
+    metadata: {
+      ...metadata,
+      copied_at: new Date().toISOString()
+    }
+  });
