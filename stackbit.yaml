@@ -1,0 +1,66 @@
+# Stackbit Configuration File
+# Docs: https://www.stackbit.com/reference/stackbit-yaml/
+
+# The stackbitVersion should be the version of Stackbit that was used to create the project
+stackbitVersion: ~0.8.0
+
+# The URL where the site will be deployed
+devCommand: npm run dev
+
+# The build command to build the site
+buildCommand: npm run build
+
+# The directory where the built files will be placed
+publishDir: .next
+
+# The port where the development server will run
+devPort: 3000
+
+# The URL where the site will be available in development
+devURL: http://localhost:3000
+
+# The URL where the site will be available in production
+siteUrl: https://your-site-url.netlify.app
+
+# The models that should be available in the CMS
+models:
+  Page:
+    type: page
+    urlPath: '/{slug}'
+    filePath: 'content/pages/{slug}.json'
+    fields:
+      - { name: title, type: string, required: true }
+      - { name: content, type: markdown }
+  
+  BlogPost:
+    type: page
+    urlPath: '/blog/{slug}'
+    filePath: 'content/blog/{slug}.json'
+    fields:
+      - { name: title, type: string, required: true }
+      - { name: date, type: date, required: true }
+      - { name: author, type: string }
+      - { name: excerpt, type: string }
+      - { name: content, type: markdown }
+      - { name: categories, type: list, items: { type: string } }
+
+# Navigation configuration
+navigation:
+  - type: page
+    label: Pages
+    include: ['Page']
+  - type: page
+    label: Blog Posts
+    include: ['BlogPost']
+
+# Sidebar configuration
+sidebar:
+  - type: category
+    label: Content
+    items:
+      - type: model
+        label: Pages
+        model: Page
+      - type: model
+        label: Blog Posts
+        model: BlogPost

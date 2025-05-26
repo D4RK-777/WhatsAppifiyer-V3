@@ -1,5 +1,16 @@
-import { defineStackbitConfig, SiteMapEntry } from "@stackbit/types";
+import { defineStackbitConfig, type SiteMapEntry, type DocumentWithSource } from "@stackbit/types";
 import { GitContentSource } from "@stackbit/cms-git";
+
+// Extend the DocumentWithSource type to include our custom fields
+type CustomDocument = DocumentWithSource & {
+  fields?: {
+    slug?: string;
+    title?: string;
+    [key: string]: any;
+  };
+  slug?: string;
+  title?: string;
+};
 
 export default defineStackbitConfig({
   stackbitVersion: '~0.8.0',
@@ -51,17 +62,25 @@ export default defineStackbitConfig({
     const pageModels = models.filter((m) => m.type === "page");
     
     return documents
-      .filter((doc) => pageModels.some(m => m.name === doc.modelName))
+      .filter((doc): doc is CustomDocument => {
+        // Type guard to ensure document has slug and is a page model
+        const docWithFields = doc as CustomDocument;
+        const hasSlug = 
+          (docWithFields.fields && 'slug' in docWithFields.fields) || 
+          'slug' in docWithFields;
+        return pageModels.some(m => m.name === doc.modelName) && hasSlug;
+      })
       .map((document) => {
         let urlPath = '';
+        const slug = (document.slug || document.fields?.slug || '').toString();
         
         // Custom URL mapping based on document type
         switch (document.modelName) {
           case 'Page':
-            urlPath = `/${document.slug}`;
+            urlPath = `/${slug}`;
             break;
           case 'BlogPost':
-            urlPath = `/blog/${document.slug}`;
+            urlPath = `/blog/${slug}`;
             break;
           default:
             return null;
@@ -71,31 +90,12 @@ export default defineStackbitConfig({
           stableId: document.id,
           urlPath,
           document,
-          isHomePage: document.slug === 'home', // Mark the home page
+          isHomePage: slug === 'home', // Mark the home page
         };
       })
       .filter(Boolean) as SiteMapEntry[];
   },
   
-  // Optional: Configure the UI
-  ui: {
-    navigation: {
-      pages: {
-        include: ['Page'],
-        exclude: ['BlogPost']
-      },
-      data: {
-        include: [],
-        exclude: []
-      }
-    },
-    sidebar: {
-      default: {
-        groups: [
-          { type: 'Page', label: 'Pages' },
-          { type: 'BlogPost', label: 'Blog Posts' }
-        ]
-      }
-    }
-  }
+  // UI configuration is now handled through the Stackbit UI configuration
+  // in the Stackbit dashboard or via the stackbit.yaml file
 });
