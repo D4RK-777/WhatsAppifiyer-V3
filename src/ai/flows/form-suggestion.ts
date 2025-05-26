@@ -291,18 +291,20 @@ FOR SERVICE MESSAGES:
 NOW CREATE THREE EXTRAORDINARY MESSAGE VARIATIONS THAT DEMONSTRATE THE VERY BEST OF CREATIVE COPYWRITING:`
 });
 
+// Define the combined input schema for whatsAppFormattingPrompt
+const WhatsAppFormattingInputSchema = z.object({
+  originalInput: SuggestFormFieldsInputSchema,
+  intentAnalysis: IntentAnalysisSchema,
+  creativeCopy: CreativeCopySchema,
+  messageStructure: MessageStructureSchema
+});
+
 // STAGE 4: WhatsApp Formatting Specialist Prompt
 const whatsAppFormattingPrompt = ai.definePrompt({
   name: 'whatsAppFormattingPrompt',
-  input: {schema: z.object({
-    originalInput: SuggestFormFieldsInputSchema,
-    intentAnalysis: IntentAnalysisSchema,
-    creativeCopy: CreativeCopySchema,
-    messageStructure: MessageStructureSchema
-  })},
+  input: {schema: WhatsAppFormattingInputSchema}, // Use the pre-defined schema
   output: {schema: SuggestFormFieldsOutputSchema},
   prompt: `You are a world-class WhatsApp B2C formatting specialist with exceptional skills in optimizing messages for maximum impact, engagement, and conversion. Your ONLY task is to take the creative content and structure plan provided and apply perfect WhatsApp-specific formatting to create THREE DISTINCT, highly effective WhatsApp messages that adhere to all B2C messaging best practices.  
-
 ### USER INPUT:
 Message Type: {{{originalInput.messageType}}}
 
@@ -399,7 +401,7 @@ Key Points to Highlight: {{{creativeCopy.keyHighlights}}}
 - Numbered Lists (1. item): Use for steps, instructions, ranked items (ordered items)
 - Block Quotes (> text): Use for testimonials, important notices, quoted content
 - Inline Code (\`text\`): Use for highlighting UI elements or specific terms
-- Combined Formatting: You can combine certain formats (e.g., *_bold and italic_*) but use sparingly
+- Combined Formatting: You can combine certain formats (e.g., *_bold italic_*) but use sparingly
 - Escaping Characters: Use backslash (\\) to escape formatting characters when needed (e.g., \\* shows literal *)
 
 ### MESSAGE TYPE-SPECIFIC FORMATTING STRATEGIES:
