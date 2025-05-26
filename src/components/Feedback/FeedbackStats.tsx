@@ -27,8 +27,8 @@ export function FeedbackStats({ messageId }: { messageId: string }) {
 
         if (error) throw error;
 
-        const positive = data.filter(fb => fb.is_positive).length;
-        const negative = data.filter(fb => !fb.is_positive).length;
+        const positive = data.filter((fb: { is_positive: boolean }) => fb.is_positive).length;
+        const negative = data.filter((fb: { is_positive: boolean }) => !fb.is_positive).length;
         const lastFeedback = data.length > 0 
           ? new Date(Math.max(...data.map(fb => new Date(fb.created_at).getTime()))).toLocaleString()
           : null;
