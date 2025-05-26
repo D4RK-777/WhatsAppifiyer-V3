@@ -1,16 +1,32 @@
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/types/supabase';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+// Debug environment variables
+console.log('Environment variables available:', Object.keys(process.env).filter(key => key.includes('NEXT_PUBLIC_') || key.includes('SUPABASE_')));
+console.log('NEXT_PUBLIC_SUPABASE_URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing required environment variables:');
+  console.error('- NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl || 'NOT SET');
+  console.error('- NEXT_PUBLIC_SUPABASE_ANON_KEY:', supabaseAnonKey ? 'SET' : 'NOT SET');
+  throw new Error('Missing required environment variables: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be set');
+}
+
+const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: false,
     autoRefreshToken: false,
     detectSessionInUrl: false
   }
 });
+
+console.log('Supabase client initialized successfully');
+
+export const supabase = supabaseClient;
 
 export const saveFeedback = async (feedback: {
   message_id: string;
