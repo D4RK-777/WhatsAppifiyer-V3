@@ -30,6 +30,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# Stackbit
+.stackbit/
+.stackbit.local/
+.stackbit.local.*
+
 # vercel
 .vercel
 

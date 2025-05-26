@@ -1,0 +1,8 @@
+{
+  "title": "My First Blog Post",
+  "date": "2025-05-26",
+  "author": "Admin",
+  "excerpt": "This is an example blog post to demonstrate the CMS.",
+  "content": "# My First Blog Post\n\nThis is some sample content for your first blog post. You can edit this in the CMS.\n\n## Features\n- Markdown support\n- Easy content management\n- Git-based workflow",
+  "categories": ["announcements", "getting-started"]
+}
