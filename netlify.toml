@@ -3,8 +3,20 @@
   publish = ".next"
   functions = "netlify/functions"
 
+[build.environment]
+  NODE_VERSION = "18.x"
+  NPM_FLAGS = "--legacy-peer-deps"
+
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+  [plugins.inputs]
+    buildCommand = "npm run build"
+    publishDirectory = ".next"
+
+[context.production.environment]
+  NODE_ENV = "production"
+  NEXT_PUBLIC_SUPABASE_URL = "https://jqaqkymjacdnllytexou.supabase.co"
+  NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxYXFreW1qYWNkbmxseXRleG91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcwNDM5MDYsImV4cCI6MjA2MjYxOTkwNn0.LoJMnX2qO945At_Gebd7khYGsttudBJfiiC-XzM3-8I"
 
 [dev]
   framework = "next"

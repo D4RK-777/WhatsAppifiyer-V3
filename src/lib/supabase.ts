@@ -1,40 +1,47 @@
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/types/supabase';
 
-// Get environment variables - using direct access since we know they're in Netlify
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+// Get environment variables - using direct access with proper error handling
+const getEnvVar = (key: string): string => {
+  const value = process.env[`NEXT_PUBLIC_${key}`] || process.env[key];
+  if (!value) {
+    console.error(`❌ Missing required environment variable: ${key}`);
+    return '';
+  }
+  return value;
+};
 
-// Throw clear error if environment variables are missing
-if (!supabaseUrl || !supabaseAnonKey) {
-  const errorMessage = [
-    '\n\n========================================',
-    'MISSING SUPABASE CONFIGURATION',
-    '========================================',
-    'Please ensure the following environment variables are set in Netlify:',
-    '- NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL',
-    '- NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY',
-    '\nCurrent environment:',
-    `- NODE_ENV: ${process.env.NODE_ENV}`,
-    `- SUPABASE_URL: ${supabaseUrl ? 'SET' : 'MISSING'}`,
-    `- SUPABASE_ANON_KEY: ${supabaseAnonKey ? 'SET' : 'MISSING'}`,
-    '========================================\n',
-  ].join('\n');
-  
-  console.error(errorMessage);
-  throw new Error('Missing Supabase configuration. Check the logs for details.');
+const supabaseUrl = getEnvVar('SUPABASE_URL');
+const supabaseAnonKey = getEnvVar('SUPABASE_ANON_KEY');
+
+// Only initialize if in browser or if we have the required variables
+const isBrowser = typeof window !== 'undefined';
+const hasRequiredVars = supabaseUrl && supabaseAnonKey;
+
+let supabaseClient: any;
+
+if (isBrowser || hasRequiredVars) {
+  try {
+    supabaseClient = createClient<Database>(
+      supabaseUrl || 'https://jqaqkymjacdnllytexou.supabase.co',
+      supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxYXFreW1qYWNkbmxseXRleG91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcwNDM5MDYsImV4cCI6MjA2MjYxOTkwNn0.LoJMnX2qO945At_Gebd7khYGsttudBJfiiC-XzM3-8I',
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false
+        }
+      }
+    );
+    console.log('✅ Supabase client initialized successfully');
+  } catch (error) {
+    console.error('❌ Failed to initialize Supabase client:', error);
+  }
+} else {
+  console.warn('⚠️ Supabase client not initialized - missing required environment variables');
 }
 
-// Initialize Supabase client
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false,
-    detectSessionInUrl: false
-  }
-});
-
-console.log('Supabase client initialized successfully');
+export const supabase = supabaseClient;
 
 export const saveFeedback = async (feedback: {
   message_id: string;
