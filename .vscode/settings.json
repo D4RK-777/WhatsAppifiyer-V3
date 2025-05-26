@@ -15,7 +15,7 @@
     "typescriptreact": "html"
   },
   "editor.codeActionsOnSave": {
-    "source.fixAll": true
+    "source.fixAll": "explicit"
   },
   "css.validate": false,
   "scss.validate": false,
