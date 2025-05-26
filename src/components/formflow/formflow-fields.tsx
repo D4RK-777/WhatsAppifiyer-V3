@@ -543,7 +543,7 @@ function FormFlowFields() {
                       onMouseEnter={() => setHoveredVariation(fieldName)}
                       onMouseLeave={() => setHoveredVariation(null)}
                     >
-                      <FormLabel className="font-semibold text-foreground mb-1 text-[20px]">WhatsApp Variation {index + 1}</FormLabel>
+                      <FormLabel className="font-semibold text-[#075E54] mb-1 text-[20px]">Variation {index + 1}</FormLabel>
                       <div className="w-full p-0.5 rounded-[44px] transition-all cursor-default overflow-hidden">
                         <FormControl>
                           <PhonePreview 
@@ -554,7 +554,7 @@ function FormFlowFields() {
                           />
                         </FormControl>
                       </div>
-                      <div className="w-full max-w-[320px] mx-auto mt-2 flex flex-col space-y-2">
+                      <div className="w-full flex flex-col items-center mt-2 space-y-2">
                         <RegenerateButton
                           type="button"
                           onClick={() => handleRegenerate(fieldName)}
@@ -562,7 +562,7 @@ function FormFlowFields() {
                           disabled={isLoadingSuggestions || regeneratingField !== null}
                           variationNumber={index + 1}
                         />
-                        <div className="flex justify-center space-x-2 mt-2">
+                        <div className="flex justify-center space-x-2 mt-2 w-full">
                           <Button 
                             variant="outline" 
                             size="icon" 

@@ -26,31 +26,38 @@ const RegenerateButton = forwardRef<HTMLButtonElement, RegenerateButtonProps>(
         disabled={isLoading || disabled}
         suppressHydrationWarning
         className={cn(
-          // Base styles
-          'whatsapp-button',
-          'relative inline-flex items-center justify-center w-full',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#075E54] focus-visible:ring-offset-2',
-          // Loading state
-          'overflow-hidden',
+          'inline-flex items-center justify-center',
+          'whitespace-nowrap font-bold transition-all duration-300',
+          'text-white z-1 uppercase relative text-sm',
+          'bg-gradient-to-r from-[#25D366] via-[#25D366] to-[#128C7E]',
+          'bg-[length:200%_auto] rounded-full',
+          'hover:bg-[position:right_center] hover:translate-y-[-0.25em]',
+          'hover:shadow-[0_10px_9px_-3px_rgba(37,211,102,0.38)]',
+          'active:translate-y-0 active:shadow-none',
+          'px-[22px] py-[11.8px] h-[37.6px]',
+          'focus-visible:outline-none',
+          'disabled:opacity-50 disabled:cursor-not-allowed',
           className
         )}
         {...props}
       >
-        {/* Loading overlay */}
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[#075E54] text-white rounded-full">
-            <Loader2 className="h-4 w-4 animate-spin-smooth mr-2" />
-            <span className="text-sm font-medium">{loadingText}</span>
-          </div>
-        )}
-        
         {/* Content */}
-        <div className={cn(
-          'flex items-center justify-center gap-2 transition-opacity',
-          isLoading ? 'opacity-0' : 'opacity-100'
-        )}>
-          <Sparkles className="h-4 w-4 animate-sparkle-icon" />
-          <span className="font-semibold">Regenerate Variation {variationNumber}</span>
+        <div className="relative flex items-center">
+          {/* Loading overlay */}
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-[#075E54] text-white rounded-full">
+              <Loader2 className="h-4 w-4 animate-spin-smooth mr-2" />
+              <span className="text-sm font-medium">{loadingText}</span>
+            </div>
+          )}
+          
+          <div className={cn(
+            'flex items-center gap-2 transition-opacity',
+            isLoading ? 'opacity-0' : 'opacity-100'
+          )}>
+            <Sparkles className="h-4 w-4 animate-sparkle-icon" />
+            <span className="font-semibold">Regenerate</span>
+          </div>
         </div>
       </button>
     )
