@@ -9,7 +9,7 @@ async function checkDatabase() {
   
   if (!supabaseUrl || !supabaseKey) {
     console.error('❌ Missing Supabase URL or key in environment variables');
-    console.log('Make sure these are set in your .env.local file:');
+    console.log('Make sure these are set in your .env file:');
     console.log('NEXT_PUBLIC_SUPABASE_URL=your-project-url');
     console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key');
     process.exit(1);

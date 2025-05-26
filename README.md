@@ -15,7 +15,7 @@ A modern web application for enhancing and formatting WhatsApp messages with AI 
 
 1. Clone the repository
 2. Install dependencies: `npm install`
-3. Copy `.env.example` to `.env.local` and fill in your environment variables
+3. Copy `.env.example` to `.env` and fill in your environment variables
 4. Run the development server: `npm run dev`
 
 ## Environment Variables

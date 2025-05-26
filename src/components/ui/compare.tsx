@@ -1,9 +1,11 @@
 "use client";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { SparklesCore } from "@/components/ui/sparkles";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, PanInfo } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { IconDotsVertical } from "@tabler/icons-react";
+
+
 
 interface CompareProps {
   firstImage?: string;
@@ -235,11 +237,8 @@ export const Compare = ({
             alt="second image"
             src={secondImage}
             draggable={false}
-            onDragStart={(e: React.DragEvent<HTMLImageElement>) => {
-              e.preventDefault();
-              return false;
-            }}
-            {...secondImageProps}
+            // Explicitly type the props to avoid conflicts
+            {...(secondImageProps as React.ComponentProps<typeof motion.img>)}
           />
         ) : null}
       </AnimatePresence>
