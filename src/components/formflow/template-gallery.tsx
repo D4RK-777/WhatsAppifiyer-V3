@@ -1,8 +1,7 @@
 "use client";
 
 import React, { FC, useState } from 'react';
-import { Copy, ThumbsUp, ThumbsDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+// Removed unused icon and button imports
 import { useToast } from '@/hooks/use-toast';
 import { cn } from "@/lib/utils";
 import { CustomButton } from "@/components/ui/custom-button";
@@ -78,16 +77,7 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
 
   const { toast } = useToast();
 
-  const handleCopy = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (previewText) {
-      navigator.clipboard.writeText(previewText);
-      toast({
-        title: "Template copied!",
-        description: "The template has been copied to your clipboard.",
-      });
-    }
-  };
+  // Removed handleCopy function as it's no longer needed
 
   return (
     <div
@@ -122,41 +112,7 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
         >
           {previewText || "No preview available"}
         </div>
-        <div className="flex justify-end mt-2 space-x-1">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={handleCopy} 
-            aria-label="Copy template" 
-            className="h-7 w-7"
-          >
-            <Copy className="h-3.5 w-3.5" />
-          </Button>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={(e) => {
-              e.stopPropagation();
-              // Handle like
-            }} 
-            aria-label="Like template" 
-            className="h-7 w-7"
-          >
-            <ThumbsUp className="h-3.5 w-3.5" />
-          </Button>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={(e) => {
-              e.stopPropagation();
-              // Handle dislike
-            }} 
-            aria-label="Dislike template" 
-            className="h-7 w-7"
-          >
-            <ThumbsDown className="h-3.5 w-3.5" />
-          </Button>
-        </div>
+        {/* Removed copy, like, and dislike buttons */}
 
       </div>
     </div>
@@ -197,8 +153,10 @@ const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', spee
       for (let i = 0; i < styleSheet.cssRules.length; i++) {
         const rule = styleSheet.cssRules[i];
         if (rule.type === CSSRule.KEYFRAMES_RULE) {
-          if (rule.name === 'scroll-left') hasScrollLeft = true;
-          if (rule.name === 'scroll-right') hasScrollRight = true;
+          // Type cast to CSSKeyframesRule which has the name property
+          const keyframeRule = rule as CSSKeyframesRule;
+          if (keyframeRule.name === 'scroll-left') hasScrollLeft = true;
+          if (keyframeRule.name === 'scroll-right') hasScrollRight = true;
         }
       }
       
