@@ -82,7 +82,7 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
   return (
     <div
       className={cn(
-        "flex-shrink-0 w-64 h-64 border-2 rounded-lg p-3 flex flex-col group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all duration-300 shadow-md hover:shadow-xl cursor-pointer",
+        "flex-shrink-0 w-64 h-64 border-2 rounded-lg p-3 flex flex-col group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer relative z-[45]",
         styles.cardBackgroundClass,
         styles.borderClass,
         `hover:border-[${whatsappColors.mainActiveGreen}]`,
@@ -124,9 +124,10 @@ interface TemplateRowProps {
   direction?: 'left' | 'right';
   speed?: string;
   onTemplateClick: (template: TemplateItemProps) => void;
+  className?: string;
 }
 
-const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', speed = '30s', onTemplateClick }) => {
+const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', speed = '300s', onTemplateClick, className }) => {
   // Create enough duplicates for a seamless infinite scroll
   const getDuplicatedTemplates = () => {
     if (templates.length === 0) return [];
@@ -183,13 +184,13 @@ const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', spee
   }, []);
 
   return (
-    <div className="w-full relative group overflow-hidden">
+    <div className={cn("w-full relative group overflow-hidden z-[30]", className)}>
       {/* Gradient fade effect on the sides */}
       <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
       <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
       
       <div
-        className="flex gap-4 px-4 py-4 force-animation"
+        className="flex gap-4 p-6 mx-4 mt-4 force-animation"
         style={{
           display: 'flex',
           width: 'max-content',
@@ -215,7 +216,7 @@ const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', spee
         {duplicatedTemplates.map((template, index) => (
           <div 
             key={`${template.id}-${index}`}
-            className="transition-all duration-300 hover:scale-105 hover:shadow-lg hover:z-10"
+            className="transition-all duration-300 hover:scale-105 hover:shadow-sm hover:z-[50] z-[40]"
           >
             <TemplateItem 
               {...template} 
@@ -518,9 +519,9 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
             <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-background via-background/90 via-10% to-transparent backdrop-blur-sm z-20 pointer-events-none" />
             
             {/* Container for template rows - these will be full width of viewport */}
-            <div className="flex flex-col gap-6 w-full" data-component-name="TemplateRowsContainer">
-              {row1Templates.length > 0 && <TemplateRow templates={row1Templates} direction="left" speed="30s" onTemplateClick={onTemplateClick} />}
-              {row2Templates.length > 0 && <TemplateRow templates={row2Templates} direction="right" speed="30s" onTemplateClick={onTemplateClick} />}
+            <div className="flex flex-col gap-0 w-full m-2" data-component-name="TemplateRowsContainer">
+              {row1Templates.length > 0 && <TemplateRow templates={row1Templates} direction="left" speed="300s" onTemplateClick={onTemplateClick} className="mb-0" />}
+              {row2Templates.length > 0 && <TemplateRow templates={row2Templates} direction="right" speed="300s" onTemplateClick={onTemplateClick} className="mt-0" />}
             </div>
           </div>
         ) : (

@@ -174,7 +174,7 @@
 .force-animation {
   animation-play-state: running !important;
   animation-delay: 0ms !important;
-  animation-duration: 60s !important;
+  /* Removed fixed duration to allow component-specific durations */
   animation-timing-function: linear !important;
   animation-iteration-count: infinite !important;
 }
