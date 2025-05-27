@@ -58,8 +58,8 @@ export default defineStackbitConfig({
   ],
 
   // Map content to URLs
-  siteMap: ({ documents, models }) => {
-    const pageModels = models.filter((m) => m.type === "page");
+  siteMap: ({ documents, models }: { documents: DocumentWithSource[], models: any[] }) => {
+    const pageModels = models.filter((m: any) => m.type === "page");
     
     return documents
       .filter((doc): doc is CustomDocument => {
@@ -68,9 +68,9 @@ export default defineStackbitConfig({
         const hasSlug = 
           (docWithFields.fields && 'slug' in docWithFields.fields) || 
           'slug' in docWithFields;
-        return pageModels.some(m => m.name === doc.modelName) && hasSlug;
+        return pageModels.some((m: any) => m.name === doc.modelName) && hasSlug;
       })
-      .map((document) => {
+      .map((document: CustomDocument) => {
         let urlPath = '';
         const slug = (document.slug || document.fields?.slug || '').toString();
         
