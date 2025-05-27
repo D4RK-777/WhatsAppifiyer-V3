@@ -454,16 +454,14 @@ function FormFlowFields() {
               render={({ field }) => (
                 <FormItem id="tour-target-input-area" className="relative">
                   <div className="bg-[#ECE5DD] rounded-lg shadow-md px-4 pt-4" data-component-name="Controller">
-                    <div className="mb-3 px-2 text-sm text-gray-500 whatsapp-instruction-text" style={{ fontSize: '14px' }}>
-                      Paste your boring SMS or plain text below to transform it. If you need an idea simply tell the AI what you want and let the ideas flow. Use the template gallery for more inspiration. <span className="font-medium text-gray-600">*AI can make mistakes, please check your work before copying.</span>
-                    </div>
+
                     <div className="relative">
                       <FormControl>
                         <Textarea
                           placeholder={currentYourTextOrIdea && currentYourTextOrIdea.length > 0 ? "" : animatedPlaceholder}
-                          className="flex min-h-[80px] w-full rounded-lg px-3 py-2 ring-offset-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus:ring-0 focus:ring-offset-0 bg-white text-zinc-800 placeholder:text-zinc-600 resize-none text-base focus-visible:ring-0 transition-all duration-200 ease-in-out shadow-sm border border-gray-300 overflow-hidden"
-                          style={{ minHeight: '80px', maxHeight: 'none' }}
-                          rows={1}
+                          className="flex min-h-[120px] w-full rounded-lg px-3 py-2 ring-offset-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus:ring-0 focus:ring-offset-0 bg-white text-zinc-800 placeholder:text-zinc-600 resize-none text-base focus-visible:ring-0 transition-all duration-200 ease-in-out shadow-sm border border-gray-300 overflow-hidden"
+                          style={{ minHeight: '120px', maxHeight: 'none' }}
+                          rows={5}
                           {...field}
                           onFocus={() => setIsTextareaFocused(true)}
                           onBlur={() => setIsTextareaFocused(false)}

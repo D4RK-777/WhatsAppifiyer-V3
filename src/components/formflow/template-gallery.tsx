@@ -21,6 +21,7 @@ export interface TemplateItemProps {
     field3?: string;
   };
   onClick: (template: TemplateItemProps) => void;
+  className?: string;
 }
 
 interface TypeStyle {
@@ -71,7 +72,7 @@ const getTypeSpecificStyles = (type: MessageType): TypeStyle => {
 };
 
 const TemplateItem: FC<TemplateItemProps> = (props) => {
-  const { title, dataAiHint, templateContent, onClick, messageType } = props;
+  const { title, dataAiHint, templateContent, onClick, messageType, className } = props;
   const previewText = templateContent.field1 || "";
   const styles = getTypeSpecificStyles(messageType);
 
@@ -91,10 +92,11 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
   return (
     <div
       className={cn(
-        "flex-shrink-0 w-60 h-auto min-h-[14rem] border-2 rounded-lg p-2 mx-1 flex flex-col group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all duration-300 shadow-md hover:shadow-xl cursor-pointer",
+        "flex-shrink-0 w-64 h-64 border-2 rounded-lg p-3 flex flex-col group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all duration-300 shadow-md hover:shadow-xl cursor-pointer",
         styles.cardBackgroundClass,
         styles.borderClass,
-        `hover:border-[${whatsappColors.mainActiveGreen}]`
+        `hover:border-[${whatsappColors.mainActiveGreen}]`,
+        className
       )}
       onClick={() => onClick(props)}
       role="button"
@@ -111,12 +113,12 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
       <p className={cn("text-xs font-semibold my-2 w-full text-left pl-0.5 py-2", styles.textHeaderClass)}>
         {title}
       </p>
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col justify-between">
         <div
           className={cn(
-            "w-full flex-1 p-2 rounded-md overflow-hidden text-xs whitespace-pre-line min-h-[6rem] bg-white text-[#111B21] border border-gray-200"
+            "w-full p-3 rounded-md overflow-hidden text-xs whitespace-pre-line h-[8rem] bg-white text-[#111B21] border border-gray-200"
           )}
-          style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' } as React.CSSProperties}
+          style={{ overflow: 'hidden', textOverflow: 'ellipsis' } as React.CSSProperties}
         >
           {previewText || "No preview available"}
         </div>
@@ -169,28 +171,100 @@ interface TemplateRowProps {
 }
 
 const TemplateRow: FC<TemplateRowProps> = ({ templates, direction = 'left', speed = '30s', onTemplateClick }) => {
-  // Reduce the number of duplicated templates to improve performance
-  const duplicatedTemplates = templates.length > 0 && templates.length < 8
-    ? [...templates, ...templates] // Reduced from 6x to 2x duplication
-    : (templates.length > 0 ? [...templates] : []);
+  // Create enough duplicates for a seamless infinite scroll
+  const getDuplicatedTemplates = () => {
+    if (templates.length === 0) return [];
+    // Create 3 sets of templates for smooth infinite scrolling
+    return [...templates, ...templates, ...templates];
+  };
 
+  const duplicatedTemplates = getDuplicatedTemplates();
   if (duplicatedTemplates.length === 0) return null;
 
-  // Use will-change to optimize the animation rendering
-  const animationClass = direction === 'left' ? 'animate-scroll-left' : 'animate-scroll-right';
+  // Calculate the width of the container to determine the animation distance
+  const containerWidth = templates.length * 256; // 16rem = 256px (w-64 = 16rem)
+  
+  // Force animation to start immediately
+  React.useEffect(() => {
+    const styleSheet = document.styleSheets[0];
+    // Add keyframes if they don't exist
+    try {
+      if (!styleSheet.cssRules) return;
+      
+      let hasScrollLeft = false;
+      let hasScrollRight = false;
+      
+      for (let i = 0; i < styleSheet.cssRules.length; i++) {
+        const rule = styleSheet.cssRules[i];
+        if (rule.type === CSSRule.KEYFRAMES_RULE) {
+          if (rule.name === 'scroll-left') hasScrollLeft = true;
+          if (rule.name === 'scroll-right') hasScrollRight = true;
+        }
+      }
+      
+      if (!hasScrollLeft) {
+        styleSheet.insertRule(`
+          @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+        `, styleSheet.cssRules.length);
+      }
+      
+      if (!hasScrollRight) {
+        styleSheet.insertRule(`
+          @keyframes scroll-right {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
+          }
+        `, styleSheet.cssRules.length);
+      }
+    } catch (e) {
+      console.error('Error adding keyframes:', e);
+    }
+  }, []);
 
   return (
-    <div className="overflow-hidden w-full my-3 relative">
+    <div className="w-full relative group overflow-hidden">
+      {/* Gradient fade effect on the sides */}
+      <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+      
       <div
-        className={`flex ${animationClass} min-w-max w-full gap-5`}
-        style={{ 
+        className="flex gap-4 px-4 py-4 force-animation"
+        style={{
+          display: 'flex',
+          width: 'max-content',
+          animationName: direction === 'left' ? 'scroll-left' : 'scroll-right',
           animationDuration: speed,
+          animationTimingFunction: 'linear',
+          animationIterationCount: 'infinite',
+          animationPlayState: 'running',
           willChange: 'transform',
-          transform: 'translateZ(0)' // Force GPU acceleration
+          transform: 'translateZ(0)', // Force GPU acceleration
+          height: '100%',
+          alignItems: 'flex-start',
+        }}
+        onMouseEnter={(e) => {
+          // Pause animation on hover
+          e.currentTarget.style.setProperty('animation-play-state', 'paused');
+        }}
+        onMouseLeave={(e) => {
+          // Resume animation when mouse leaves
+          e.currentTarget.style.setProperty('animation-play-state', 'running');
         }}
       >
         {duplicatedTemplates.map((template, index) => (
-          <TemplateItem key={`${template.id}-${index}`} {...template} onClick={onTemplateClick} />
+          <div 
+            key={`${template.id}-${index}`}
+            className="transition-all duration-300 hover:scale-105 hover:shadow-lg hover:z-10"
+          >
+            <TemplateItem 
+              {...template} 
+              onClick={onTemplateClick} 
+              className="w-64 h-64"
+            />
+          </div>
         ))}
       </div>
     </div>
@@ -452,35 +526,53 @@ const TemplateGallery: FC<TemplateGalleryProps> = ({ onTemplateClick }) => {
   ];
 
   return (
-    <div className="pt-8 border-t border-border mt-8 w-[100vw] max-w-[100vw] overflow-x-hidden ml-[calc(-50vw+50%)] mr-[calc(-50vw+50%)] px-0" data-component-name="TemplateGallery">
-      <h3 className="text-xl font-semibold text-center mb-6 text-primary" data-component-name="TemplateGallery">
-        Explore WhatsApp Templates
-      </h3>
-      <div className="flex flex-wrap gap-3 pt-2 pb-6 justify-center" data-component-name="TemplateGallery">
-        {filterCategories.map(category => {
-          const isActive = activeFilter === category.value;
+    <div className="w-full relative pt-8 border-t border-border mt-8" data-component-name="TemplateGalleryRoot">
+      {/* Padded content for title and filters */}
+      <div className="relative w-full px-4" data-component-name="TemplateGalleryHeader">
+        <h3 className="text-xl font-semibold text-center mb-6 text-primary">
+          Explore WhatsApp Templates
+        </h3>
+        <div className="flex flex-wrap gap-3 pt-2 pb-6 justify-center">
+          {filterCategories.map(category => {
+            const isActive = activeFilter === category.value;
+            return (
+              <CustomButton
+                key={category.value}
+                type="button"
+                onClick={() => setActiveFilter(category.value)}
+                active={isActive}
+                className="capitalize flex-grow sm:flex-grow-0"
+                data-component-name="FilterButton"
+              >
+                {category.label.toLowerCase()}
+              </CustomButton>
+            );
+          })}
+        </div>
+      </div>
 
-          return (
-            <CustomButton
-              key={category.value}
-              type="button"
-              onClick={() => setActiveFilter(category.value)}
-              active={isActive}
-              className="capitalize flex-grow sm:flex-grow-0" 
-              data-component-name="FilterButton" 
-            >
-              {category.label.toLowerCase()}
-            </CustomButton>
-          );
-        })}
+      {/* Full-width section for the carousel itself and 'no templates' message */}
+      <div className="w-full relative mt-1.5" data-component-name="TemplateGalleryCarouselSection">
+        {filteredTemplates.length > 0 ? (
+          <div className="relative w-screen -mx-4 md:-mx-8 lg:-mx-12 xl:-mx-16 overflow-hidden" style={{ left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', width: '100vw' }} data-component-name="ViewportWidthContainer">
+            {/* Gradient overlays */}
+            <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-background via-background/90 via-10% to-transparent backdrop-blur-sm z-20 pointer-events-none" />
+            <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-background via-background/90 via-10% to-transparent backdrop-blur-sm z-20 pointer-events-none" />
+            
+            {/* Container for template rows - these will be full width of viewport */}
+            <div className="flex flex-col gap-6 w-full" data-component-name="TemplateRowsContainer">
+              {row1Templates.length > 0 && <TemplateRow templates={row1Templates} direction="left" speed="30s" onTemplateClick={onTemplateClick} />}
+              {row2Templates.length > 0 && <TemplateRow templates={row2Templates} direction="right" speed="30s" onTemplateClick={onTemplateClick} />}
+            </div>
+          </div>
+        ) : (
+          activeFilter !== "all" && (
+            <div className="relative w-full px-4" data-component-name="NoTemplatesMessageContainer">
+              <p className="text-center text-muted-foreground mt-4">No templates found for "{activeFilter}" category.</p>
+            </div>
+          )
+        )}
       </div>
-      <div className="mt-1.5 flex flex-col gap-1.5" data-component-name="TemplateGallery">
-        {row1Templates.length > 0 && <TemplateRow templates={row1Templates} direction="left" speed="60s" onTemplateClick={onTemplateClick} />}
-        {row2Templates.length > 0 && <TemplateRow templates={row2Templates} direction="right" speed="75s" onTemplateClick={onTemplateClick} />}
-      </div>
-      {filteredTemplates.length === 0 && activeFilter !== "all" && (
-        <p className="text-center text-muted-foreground mt-4">No templates found for "{activeFilter}" category.</p>
-      )}
     </div>
   );
 };

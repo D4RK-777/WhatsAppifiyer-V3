@@ -159,6 +159,26 @@
   box-shadow: none;
 }
 
+/* Scroll animations for template gallery */
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes scroll-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+/* Force animations to run */
+.force-animation {
+  animation-play-state: running !important;
+  animation-delay: 0ms !important;
+  animation-duration: 60s !important;
+  animation-timing-function: linear !important;
+  animation-iteration-count: infinite !important;
+}
+
 /* Button 33 styles - Exact match for the format button */
 .button-33 {
   background-color: #4CAF50;

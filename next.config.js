@@ -17,6 +17,22 @@ const nextConfig = {
       '@/lib': path.resolve(__dirname, 'src/lib'),
       '@/ai': path.resolve(__dirname, 'src/ai'),
     };
+
+    // Add file-loader rule
+    config.module.rules.push({
+      test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2)$/i,
+      use: [
+        {
+          loader: 'file-loader',
+          options: {
+            name: '[name].[hash].[ext]',
+            publicPath: '/_next/static/media/',
+            outputPath: 'static/media/',
+            esModule: false, // Important for compatibility with some setups
+          },
+        },
+      ],
+    });
     
     return config;
   },
