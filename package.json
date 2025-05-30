@@ -10,14 +10,15 @@
     "dev": "next dev --turbopack -p 9002",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
-    "build": "next build",
+    "build": "next build && next export -o out",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "visual-editor": "netlify dev",
     "db:migrate": "tsx scripts/run-migration.ts",
     "db:check": "tsx scripts/check-tables.ts",
-    "db:test": "tsx scripts/check-db.ts"
+    "db:test": "tsx scripts/check-db.ts",
+    "export": "next export -o out"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.8.0",
@@ -85,6 +86,7 @@
     "file-loader": "^6.2.0",
     "fs-extra": "^11.3.0",
     "genkit-cli": "^1.8.0",
+    "next-transpile-modules": "^10.0.0",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.4",
     "typescript": "^5.0.0"
