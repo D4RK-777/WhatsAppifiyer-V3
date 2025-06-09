@@ -1,7 +1,7 @@
 [build]
   base = "."
   command = "npm install && npm run build"
-  publish = "out"
+  publish = ".next"
   functions = "netlify/functions"
 
 [build.environment]
@@ -11,12 +11,6 @@
   NPM_CONFIG_PRODUCTION = "false"
   YARN_PRODUCTION = "false"
   NETLIFY_NEXT_PLUGIN_SKIP = "true"  # Skip the Netlify Next.js plugin
-
-# Required redirect for client-side routing
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
 
 # Cache static assets for 1 year
 [[headers]]

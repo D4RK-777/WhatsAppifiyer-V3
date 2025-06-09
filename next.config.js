@@ -4,8 +4,6 @@ const path = require('path');
 const nextConfig = {
   reactStrictMode: true,
   
-  // Enable standalone output for better compatibility with Netlify
-  output: 'standalone',
   
   // Configure images for static export
   images: {
@@ -51,8 +49,6 @@ const nextConfig = {
   // External packages that should be included in the build
   serverExternalPackages: ['@genkit-ai/googleai', 'genkit'],
   
-  // Enable static HTML export
-  output: 'export',
   
   // Configure base path if your app is not served from the root
   // basePath: '/your-base-path',
