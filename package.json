@@ -17,7 +17,7 @@
     "visual-editor": "netlify dev",
     "db:migrate": "tsx scripts/run-migration.ts",
     "db:check": "tsx scripts/check-tables.ts",
-    "db:test": "tsx scripts/check-db.ts",
+    "db:test": "tsx scripts/check-db.ts"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.8.0",
@@ -59,6 +59,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
+    "dayjs": "^1.11.12",
     "dotenv": "^16.5.0",
     "firebase": "^11.7.0",
     "framer-motion": "^11.0.0",
