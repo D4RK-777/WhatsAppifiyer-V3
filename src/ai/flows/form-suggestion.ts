@@ -16,7 +16,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { z } from 'zod';
 
 const SuggestFormFieldsInputSchema = z.object({
   context: z.string().describe('The user-provided text to be WhatsAppified, or an idea/topic for message generation.'),
