@@ -20,7 +20,8 @@ export function FeedbackStats({ messageId }: { messageId: string }) {
       try {
         setLoading(true);
         
-        const { data, error } = await supabase
+        const supabaseClient = await supabase;
+        const { data, error } = await supabaseClient
           .from('message_feedback')
           .select('is_positive, created_at')
           .eq('message_id', messageId);
