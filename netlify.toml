@@ -1,7 +1,6 @@
 [build]
   base = "."
-  command = "npm install && npm run build"
-  publish = ".next"
+
   functions = "netlify/functions"
 
 [build.environment]
@@ -10,7 +9,7 @@
   NPM_VERBOSE = "true"
   NPM_CONFIG_PRODUCTION = "false"
   YARN_PRODUCTION = "false"
-  NETLIFY_NEXT_PLUGIN_SKIP = "true"  # Skip the Netlify Next.js plugin
+
 
 # Cache static assets for 1 year
 [[headers]]
