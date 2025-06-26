@@ -5,7 +5,7 @@
   functions = "netlify/functions"
 
 [build.environment]
-  NODE_VERSION = "20.0.0"
+  NODE_VERSION = "20.19.3"
   NPM_FLAGS = "--legacy-peer-deps --production=false"
   NPM_VERBOSE = "true"
   NPM_CONFIG_PRODUCTION = "false"
