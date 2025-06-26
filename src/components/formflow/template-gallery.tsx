@@ -97,7 +97,7 @@ const TemplateItem: FC<TemplateItemProps> = (props) => {
     >
       <div className="w-full flex justify-start">
         <span className="text-[0.6rem] font-bold uppercase tracking-wider mb-0.5 px-2 py-0.5 rounded-md bg-black/10 text-black dark:text-white whitespace-nowrap">
-          {messageType}
+
         </span>
       </div>
       <p className={cn("text-xs font-semibold my-2 w-full text-left pl-0.5 py-2", styles.textHeaderClass)}>

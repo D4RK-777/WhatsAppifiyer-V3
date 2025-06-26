@@ -12,6 +12,13 @@ import { ToneSelector } from './tone-selector';
 import { PurposeSelector } from './purpose-selector';
 import { CharacterCounter } from './character-counter';
 
+const truncateString = (str: string, num: number) => {
+  if (str.length <= num) {
+    return str;
+  }
+  return str.slice(0, num) + '...';
+};
+
 export function MessageForm() {
   const form = useForm<MessageFormValues>({
     resolver: zodResolver(messageFormSchema),
@@ -27,7 +34,7 @@ export function MessageForm() {
   const body = form.watch('body') || '';
   const header = form.watch('header') || '';
   const footer = form.watch('footer') || '';
-  const mediaCaption = form.watch('mediaCaption') || '';
+  const mediaCaption = truncateString(form.watch('mediaCaption') || '', 1024);
   const buttonText = form.watch('buttonText') || '';
 
   const onSubmit = (data: MessageFormValues) => {

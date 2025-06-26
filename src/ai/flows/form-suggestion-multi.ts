@@ -30,12 +30,12 @@ const MODEL_NAMES = {
 
 // Media type specific instructions
 const MEDIA_TYPE_INSTRUCTIONS = {
-  standard: 'This is a standard text message. Maximum length is 4096 characters, but keep it concise for better readability.',
-  image: 'This message includes an image. Write a caption (max 4096 characters) that complements the visual content. Describe the image or provide context.',
-  video: 'This message includes a video. Write an engaging description (max 4096 characters) that explains the video content and encourages viewing.',
-  pdf: 'This message includes a PDF document. Briefly describe the document contents (max 4096 characters) and what the recipient should expect.',
-  carousel: 'This is a carousel message with 2-10 cards. Write a brief introduction followed by short, engaging text for each card (max 1024 chars per card).',
-  catalog: 'This is a product catalog message. Write a brief introduction followed by product highlights. Include product names, key features, and prices. Maximum total length is 4096 characters.'
+  standard: '',
+  image: '',
+  video: '',
+  pdf: '',
+  carousel: '',
+  catalog: ''
 };
 
 // Helper function for tone instructions

@@ -3,10 +3,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState, useEffect, useRef } from "react";
+// Refs for toast control and stored field values
+
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
+
 
 import {
   Card,
@@ -29,6 +31,8 @@ import { WhatsAppifyButton } from "@/components/ui/whatsappify-button";
 import { RegenerateButton } from "@/components/ui/regenerate-button";
 import { Copy, ThumbsUp, ThumbsDown } from "lucide-react"; 
 import PhonePreview from "./phone-preview";
+import { saveTemplate } from "@/lib/supabase";
+import { saveMessageAnalytics, analyzeMessageFormatting } from "@/lib/analytics";
 import { AnimatedDropdownMenu } from "@/components/ui/animated-dropdown-menu";
 
 import { 
@@ -74,10 +78,11 @@ const placeholderTips = [
 
 
 function FormFlowFields() {
-  const { toast } = useToast();
+
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [hoveredVariation, setHoveredVariation] = useState<VariationFieldName | null>(null);
   const [regeneratingField, setRegeneratingField] = useState<VariationFieldName | null>(null);
+
 
   const [animatedPlaceholder, setAnimatedPlaceholder] = useState("");
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
@@ -100,6 +105,219 @@ function FormFlowFields() {
   });
 
   const currentYourTextOrIdea = form.watch("yourTextOrIdea");
+
+  const handleSubmitSuggestions = async (values: FormValues) => {
+    const { yourTextOrIdea, messageType, mediaType, tone, field1, field2, field3 } = values;
+    
+    if (!yourTextOrIdea || !messageType || !mediaType || !tone) {
+
+      return;
+    }
+    
+    // Prepare input for the multi-provider approach
+    const input: {
+      context: string;
+      messageType: MessageType;
+      mediaType: MediaType;
+      tone: ToneType;
+      field1: string;
+      field2: string;
+      field3: string;
+    } = {
+      context: yourTextOrIdea,
+      messageType: messageType as MessageType,
+      mediaType: mediaType as MediaType,
+      tone: tone as ToneType,
+      field1: field1 || "",
+      field2: field2 || "",
+      field3: field3 || ""
+    };
+
+    // Reset success toast flag for a new generation cycle
+
+setIsLoadingSuggestions(true);
+    
+    try {
+      // Use the new multi-provider approach
+      const result = await generateMultiProviderSuggestions(input);
+      
+      // Update form with the new suggestions
+      form.setValue("field1", result.suggestion1, { shouldValidate: true });
+      form.setValue("field2", result.suggestion2, { shouldValidate: true });
+      form.setValue("field3", result.suggestion3, { shouldValidate: true });
+      
+      // Show success message
+
+
+        // remember current valid selections for regeneration fallback
+        lastMessageType.current = messageType as MessageType;
+        lastMediaType.current = mediaType as MediaType;
+        lastTone.current = tone as ToneType;
+      } catch (error) {
+        console.error("Error generating suggestions:", error);
+
+      } finally {
+        setIsLoadingSuggestions(false);
+      }
+  };
+
+  const handleCopy = async (fieldName: VariationFieldName) => {
+    const contentToCopy = form.getValues(fieldName);
+    if (!contentToCopy) {
+
+      return;
+    }
+
+    try {
+      // Try modern clipboard API first
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(contentToCopy);
+      } else {
+        // Fallback for browsers that don't support the Clipboard API
+        const textarea = document.createElement('textarea');
+        textarea.value = contentToCopy;
+        textarea.style.position = 'fixed';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        try {
+          document.execCommand('copy');
+        } catch (err) {
+          console.error('execCommand error', err);
+          throw err;
+        } finally {
+          document.body.removeChild(textarea);
+        }
+      }
+      
+      // Show success toast
+
+      
+
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+
+    }
+  };
+
+  const handleLike = (fieldName: VariationFieldName) => {
+    const contentToLike = form.getValues(fieldName);
+    if (!contentToLike) return;
+    
+    // Show success toast
+
+    
+    // Track like action in analytics
+    try {
+      const currentValues = form.getValues();
+      console.log('Attempting to save analytics for handleLike. Payload:', {
+        originalMessage: currentValues.yourTextOrIdea,
+        generatedMessage: contentToLike,
+        messageType: currentValues.messageType || '',
+        mediaType: currentValues.mediaType || '',
+        toneOfVoice: currentValues.tone || '',
+        action: 'like',
+        fieldName: fieldName
+      });
+      saveMessageAnalytics({
+        originalMessage: currentValues.yourTextOrIdea,
+        generatedMessage: contentToLike,
+        messageType: currentValues.messageType || '',
+        mediaType: currentValues.mediaType || '',
+        toneOfVoice: currentValues.tone || '',
+        action: 'like',
+        fieldName: fieldName
+      }).then(success => {
+        if (success) {
+          console.log('Analytics data collected successfully for handleLike.');
+        } else {
+          console.log('Analytics data collection failed for handleLike.');
+        }
+      });
+    } catch (analyticsError) {
+      // Silent fail - don't disrupt user experience
+      console.log('Failed to track like analytics:', analyticsError);
+    }
+  };
+
+  const handleDislike = (fieldName: VariationFieldName) => {
+    const contentToDislike = form.getValues(fieldName);
+    if (!contentToDislike) return;
+    
+    // Show feedback toast
+
+    
+    // Track dislike action in analytics
+    try {
+      const currentValues = form.getValues();
+      console.log('Attempting to save analytics for handleDislike. Payload:', {
+        originalMessage: currentValues.yourTextOrIdea,
+        generatedMessage: contentToDislike,
+        messageType: currentValues.messageType || '',
+        mediaType: currentValues.mediaType || '',
+        toneOfVoice: currentValues.tone || '',
+        action: 'dislike',
+        fieldName: fieldName
+      });
+      saveMessageAnalytics({
+        originalMessage: currentValues.yourTextOrIdea,
+        generatedMessage: contentToDislike,
+        messageType: currentValues.messageType || '',
+        mediaType: currentValues.mediaType || '',
+        toneOfVoice: currentValues.tone || '',
+        action: 'dislike',
+        fieldName: fieldName
+      }).then(success => {
+        if (success) {
+          console.log('Analytics data collected successfully for handleDislike.');
+        } else {
+          console.log('Analytics data collection failed for handleDislike.');
+        }
+      });
+    } catch (analyticsError) {
+      // Silent fail - don't disrupt user experience
+      console.log('Failed to track dislike analytics:', analyticsError);
+    }
+  };
+
+  const handleCopyToClipboard = (text: string, variationNumber: number) => {
+    navigator.clipboard.writeText(text);
+
+    
+    // Track copy action in analytics (alternative method)
+    try {
+      const currentValues = form.getValues();
+      const fieldName = `field${variationNumber}` as VariationFieldName;
+      
+      console.log('Attempting to save analytics for handleCopyToClipboard. Payload:', {
+        originalMessage: currentValues.yourTextOrIdea,
+        generatedMessage: text,
+        messageType: currentValues.messageType || '',
+        mediaType: currentValues.mediaType || '',
+        toneOfVoice: currentValues.tone || '',
+        action: 'copy',
+        fieldName: fieldName
+      });
+      saveMessageAnalytics({
+        originalMessage: currentValues.yourTextOrIdea,
+        generatedMessage: text,
+        messageType: currentValues.messageType || '',
+        mediaType: currentValues.mediaType || '',
+        toneOfVoice: currentValues.tone || '',
+        action: 'copy',
+        fieldName: fieldName
+      }).then(success => {
+        if (success) {
+          console.log('Analytics data collected successfully for handleCopyToClipboard.');
+        } else {
+          console.log('Analytics data collection failed for handleCopyToClipboard.');
+        }
+      });
+    } catch (analyticsError) {
+      // Silent fail - don't disrupt user experience
+      console.log('Failed to track copy analytics:', analyticsError);
+    }
+  };
 
   useEffect(() => {
     const typingSpeed = 5; // Dramatically reduced from 20ms to 5ms for much faster typing
@@ -175,146 +393,42 @@ function FormFlowFields() {
   ]);
 
 
-  const handleTemplateSelect = (template: TemplateItemProps) => {
+  const handleTemplateSelect = async (template: TemplateItemProps) => {
     form.setValue("yourTextOrIdea", template.dataAiHint, { shouldValidate: true });
     form.setValue("messageType", template.messageType as FormValues['messageType'], { shouldValidate: true });
     form.setValue("field1", template.templateContent.field1 || "", { shouldValidate: true });
     form.setValue("field2", template.templateContent.field2 || "", { shouldValidate: true });
     form.setValue("field3", template.templateContent.field3 || "", { shouldValidate: true });
-    toast({
-      title: `Template "${template.title}" Applied!`,
-      description: "Text/Idea, message type, and initial field content pre-populated. Edit or get AI suggestions.",
-    });
-  };
 
-  const handleSubmitSuggestions = async (values: FormValues) => {
-    const { yourTextOrIdea, messageType, mediaType, tone, field1, field2, field3 } = values;
-    
-    if (!yourTextOrIdea || !messageType || !mediaType || !tone) {
-      toast({
-        title: "Missing information",
-        description: "Please fill in all required fields.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    // Prepare input for the multi-provider approach
-    const input: {
-      context: string;
-      messageType: MessageType;
-      mediaType: MediaType;
-      tone: ToneType;
-      field1: string;
-      field2: string;
-      field3: string;
-    } = {
-      context: yourTextOrIdea,
-      messageType: messageType as MessageType,
-      mediaType: mediaType as MediaType,
-      tone: tone as ToneType,
-      field1: field1 || "",
-      field2: field2 || "",
-      field3: field3 || ""
-    };
 
-    setIsLoadingSuggestions(true);
-    
+    // Save the selected template to Supabase
     try {
-      // Use the new multi-provider approach
-      const result = await generateMultiProviderSuggestions(input);
-      
-      // Update form with the new suggestions
-      form.setValue("field1", result.suggestion1, { shouldValidate: true });
-      form.setValue("field2", result.suggestion2, { shouldValidate: true });
-      form.setValue("field3", result.suggestion3, { shouldValidate: true });
-      
-      // Show success message
-      toast({
-        title: "Suggestions Generated!",
-        description: "Three new variations have been created for your message.",
-      });
+      await saveTemplate(template);
     } catch (error) {
-      console.error("Error generating suggestions:", error);
-      toast({
-        title: "Error",
-        description: "Failed to generate suggestions. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoadingSuggestions(false);
+      console.error('Failed to save template to Supabase:', error);
+
     }
   };
 
-  const handleCopy = async (fieldName: VariationFieldName) => {
-    const contentToCopy = form.getValues(fieldName);
-    if (!contentToCopy) {
-      toast({
-        title: "Nothing to Copy",
-        description: "This variation is empty.",
-        variant: "destructive",
-      });
-      return;
-    }
 
-    try {
-      // Try modern clipboard API first
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(contentToCopy);
-      } else {
-        // Fallback for browsers that don't support the Clipboard API
-        const textarea = document.createElement('textarea');
-        textarea.value = contentToCopy;
-        textarea.style.position = 'fixed';
-        document.body.appendChild(textarea);
-        textarea.select();
-        
-        try {
-          const successful = document.execCommand('copy');
-          if (!successful) {
-            throw new Error('Copy command was unsuccessful');
-          }
-        } finally {
-          document.body.removeChild(textarea);
-        }
-      }
-      
-      toast({
-        title: "Copied!",
-        description: `Variation ${fieldName.charAt(fieldName.length - 1)} copied to clipboard.`,
-      });
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-      toast({
-        title: "Error Copying",
-        description: "Could not copy text to clipboard. Please check your browser permissions.",
-        variant: "destructive",
-      });
-    }
-  };
+// Store last valid selections so regenerate can fallback
+const lastMessageType = useRef<MessageType | null>(null);
+const lastMediaType = useRef<MediaType | null>(null);
+const lastTone = useRef<ToneType | null>(null);
+
+
+
+
   
-  const handleLike = (fieldName: VariationFieldName) => {
-    toast({ title: `Liked Variation ${fieldName.charAt(fieldName.length - 1)}`, description: "Feedback submitted (placeholder)." });
-  };
 
-  const handleDislike = (fieldName: VariationFieldName) => {
-    toast({ title: `Disliked Variation ${fieldName.charAt(fieldName.length - 1)}`, description: "Feedback submitted (placeholder)." });
-  };
 
-  const handleCopyToClipboard = (text: string, variationNumber: number) => {
-    navigator.clipboard.writeText(text);
-    toast({
-      title: `Variation ${variationNumber} Copied!`,
-      description: "The text has been copied to your clipboard.",
-    });
-  };
 
   const handleRegenerate = async (fieldName: VariationFieldName) => {
     const { yourTextOrIdea, messageType, mediaType, tone } = form.getValues();
 
     if (!yourTextOrIdea || !yourTextOrIdea.trim()) {
       form.setError("yourTextOrIdea", { type: "manual", message: "Please provide your text or an idea first." });
-      toast({ title: "Input Missing", description: "Please provide your text or an idea before regenerating.", variant: "destructive" });
+
       return;
     } else {
       form.clearErrors("yourTextOrIdea");
@@ -322,7 +436,7 @@ function FormFlowFields() {
     
     if (!messageType) {
       form.setError("messageType", { type: "manual", message: "Please select a message type first." });
-      toast({ title: "Message Type Missing", description: "Please select a message type before regenerating.", variant: "destructive" });
+
       return;
     } else {
       form.clearErrors("messageType");
@@ -330,7 +444,7 @@ function FormFlowFields() {
     
     if (!mediaType) {
       form.setError("mediaType", { type: "manual", message: "Please select a media type first." });
-      toast({ title: "Media Type Missing", description: "Please select a media type before regenerating.", variant: "destructive" });
+
       return;
     } else {
       form.clearErrors("mediaType");
@@ -338,74 +452,149 @@ function FormFlowFields() {
     
     if (!tone) {
       form.setError("tone", { type: "manual", message: "Please select a tone first." });
-      toast({ title: "Tone Missing", description: "Please select a tone before regenerating.", variant: "destructive" });
-      return;
+
+     return;
     } else {
       form.clearErrors("tone");
     }
-
     setRegeneratingField(fieldName);
     
+    // Define model names for each field
+    const modelNames: Record<string, string> = {
+      field1: 'Llama 3',
+      field2: 'DeepSeek',
+      field3: 'Gemini'
+    };
+    
     try {
-      // Prepare input for the multi-provider approach
-      const input = {
-        context: yourTextOrIdea,
-        messageType,
-        mediaType,
-        tone,
-        // Not passing specific field values to get entirely new suggestions
-        field1: "",
-        field2: "",
-        field3: ""
-      };
+      // Get current form values
+      const currentValues = form.getValues();
+      // Fallback to last stored selections if fields are missing (can happen after form edits)
+      if (!currentValues.messageType && lastMessageType.current) {
+        currentValues.messageType = lastMessageType.current;
+      }
+      if (!currentValues.mediaType && lastMediaType.current) {
+        currentValues.mediaType = lastMediaType.current;
+      }
+      if (!currentValues.tone && lastTone.current) {
+        currentValues.tone = lastTone.current;
+      }
+      
+      // Directly call the multi-provider generator instead of hitting API route
+      const regenResult = await generateMultiProviderSuggestions({
+        context: currentValues.yourTextOrIdea,
+        messageType: currentValues.messageType as MessageType,
+        mediaType: currentValues.mediaType as MediaType,
+        tone: currentValues.tone as ToneType,
+        field1: '',
+        field2: '',
+        field3: ''
+      });
 
-      // Use the new multi-provider approach
-      const result = await generateMultiProviderSuggestions({
-        ...input,
-        field1: "",
-        field2: "",
-        field3: ""
-      });
+      let regeneratedText = '';
+      switch (fieldName) {
+        case 'field1':
+          regeneratedText = regenResult.suggestion1;
+          break;
+        case 'field2':
+          regeneratedText = regenResult.suggestion2;
+          break;
+        case 'field3':
+          regeneratedText = regenResult.suggestion3;
+          break;
+      }
+
+      // Update the form field with the regenerated content
+      form.setValue(fieldName, regeneratedText);
       
-      // Map fieldName to the corresponding suggestion
-      const suggestionMap: Record<VariationFieldName, keyof typeof result> = {
-        field1: 'suggestion1',
-        field2: 'suggestion2',
-        field3: 'suggestion3'
-      };
+
       
-      // Update only the specific field that needs regeneration
-      form.setValue(fieldName, result[suggestionMap[fieldName]] || "", { shouldValidate: true });
-      
-      // Show success message with model name based on field
-      const modelNames: Record<VariationFieldName, string> = {
-        field1: 'Llama 3',
-        field2: 'DeepSeek',
-        field3: 'Gemini'
-      };
-      
-      toast({ 
-        title: `Variation ${fieldName.charAt(fieldName.length - 1)} Regenerated!`, 
-        description: `New suggestion from ${modelNames[fieldName]} has been populated.` 
-      });
+      // Track analytics for the regenerated message in the background
+      try {
+        // Analyze formatting in the regenerated message
+        const formattingAnalysis = analyzeMessageFormatting(regeneratedText);
+        
+        // Save analytics data in the background (non-blocking)
+        console.log('Attempting to save analytics for handleRegenerate. Payload:', {
+          originalMessage: currentValues.yourTextOrIdea,
+          generatedMessage: regeneratedText,
+          messageType: currentValues.messageType || '',
+          mediaType: currentValues.mediaType || '',
+          toneOfVoice: currentValues.tone || '',
+          wasRegenerated: true,
+          formattingAnalysis: formattingAnalysis
+        });
+        saveMessageAnalytics({
+          originalMessage: currentValues.yourTextOrIdea,
+          generatedMessage: regeneratedText,
+          messageType: currentValues.messageType || '',
+          mediaType: currentValues.mediaType || '',
+          toneOfVoice: currentValues.tone || '',
+          wasRegenerated: true, // Flag that this was a regeneration
+          formattingAnalysis: formattingAnalysis
+        }).then(success => {
+          if (success) {
+            console.log('Analytics data collected successfully for handleRegenerate.');
+          } else {
+            console.log('Analytics data collection failed for handleRegenerate.');
+          }
+        });
+      } catch (analyticsError) {
+        // Silent fail - don't disrupt user experience
+        console.log('Failed to collect regeneration analytics data:', analyticsError);
+      }
     } catch (error) {
       console.error(`Error regenerating ${fieldName}:`, error);
-      toast({ 
-        title: "Regeneration Error", 
-        description: `Failed to regenerate Variation ${fieldName.charAt(fieldName.length - 1)}. Please try again.`, 
-        variant: "destructive" 
-      });
+
     } finally {
       setRegeneratingField(null);
     }
   };
 
-  const onSubmit = (values: FormValues) => {
+  const onSubmit = async (values: FormValues) => {
     console.log("Form data (WhatsAppified variations):", values);
-    toast({
-      title: "Form Data Logged",
-      description: `Current variations logged to console. You would typically send this data to a backend.`,
-    });
+    
+    // Show success message immediately - don't wait for analytics
+
+    
+    // Collect analytics data in the background
+    try {
+      // Determine which field to use as the generated message (prioritize field1)
+      const generatedMessage = values.field1 || values.field2 || values.field3 || '';
+      
+      // Analyze formatting in the generated message
+      const formattingAnalysis = analyzeMessageFormatting(generatedMessage);
+      
+      console.log('Attempting to save analytics for onSubmit. Payload:', {
+        originalMessage: values.yourTextOrIdea,
+        generatedMessage: generatedMessage,
+        messageType: values.messageType || '',
+        mediaType: values.mediaType || '',
+        toneOfVoice: values.tone || '',
+        wasRegenerated: false,
+        formattingAnalysis: formattingAnalysis
+      });
+
+      // Save analytics data in the background (non-blocking)
+      saveMessageAnalytics({
+        originalMessage: values.yourTextOrIdea,
+        generatedMessage: generatedMessage,
+        messageType: values.messageType || '',
+        mediaType: values.mediaType || '',
+        toneOfVoice: values.tone || '',
+        wasRegenerated: false, // Set to true when regenerating
+        formattingAnalysis: formattingAnalysis
+      }).then(success => {
+        if (success) {
+          console.log('Analytics data collected successfully for onSubmit.');
+        } else {
+          console.log('Analytics data collection failed for onSubmit.');
+        }
+      });
+    } catch (error) {
+      // Silent fail - don't disrupt user experience
+      console.log('Failed to collect analytics data for onSubmit:', error);
+    }
   };
 
   return (

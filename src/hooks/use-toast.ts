@@ -9,7 +9,7 @@ import type {
 } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+const TOAST_REMOVE_DELAY = 3000
 
 type ToasterToast = ToastProps & {
   id: string
@@ -77,9 +77,23 @@ const addToRemoveQueue = (toastId: string) => {
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "ADD_TOAST":
-      return {
-        ...state,
-        toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
+      if (TOAST_LIMIT === 1) {
+        // If TOAST_LIMIT is 1, ensure any existing toast is dismissed before replacing
+        state.toasts.forEach(t => {
+          if (t.open) { // Only dismiss if it's currently open
+            t.open = false; // Mark as closed
+            addToRemoveQueue(t.id); // Add to removal queue
+          }
+        });
+        return {
+          ...state,
+          toasts: [action.toast], // Replace with the new toast
+        };
+      } else {
+        return {
+          ...state,
+          toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
+        }
       }
 
     case "UPDATE_TOAST":
@@ -152,6 +166,7 @@ function toast({ ...props }: Toast) {
     })
   const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
 
+
   dispatch({
     type: "ADD_TOAST",
     toast: {
@@ -163,6 +178,9 @@ function toast({ ...props }: Toast) {
       },
     },
   })
+
+  // automatically schedule removal after delay
+  addToRemoveQueue(id);
 
   return {
     id: id,

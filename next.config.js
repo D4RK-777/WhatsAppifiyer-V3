@@ -2,6 +2,10 @@ const path = require('path');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env: {
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  },
   reactStrictMode: true,
   
   
@@ -47,7 +51,7 @@ const nextConfig = {
   },
   
   // External packages that should be included in the build
-  serverExternalPackages: ['@genkit-ai/googleai', 'genkit'],
+
   
   
   // Configure base path if your app is not served from the root
